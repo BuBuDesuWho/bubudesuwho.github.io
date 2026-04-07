@@ -78,9 +78,12 @@ export function loadSong(song: Song): void {
   const savedDiff = getStorage(song.id + '-diff');
   if (savedDiff) state.diff = Math.min(parseInt(savedDiff, 10), getMaxDiff());
 
-  // load audio
+  // load audio — VITE_SOUND_BASE overrides for external hosting (e.g. GitHub Releases)
+  const soundBase = import.meta.env.VITE_SOUND_BASE;
   const base = import.meta.env.BASE_URL;
-  player.loadSong(song.mp3 ? base + song.mp3 : '', base + song.ogg);
+  const resolveAudio = (path: string) =>
+    soundBase ? soundBase + path.replace(/^sound\//, '') : base + path;
+  player.loadSong(song.mp3 ? resolveAudio(song.mp3) : '', resolveAudio(song.ogg));
 }
 
 function makeSlotsFromBase(bases: SlotBase[]): Slot[] {
