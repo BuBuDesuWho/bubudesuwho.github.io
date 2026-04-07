@@ -14,8 +14,9 @@ function copyAssetsPlugin(): Plugin {
       for (const file of ['config.json', 'changelog.json']) {
         cpSync(resolve(root, file), resolve(dist, file));
       }
-      cpSync(resolve(root, 'sound'), resolve(dist, 'sound'), { recursive: true });
       cpSync(resolve(root, 'css', 'images'), resolve(dist, 'assets', 'images'), { recursive: true });
+      // sound/ hosted on GitHub Releases, only copy call.wav for SFX
+      cpSync(resolve(root, 'sound'), resolve(dist, 'sound'), { recursive: true });
     },
   };
 }

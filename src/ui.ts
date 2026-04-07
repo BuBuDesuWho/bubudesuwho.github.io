@@ -67,9 +67,9 @@ export async function initPlayPage(): Promise<void> {
 
   window.addEventListener('resize', resizeGameArea);
 
-  // Dark/light mode toggle — dark is the default
+  // Dark/light mode toggle — light is the default
   const savedTheme = getStorage('theme');
-  if (savedTheme !== 'light') {
+  if (savedTheme === 'dark') {
     document.documentElement.classList.add('dark-mode');
   }
   updateThemeToggleLabel();
