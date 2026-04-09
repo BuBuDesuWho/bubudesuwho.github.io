@@ -34,6 +34,7 @@ export default defineConfig(({ command }) => ({
         play: resolve(__dirname, 'play.html'),
         changelog: resolve(__dirname, 'changelog.html'),
         stats: resolve(__dirname, 'stats.html'),
+        bubudle: resolve(__dirname, 'bubudle.html'),
       },
     },
   },

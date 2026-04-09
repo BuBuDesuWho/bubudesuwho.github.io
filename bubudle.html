@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en-US" class="no-overflow">
+<head>
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Bubudle</title>
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+<link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
+<link type="text/css" href="css/themes.css?ver=20170402" rel="stylesheet" />
+<link type="text/css" href="css/themes-generated.css" rel="stylesheet" />
+<link type="text/css" href="css/styles.css?ver=20260405" rel="stylesheet" />
+
+</head>
+<body class="no-overflow bubudle-page">
+
+<div id="sidebar" class="sidebar-collapsed">
+  <ul class="sidebar-nav">
+    <li><a class="select-info" href="index.html">About</a></li>
+    <li><a class="select-info" href="changelog.html">Changelog</a></li>
+    <li><a class="select-info" href="stats.html">Stats</a></li>
+    <li><a class="select-info active" href="bubudle.html">Bubudle</a></li>
+    <li>
+      <button id="muse-group-button" type="button" class="btn btn-primary group-button" data-value="muse"><img class="group-icon" src="css/images/muse.png"></img></button><button id="aqours-group-button" type="button" class="btn btn-primary group-button" data-value="aqours"><img class="group-icon" src="css/images/aqours.png"></img></button>
+    </li>
+    <li>
+      <button id="wug-group-button" type="button" class="btn btn-primary group-button" data-value="wug"><img class="group-icon" src="css/images/wug.png"></img>
+    </li>
+    <li class="has-feedback">
+      <input class="form-control" id="menu-search" autofocus></input>
+      <span class="glyphicon glyphicon-search form-control-feedback"></span>
+    </li>
+    <li class="sort-toggle-wrap">
+      <button type="button" class="sort-btn active" data-sort="date">Date</button><button type="button" class="sort-btn" data-sort="alpha">A–Z</button><button type="button" class="group-toggle-btn" id="group-toggle">Group</button>
+    </li>
+  </ul>
+  <img id="song-cover" src="" alt="" style="display:none">
+</div>
+
+<div class="main">
+  <span id="menu-button" class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+
+  <nav class="navbar song-header">
+    <div id="song-controls">
+      <div class="song-title-row">
+        <h2 id="song-title">Bubudle</h2>
+        <div class="song-title-utils">
+          <div id="bubudle-difficulty" class="bubudle-difficulty-toggle">
+            <button type="button" class="btn btn-xs bubudle-diff-btn active" data-bdiff="normal">Normal</button>
+            <button type="button" class="btn btn-xs bubudle-diff-btn" data-bdiff="hard">Hard</button>
+            <button type="button" class="btn btn-xs bubudle-diff-btn" data-bdiff="insane">Insane</button>
+            <span id="bubudle-diff-help" class="glyphicon glyphicon-question-sign bubudle-diff-help"></span>
+          </div>
+          <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <div id="game-area" class="container-fluid"><div class="row">
+    <div id="slots-container" class="col-xs-12">
+      <div id="bubudle-lyric-card" class="bubudle-lyric-card">
+        <div class="bubudle-card-left">
+          <div id="bubudle-lyric" class="bubudle-lyric-text"></div>
+          <div id="bubudle-lyric-jp" class="bubudle-lyric-jp"></div>
+          <div id="bubudle-diff" class="bubudle-diff"></div>
+          <button id="bubudle-play" type="button" class="btn btn-default bubudle-play-btn" title="Play clip"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+          <div class="bubudle-playback">
+            <div class="bubudle-seek-wrap">
+              <div id="bubudle-lyric-marker" class="bubudle-lyric-marker"></div>
+              <input id="bubudle-seek-slider" type="range" min="0" max="1000" value="0" step="1">
+            </div>
+            <span id="bubudle-time" class="bubudle-time">0:00</span>
+          </div>
+          <div class="bubudle-volume">
+            <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
+            <input id="bubudle-volume-slider" type="range" min="0" max="100" value="30">
+          </div>
+        </div>
+        <div class="bubudle-card-right">
+          <div id="bubudle-hint-clip" class="bubudle-hint-line"></div>
+          <div id="bubudle-hint-song" class="bubudle-hint-line"></div>
+          <div id="bubudle-hint-narrow" class="bubudle-hint-line"></div>
+          <div id="bubudle-hint-theme" class="bubudle-hint-line"></div>
+          <div id="bubudle-guesses" class="bubudle-guesses"></div>
+        </div>
+      </div>
+      <div id="slots">
+      </div>
+      <div class="bubudle-controls">
+        <button id="bubudle-check-bottom" type="button" class="btn btn-success">Check</button>
+        <button id="bubudle-next-bottom" type="button" class="btn btn-primary" style="display:none">Next</button>
+      </div>
+      <div class="bubudle-flags">
+        <button id="bubudle-bad-timestamp" type="button" class="btn btn-default bubudle-flag-btn" title="Report wrong timestamp and skip">&#9888; Bad Timestamp</button>
+        <button id="bubudle-flag-diff" type="button" class="btn btn-default bubudle-flag-btn" title="Flag difficulty as wrong">&#9873; Flag Difficulty</button>
+        <button id="bubudle-flag-singer" type="button" class="btn btn-default bubudle-flag-btn" title="Flag wrong singer assignment">&#9834; Flag Singer</button>
+      </div>
+      <div id="bubudle-diff-options" class="bubudle-flag-options" style="display:none">
+        <button type="button" class="btn btn-success btn-xs bubudle-diff-pick" data-diff="1">Normal</button>
+        <button type="button" class="btn btn-warning btn-xs bubudle-diff-pick" data-diff="2">Hard</button>
+        <button type="button" class="btn btn-danger btn-xs bubudle-diff-pick" data-diff="3">Insane</button>
+      </div>
+      <div id="bubudle-singer-options" class="bubudle-flag-options" style="display:none">
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="1">Chika</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="2">You</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="3">Riko</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="4">Hanamaru</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="5">Ruby</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="6">Yoshiko</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="7">Dia</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="8">Kanan</button>
+        <button type="button" class="btn btn-primary btn-xs bubudle-singer-pick" data-singer="9">Mari</button>
+        <button type="button" class="btn btn-info btn-xs" id="bubudle-singer-submit">Done</button>
+        <button type="button" class="btn btn-default btn-xs" id="bubudle-singer-idk">Just Wrong</button>
+      </div>
+      <div id="bubudle-streak" class="bubudle-streak"></div>
+    </div>
+  </div></div>
+</div>
+
+
+<template id="muse-slot-template">
+  <div class="row slot">
+    <div class="col-xs-12 col-md-2 slot-header">
+      <span class="label label-default timerange"></span>
+      <span class="jump-button glyphicon glyphicon-play" aria-hidden="true"></span>
+      <span class="check-slot-button glyphicon glyphicon-ok" aria-hidden="true" title="Check this line"></span>
+      <span class="reveal-button glyphicon glyphicon-search" aria-hidden="true"></span>
+      <span class="reveal-off-button glyphicon glyphicon-search" aria-hidden="true"></span>
+      <span class="show-lyrics glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    </div>
+    <div class="col-xs-12 col-md-10 slot-body"><div class="row">
+      <div class="col-xs-4 col-sm-offset-1 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="1">Honoka (Emitsun)</button>
+        <button type="button" class="btn btn-primary choice" data-value="3">Kotori (Ucchi)</button>
+        <button type="button" class="btn btn-primary choice" data-value="4">Umi (Mimorin)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="1,3,8">Printemps</button>
+        <button type="button" class="btn btn-primary" data-value="4,5,7">lily white</button>
+        <button type="button" class="btn btn-primary" data-value="2,6,9">BiBi</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="6">Maki (Pile)</button>
+        <button type="button" class="btn btn-primary choice" data-value="5">Rin (Rippi)</button>
+        <button type="button" class="btn btn-primary choice" data-value="8">Hanayo (Shikaco)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="5,6,8">1st years</button>
+        <button type="button" class="btn btn-primary" data-value="1,3,4">2nd years</button>
+        <button type="button" class="btn btn-primary" data-value="2,7,9">3rd years</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="9">Nico (Soramaru)</button>
+        <button type="button" class="btn btn-primary choice" data-value="7">Nozomi (Kussun)</button>
+        <button type="button" class="btn btn-primary choice" data-value="2">Eli (Nanjolno)</button>
+      </div>
+    </div></div>
+  </div>
+</template>
+
+<template id="aqours-slot-template">
+  <div class="row slot">
+    <div class="col-xs-12 col-md-2 slot-header">
+      <span class="label label-default timerange"></span>
+      <span class="jump-button glyphicon glyphicon-play" title="Jump" aria-hidden="true"></span>
+      <span class="check-slot-button glyphicon glyphicon-ok" aria-hidden="true" title="Check this line"></span>
+      <span class="reveal-button glyphicon glyphicon-search" title="Reveal answer" aria-hidden="true"></span>
+      <span class="reveal-off-button glyphicon glyphicon-search" title="Unreveal" aria-hidden="true"></span>
+      <span class="show-lyrics glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    </div>
+    <div class="col-xs-12 col-md-10 slot-body"><div class="row">
+      <div class="col-xs-4 col-sm-offset-1 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="1">Chika (Anchan)</button>
+        <button type="button" class="btn btn-primary choice" data-value="2">You (Shukashuu)</button>
+        <button type="button" class="btn btn-primary choice" data-value="3">Riko (Rikyako)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="1,2,5">CYaRon</button>
+        <button type="button" class="btn btn-primary" data-value="3,6,9">Guilty Kiss</button>
+        <button type="button" class="btn btn-primary" data-value="4,7,8">AZALEA</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="4">Hanamaru (King)</button>
+        <button type="button" class="btn btn-primary choice" data-value="5">Ruby (Furirin)</button>
+        <button type="button" class="btn btn-primary choice" data-value="6">Yoshiko (Aikyan)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="4,5,6">1st years</button>
+        <button type="button" class="btn btn-primary" data-value="1,2,3">2nd years</button>
+        <button type="button" class="btn btn-primary" data-value="7,8,9">3rd years</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="7">Dia (Arisha)</button>
+        <button type="button" class="btn btn-primary choice" data-value="8">Kanan (Suwawa)</button>
+        <button type="button" class="btn btn-primary choice" data-value="9">Mari (Ainya)</button>
+      </div>
+    </div></div>
+  </div>
+</template>
+
+<template id="saint-aqours-snow-slot-template">
+  <div class="row slot">
+    <div class="col-xs-12 col-md-2 slot-header">
+      <span class="label label-default timerange"></span>
+      <span class="jump-button glyphicon glyphicon-play" title="Jump" aria-hidden="true"></span>
+      <span class="check-slot-button glyphicon glyphicon-ok" aria-hidden="true" title="Check this line"></span>
+      <span class="reveal-button glyphicon glyphicon-search" title="Reveal answer" aria-hidden="true"></span>
+      <span class="reveal-off-button glyphicon glyphicon-search" title="Unreveal" aria-hidden="true"></span>
+      <span class="show-lyrics glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    </div>
+    <div class="col-xs-12 col-md-10 slot-body"><div class="row">
+      <div class="col-xs-4 col-sm-offset-1 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="1">Chika (Anchan)</button>
+        <button type="button" class="btn btn-primary choice" data-value="2">You (Shukashuu)</button>
+        <button type="button" class="btn btn-primary choice" data-value="3">Riko (Rikyako)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="10">Sarah (Asamin)</button>
+        <button type="button" class="btn btn-primary" data-value="11">Leah (Hinahina)</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="4">Hanamaru (King)</button>
+        <button type="button" class="btn btn-primary choice" data-value="5">Ruby (Furirin)</button>
+        <button type="button" class="btn btn-primary choice" data-value="6">Yoshiko (Aikyan)</button>
+      </div>
+      <div class="hidden-xs col-sm-push-2 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary" data-value="1,2,3,4,5,6,7,8,9">Aqours</button>
+        <button type="button" class="btn btn-primary" data-value="10,11">Saint Snow</button>
+      </div>
+      <div class="col-xs-4 col-sm-pull-4 col-sm-2 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="7">Dia (Arisha)</button>
+        <button type="button" class="btn btn-primary choice" data-value="8">Kanan (Suwawa)</button>
+        <button type="button" class="btn btn-primary choice" data-value="9">Mari (Ainya)</button>
+      </div>
+    </div></div>
+  </div>
+</template>
+
+<template id="wug-slot-template">
+  <div class="row slot">
+    <div class="col-xs-12 col-md-2 slot-header">
+      <span class="label label-default timerange"></span>
+      <span class="jump-button glyphicon glyphicon-play" title="Jump" aria-hidden="true"></span>
+      <span class="check-slot-button glyphicon glyphicon-ok" aria-hidden="true" title="Check this line"></span>
+      <span class="reveal-button glyphicon glyphicon-search" title="Reveal answer" aria-hidden="true"></span>
+      <span class="reveal-off-button glyphicon glyphicon-search" title="Unreveal" aria-hidden="true"></span>
+      <span class="show-lyrics glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    </div>
+    <div class="col-xs-12 col-md-10 slot-body"><div class="row">
+      <div class="col-xs-4 col-sm-offset-1 col-sm-3 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="1">Mayu (Mayushii)</button>
+        <button type="button" class="btn btn-primary choice" data-value="2">Airi (Ai-chan)</button>
+        <button type="button" class="btn btn-primary choice" data-value="3">Minami (Minyami)</button>
+      </div>
+      <div class="col-xs-4 col-sm-3 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="4">Yoshino (Yoppi)</button>
+        <button type="button" class="btn btn-primary choice" data-value="5">Nanami (Nanamin)</button>
+      </div>
+      <div class="col-xs-4 col-sm-3 btn-group-vertical">
+        <button type="button" class="btn btn-primary choice" data-value="6">Kaya (Kaya-tan)</button>
+        <button type="button" class="btn btn-primary choice" data-value="7">Miyu (Myu)</button>
+      </div>
+    </div></div>
+  </div>
+</template>
+
+<script type="module" src="/src/main.ts"></script>
+<script>
+  if (!('ontouchstart' in window) && !(navigator.msMaxTouchPoints > 0)) {
+    document.documentElement.classList.add('hoverable');
+  }
+</script>
+</body>
+</html>
