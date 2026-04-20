@@ -53,48 +53,55 @@
 
   <div class="container"><div class="row"><div class="col-xs-12 col-md-10 info-content">
 
-      <p>This site is a tribute to <a href="https://nanodesu.moe/ganbawhoby/"><strong>the original GanbaWhoby</strong></a> by gacha4life.
-      I loved that little game and always found myself coming back to it, even after all this time.
-      I wanted to create something just like it, with more songs.</p>
+      <p><strong>BubuDesuWho</strong> is a rebuild of and tribute to
+      <a href="https://nanodesu.moe/ganbawhoby/">the original GanbaWhoby</a> by gacha4life — a game I
+      kept coming back to long after its last update. This version extends it
+      with more groups, more songs, higher-quality audio, and a pile of new
+      features built on top.</p>
 
       <hr>
-      <p><strong>GanbaWhoby</strong> is a little game to test your ability to
-      recognize individual singers in <span class="muse-pink">μ's</span> and
-        <span class='aqours-blue'>Aqours</span> songs. If you have never heard
-        of <span class='muse-pink'>Love Live!</span> before, check out the
-        <a href="http://love-live.wikia.com/wiki/Love_Live!">Wikia page</a>.</p>
+      <p><strong>BubuDesuWho</strong> tests your ability to recognize individual singers in
+      <span class="muse-pink">μ's</span>,
+      <span class='aqours-blue'>Aqours</span>, and
+      <span style="color:#F39800">Nijigasaki</span> songs. New to
+      Love Live? Start with the
+      <a href="https://lovelive.fandom.com/wiki/Love_Live!_Wiki">Love Live! Wiki</a>.</p>
 
       <hr>
       <h2>How to play</h2>
       <ol>
-        <li>Select a song from the menu on the left</li>
-        <li>As the song plays, the time slots in the bottom will be
-          highlighted. When a slot is highlighted, that (normally) means a
-          single member, subunit, or year group is singing that portion</li>
+        <li>Pick a song from the menu on the left — sort by date or A–Z, filter
+        by group, or search by title</li>
+        <li>As the song plays, the time slots at the bottom highlight one at a
+        time. Each slot is (usually) a single member, subunit, or year group</li>
         <li>Select who you think is singing</li>
-        <li>When you're done <strike>guessing</strike> choosing, click the <span
-            class='text-success'>Check</span> button</li>
-        <li>You may try as many times as you like until you get them all</li>
+        <li>When you're done <strike>guessing</strike> choosing, hit
+        <span class='text-success'>Check</span> — or use the per-slot
+        <code>Check</code> button to verify one line at a time</li>
+        <li>Try as many times as you like until you get them all</li>
       </ol>
 
       <hr>
       <h2>Controls</h2>
-      <p>Click the <code>Autoscroll</code> button to toggle automatic scrolling
-      on slot activation.</p>
-      <p>Click the <code>Themed</code> button to enable/disable special color
-      themes that some songs have.</p>
-      <p>Click the <code>Reveal</code> button to reveal all of the answers, if
-      you just want a singer reference without playing.</p>
-      <p>You can also choose the difficulty for some songs. Toggling a higher
-      difficulty will reveal additional time slots that are <strong
-      class='text-danger'>not</strong> guaranteed to be either a solo, a
-    subunit, or a year group (i.e. any combination is fair game). However, there
-    will never be any slots where everyone in the song is singing (e.g. for a
-    2nd year song, there will never be an answer where it's all three 2nd
-    years). Also, slots in Hard or Insane mode <strong class='text-danger'>may
-    not</strong> be completely accurate, because nobody knows for sure who sang
-  what until the songs are performed live.</p>
-      <p>There are a few keyboard controls:</p>
+      <p><code>Autoscroll</code> follows the active slot as the song plays.</p>
+      <p><code>Themed</code> toggles special per-song color themes.</p>
+      <p>The 🎨 palette button in the top-right swaps between the site's
+      theme colors and the <em>official</em> member colors (Honoka orange,
+      Chika orange, Ayumu pink, and so on).</p>
+      <p>The 🌙 / ☀ toggle next to it switches between dark and light mode.
+      Both modes are theme-aware across slots and lyrics.</p>
+      <p><code>Reveal</code> shows every answer — handy as a singer reference
+      when you just want to listen.</p>
+      <p>You can also pick a difficulty per song. Higher difficulties add slots
+      that are <strong class='text-danger'>not</strong> guaranteed to be a
+      solo, subunit, or year group (any combination is fair game), though
+      there's never a slot where the entire song lineup sings together. Hard
+      and Insane assignments <strong class='text-danger'>may not</strong> be
+      fully accurate — nobody knows who sang what until the song is performed
+      live.</p>
+      <p>Songs with rough, unsynced timings show a <code>timing approx</code>
+      badge in the menu so you know which mappings aren't tightly aligned.</p>
+      <p>Keyboard shortcuts:</p>
       <ul>
         <li><code>space</code>: toggle play/pause</li>
         <li><code>left</code>: move backwards 2 seconds</li>
@@ -105,30 +112,38 @@
 
       <hr>
       <h2>Lyrics</h2>
-      <p>For some songs, you can click the <code>Lyrics</code> button on the
-      top-right to enable lyrics mode, which shows the romaji of the current
-      line being sung. If the line is sung solo, and the corresponding time
-      slot is answered correctly or is revealed, the highlight will be
-      color-coded. In full lyrics mode, the regular game controls/status are
-      replaced by buttons like <code>Download</code>, which lets you download
-      the lyrics of the song in ASS format.</p>
+      <p>Click the <code>Lyrics</code> button in the top-right to enable lyrics
+      mode — the current line being sung appears in romaji, and for songs
+      where they've been transcribed, the Japanese lyrics show alongside. When
+      a solo line is answered correctly or revealed, the highlight is
+      color-coded to that member. In full lyrics mode, the regular game
+      controls are replaced by buttons including <code>Download</code>, which
+      exports the lyrics as a karaoke-ready ASS file.</p>
+
+      <hr>
+      <h2>Bubudle</h2>
+      <p><a href="bubudle.html"><strong>Bubudle</strong></a> is a daily
+      Wordle-style mini-game. It plays a random lyric clip and asks you to
+      guess the singer(s), revealing progressive hints (lyric snippet → clip
+      difficulty → song difficulty → song theme) until you get it. Includes
+      streak tracking, a subunit filter, volume and seek controls, and a
+      <code>Skip</code> button when a clip has you stumped.</p>
 
       <hr>
       <h2>Thanks</h2>
       <ul>
-      <li><strong>throwaway93257</strong> for help in voice identification.
-        This game would not be possible without his help. Check out his <a
-          href="https://www.reddit.com/r/LoveLive/search?q=music+primer&restrict_sr=on">music
-          primers</a> for indepth Aqours song analyses!</li>
-      <li><strong>chaos_inferno</strong> for contributing Aqours mappings and various μ's mappings</li>
-      <li><a href="http://loveliveccl.webs.com/"><strong>Love Live CCL</strong></a> for their work in μ's and Aqours identification</li>
-      <li><a href="http://love-live.wikia.com/wiki/Main_Page"><strong>Love Live! Wikia</strong></a> for the lyrics reference</li>
+      <li><a href="https://nanodesu.moe/ganbawhoby/"><strong>gacha4life</strong></a>
+      for the original GanbaWhoby — the game that inspired all of this. Every
+      core mechanic here started as something from that site.</li>
+      <li><a href="https://lovelive.fandom.com/wiki/Love_Live!_Wiki"><strong>Love Live! Wiki</strong></a>
+      for lyrics, member information, and song metadata.</li>
       </ul>
 
       <hr>
       <h2>Contributing</h2>
-      <p>Spot a bad timestamp, a wrong singer, or an off difficulty? Or maybe I'm just missing your favorite song?
-      Open a <a href="https://github.com/BuBuDesuWho/bubudesuwho.github.io/issues/new">GitHub
+      <p>Spot a bad timestamp, a wrong singer, or an off difficulty? Or maybe
+      I'm just missing your favorite song? Open a
+      <a href="https://github.com/BuBuDesuWho/bubudesuwho.github.io/issues/new">GitHub
       issue</a> — include the song title, what's wrong, and how you think it
       should be.</p>
       <p>Two ways to gather what to report:</p>
@@ -136,8 +151,7 @@
       <li>Flag things as you play from the <a href="bubudle.html">Bubudle</a>
       page — <code>Bad Timestamp</code>, <code>Flag Difficulty</code>, or
       <code>Flag Singer</code>. Flags save locally; hit <code>Export</code> to
-      download a <code>.txt</code> summary and paste or attach it to the
-      issue.</li>
+      download a <code>.txt</code> summary to paste or attach to the issue.</li>
       <li>Fix it in place — while playing, click <code>Edit</code> in the
       top-right to adjust slot timings, difficulty, and singer assignments,
       then <code>Save Mapping</code> to download the corrected config JSON.
