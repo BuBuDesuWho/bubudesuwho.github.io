@@ -543,6 +543,25 @@ html.dark-mode nav.navbar {
   text-decoration: line-through;
 }
 
+.bubudle-mobile-shortcuts {
+  margin-top: 8px;
+}
+.bubudle-mobile-shortcut-group {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+  padding: 0 2px;
+}
+.bubudle-mobile-shortcut-group .btn {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 #lyrics-button,
 #theme-toggle {
   float: none;

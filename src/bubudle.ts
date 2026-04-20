@@ -139,6 +139,22 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
   }
   row.appendChild(makeCol('col-xs-4 col-sm-pull-4 col-sm-2 btn-group-vertical', memberCols[2]));
 
+  // Mobile-only row: shortcuts laid out horizontally below the member grid.
+  // Desktop uses the hidden-xs shortcut cols above; xs swaps to this block.
+  const leftBtnsMobile = leftShortcutBtns.map(b => b.cloneNode(true) as HTMLButtonElement);
+  const rightBtnsMobile = rightShortcutBtns.map(b => b.cloneNode(true) as HTMLButtonElement);
+  if (leftBtnsMobile.length + rightBtnsMobile.length > 0) {
+    const mobileRow = document.createElement('div');
+    mobileRow.className = 'row visible-xs-block bubudle-mobile-shortcuts';
+    if (leftBtnsMobile.length > 0) {
+      mobileRow.appendChild(makeCol('col-xs-12 bubudle-mobile-shortcut-group', leftBtnsMobile));
+    }
+    if (rightBtnsMobile.length > 0) {
+      mobileRow.appendChild(makeCol('col-xs-12 bubudle-mobile-shortcut-group', rightBtnsMobile));
+    }
+    body.appendChild(mobileRow);
+  }
+
   // Bind click handlers + disable non-singers
   el.querySelectorAll<HTMLElement>('.slot-body button[data-value]').forEach((btn) => {
     const members = btn.dataset.value!.split(',').map(Number);
