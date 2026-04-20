@@ -213,7 +213,6 @@ export async function initBubudlePage(): Promise<void> {
   bubudleGroup = state.group;
   applyGroupClass(bubudleGroup);
   toggleMenu(window.innerWidth >= 1200);
-  document.getElementById('menu-button')?.addEventListener('click', () => toggleMenu());
   initThemeToggle();
   initVolume();
   initSeekSlider();
