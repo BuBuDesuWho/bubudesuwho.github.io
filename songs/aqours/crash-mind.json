@@ -11,7 +11,7 @@
   "slots": [
 
   ],
-  "generated": "2026-04-15T01:42:12Z",
+  "generated": "2026-04-21T01:33:01Z",
   "lines": [
     {"lyric": "Saint crash!!",
       "lyric_jp": "Saint CRASH!!",
@@ -156,28 +156,23 @@
         {"lyric": "Nani ga okorou to nigenai",
           "range": [141.53, 145.59], "ans": [10]},
         {"lyric": "My heart",
-          "range": [145.03, 151.69], "ans": []},
+          "range": [145.03, 151.09], "ans": []},
         {"lyric": "(OK!)",
-          "range": [150.99, 151.94], "ans": [11]}
+          "range": [150.39, 151.34], "ans": [11]},
       ]
     },
     "",
     "[next-col]",
-    {
+    {"lyric": "(Come on!)",
       "lyric_jp": "Come on! Come on!",
-      "parts": [
-        {"lyric": "(Come on!)",
-          "range": [151.94, 156.6], "ans": [11]},
-        {"lyric": "(Here we go!)",
-          "range": [156.6, 157.2], "ans": [11]}
-      ]
-    },
-    {"lyric": "Every go!",
-      "lyric_jp": "Every go!",
-      "range": [157.2, 162.39], "ans": []},
+      "range": [151.94, 157.2], "ans": [11]},
+    {"lyric": "(Here we go!)",
+      "lyric_jp": "(Here we go!)",
+      "range": [157.2, 162.39], "ans": [11]},
     {"lyric": "(Go crash!)",
       "lyric_jp": "Go CRASH!",
       "range": [162.39, 162.96], "ans": [11]},
+    "",
     {"lyric": "Anzen na toko kara miteru tte",
       "lyric_jp": "安全なとこから見てるって",
       "range": [162.96, 168.13], "ans": [10]},
@@ -193,10 +188,9 @@
           "range": [175.15, 178.04], "ans": []}
       ]
     },
-    "",
     {"lyric": "Crash mind",
       "lyric_jp": "CRASH MIND",
-      "range": [178.04, 179.92], "ans": []},
+      "range": [178.04, 180.3], "ans": []},
     {"lyric": "Kotae wa ima ga kowareta ato de arawareru",
       "lyric_jp": "答えは今が壊れた後で現れる",
       "range": [179.92, 185.97], "ans": []},
@@ -206,15 +200,21 @@
     {"lyric": "Mayotte naite mo dame ni nanka naranai yo",
       "lyric_jp": "迷って泣いても駄目になんかならないよ",
       "range": [187.93, 194], "ans": []},
-    {"lyric": "Crash plan",
+    {
       "lyric_jp": "CRASH PLAN",
-      "range": [194, 196.24], "ans": [10]},
+      "parts": [
+        {"lyric": "Crash plan",
+          "range": [194, 195.49], "ans": [10]},
+        {"lyric": "Crash plan",
+          "range": [194.79, 196.24], "ans": [11]}
+      ]
+    },
     {"lyric": "Kowashite!",
       "lyric_jp": "壊して！",
       "range": [196.24, 201.8], "ans": [10]},
     {"lyric": "Crash plan",
       "lyric_jp": "CRASH PLAN",
-      "range": [201.8, 203.57], "ans": [11]},
+      "range": [201.8, 203.57], "ans": []},
     {
       "lyric_jp": "足掻いた時間が無駄とは思わないから",
       "parts": [
@@ -226,11 +226,10 @@
     },
     {"lyric": "Nani ga okorou to nigenai My heart",
       "lyric_jp": "何が起ころうと逃げない My heart",
-      "range": [210.16, 217.44], "ans": []},
-    "",
+      "range": [210.16, 222.47], "ans": []},
     {"lyric": "No more trick, no more trap!",
       "lyric_jp": "No more trick, no more trap!",
-      "range": [222.47, 226.37], "ans": []},
+      "range": [222.47, 226.47], "ans": []},
     {"lyric": "No more trick, no more trap!",
       "lyric_jp": "No more trick, no more trap!",
       "range": [226.37, 230.35], "ans": []},

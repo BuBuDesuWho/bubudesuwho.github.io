@@ -41,22 +41,45 @@ export function getSongs(): Song[] {
   return songs;
 }
 
-function normalizeLines(cfg: SongConfig): (string | undefined)[] | undefined {
+interface NormalizedJp {
+  jpTexts: (string | undefined)[];
+  jpRanges: ([number, number] | undefined)[];
+  jpParts: (MappingEntry[] | undefined)[];
+}
+
+function normalizeLines(cfg: SongConfig): NormalizedJp | undefined {
   if (!cfg.lines) { console.log(`[legacy] ${cfg.id}`); return undefined; }
   const mappingEntries: MappingEntry[] = [];
   const lyricParts: string[] = [];
   const jpTexts: (string | undefined)[] = [];
+  const jpRanges: ([number, number] | undefined)[] = [];
+  const jpParts: (MappingEntry[] | undefined)[] = [];
 
   for (const line of cfg.lines) {
     if (typeof line === 'string') {
       lyricParts.push(line);
     } else if (line.parts && line.parts.length > 0) {
+      // When JP text is present and spans multiple parts, the first part owns
+      // the visible glow for the full span (subsequent parts render as display:none).
+      const spansAll = line.lyric_jp != null && line.parts.length > 1
+        ? [line.parts[0].range[0], line.parts[line.parts.length - 1].range[1]] as [number, number]
+        : undefined;
+      const partMappings: MappingEntry[] = [];
       for (let pi = 0; pi < line.parts.length; pi++) {
         const part = line.parts[pi];
         const { lyric: _l, ...m } = part;
-        mappingEntries.push(m as MappingEntry);
+        const entry = m as MappingEntry;
+        mappingEntries.push(entry);
+        partMappings.push(entry);
         // First part gets the full JP text; subsequent parts get empty string (hidden in JP mode)
         jpTexts.push(pi === 0 ? line.lyric_jp : (line.lyric_jp != null ? '' : undefined));
+        jpRanges.push(pi === 0 ? spansAll : undefined);
+        jpParts.push(undefined);
+      }
+      // Attach sibling mappings to the first part (only when JP text spans >1 part,
+      // since that's the only scenario where the JP element stays visible across sub-parts).
+      if (spansAll) {
+        jpParts[jpParts.length - line.parts.length] = partMappings;
       }
       // Emit all parts on one display line — space-separated so the full
       // lyric appears as a single line rather than one line per part.
@@ -66,16 +89,18 @@ function normalizeLines(cfg: SongConfig): (string | undefined)[] | undefined {
       mappingEntries.push(m as MappingEntry);
       lyricParts.push('{' + line.lyric + '}');
       jpTexts.push(line.lyric_jp);
+      jpRanges.push(undefined);
+      jpParts.push(undefined);
     }
   }
 
   cfg.mapping = mappingEntries;
   cfg.lyrics = lyricParts.join('\n');
-  return jpTexts;
+  return { jpTexts, jpRanges, jpParts };
 }
 
 function preprocessSong(cfg: SongConfig): Song {
-  const jpTexts = normalizeLines(cfg);
+  const normalized = normalizeLines(cfg);
 
   // assign IDs to mappings
   (cfg.mapping ?? []).forEach((m, idx) => {
@@ -94,7 +119,9 @@ function preprocessSong(cfg: SongConfig): Song {
     cfg.name,
     { mapping, calls },
     cfg.lyrics,
-    jpTexts,
+    normalized?.jpTexts,
+    normalized?.jpRanges,
+    normalized?.jpParts,
   );
 
   return {
@@ -181,6 +208,8 @@ function preprocessLyrics(
   mappings: { mapping: MappingEntry[]; calls: MappingEntry[] },
   lyricsDefinition: string | string[] | undefined,
   jpTexts?: (string | undefined)[],
+  jpRanges?: ([number, number] | undefined)[],
+  jpParts?: (MappingEntry[] | undefined)[],
 ): LyricToken[] {
   if (!lyricsDefinition) return [];
 
@@ -271,11 +300,15 @@ function preprocessLyrics(
       refs[src]++;
 
       const textJp = src === 'mapping' && jpTexts ? jpTexts[jpIdx] : undefined;
+      const rangeJp = src === 'mapping' && jpRanges ? jpRanges[jpIdx] : undefined;
+      const partsJp = src === 'mapping' && jpParts ? jpParts[jpIdx] : undefined;
       lyrics.push({
         id: 0,
         type: 'lyric',
         text,
         textJp,
+        rangeJp,
+        jpParts: partsJp,
         mapping: matched,
         src,
         push,

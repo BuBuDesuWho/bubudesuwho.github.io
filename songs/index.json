@@ -184,6 +184,10 @@
     "cover": "css/images/covers/pf.png"
   },
   {
+    "file": "aqours/kimikoko.json",
+    "cover": "css/images/covers/kimikoko.png"
+  },
+  {
     "file": "aqours/legacy/step.json",
     "cover": "css/images/covers/step.png"
   },
@@ -435,10 +439,6 @@
   {
     "file": "aqours/bokuhashi.json",
     "cover": "css/images/covers/bokuhashi.png"
-  },
-  {
-    "file": "legacy/kimikoko.json",
-    "cover": "css/images/covers/kimikoko.png"
   },
   {
     "file": "aqours/banzai-digital-trippers.json",

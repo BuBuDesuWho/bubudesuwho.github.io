@@ -82,6 +82,12 @@ export interface LyricToken {
   type: 'text' | 'newline' | 'lyric' | 'next-col';
   text?: string;
   textJp?: string;
+  /** When set, the effective highlight range in JP mode — spans all sibling parts. */
+  rangeJp?: [number, number];
+  /** Sibling part mappings (including self) for multi-part JP lines; present on first part only. */
+  jpParts?: MappingEntry[];
+  /** Last sub-part id the JP element was colored for (change-detection during playback). */
+  activeJpPartId?: number;
   mapping?: MappingEntry;
   src?: 'mapping' | 'calls';
   push?: string;

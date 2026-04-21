@@ -1,5 +1,5 @@
 import {
-  Song, Slot, SlotBase, SlotState, LyricToken, GameState,
+  Song, Slot, SlotBase, SlotState, LyricToken, GameState, MappingEntry,
   MEMBER_COLORS, MEMBER_COLORS_OFFICIAL, MEMBER_MAPPING,
 } from './types';
 import { arrayEqual } from './utils';
@@ -35,7 +35,12 @@ export function refreshPaletteColors(): void {
 
   for (const lyric of state.lyrics) {
     if (!lyric.element || !lyric.element.classList.contains('lyric-gradient')) continue;
-    const ans = lyric.mapping?.ans;
+    // In JP multi-part mode, the visible gradient reflects the currently-active sub-part, not part 0.
+    let ans = lyric.mapping?.ans;
+    if (state.jpLyrics && lyric.jpParts && lyric.activeJpPartId != null) {
+      const active = lyric.jpParts.find((p) => p.id === lyric.activeJpPartId);
+      if (active?.ans) ans = active.ans;
+    }
     if (!ans || ans.length < 2) continue;
     const colors = ans.map((a) => groupColors[a]).filter(Boolean);
     if (colors.length < 2) continue;
@@ -115,8 +120,14 @@ export function loadSong(song: Song): void {
   const savedDiff = getStorage('diff');
   if (savedDiff) state.diff = Math.min(parseInt(savedDiff, 10), getMaxDiff());
 
-  // load audio — VITE_SOUND_BASE overrides for external hosting (e.g. GitHub Releases)
-  const soundBase = import.meta.env.VITE_SOUND_BASE;
+  // load audio — VITE_SOUND_BASE overrides for external hosting (e.g. GitHub Releases).
+  // iOS Safari rejects the GH Releases Content-Type/Disposition, so route iOS through
+  // VITE_IOS_AUDIO_BASE (a Cloudflare Worker that rewrites the headers) when present.
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+  const iosBase = import.meta.env.VITE_IOS_AUDIO_BASE;
+  const soundBase = isIOS && iosBase ? iosBase : import.meta.env.VITE_SOUND_BASE;
   const base = import.meta.env.BASE_URL;
   const resolveAudio = (path: string) =>
     soundBase ? soundBase + path.replace(/^sound\//, '') : base + path;
@@ -223,7 +234,7 @@ function highlightLyrics(time: number): void {
   let playSFX = false;
   for (const lyric of state.lyrics) {
     if (!lyric.element || !lyric.mapping) continue;
-    const range = lyric.mapping.range;
+    const range = (state.jpLyrics && lyric.rangeJp) ? lyric.rangeJp : lyric.mapping.range;
     const active = range[0] <= time && time < range[1];
 
     if (active && !lyric.active) {
@@ -250,6 +261,16 @@ function highlightLyrics(time: number): void {
       lyric.active = false;
       if (lyric.mapping.kdur != null) {
         lyric.element.style.transition = '';
+      }
+    }
+
+    // JP multi-part: recolor the visible first-part element as each sub-part plays.
+    if (state.jpLyrics && lyric.jpParts && lyric.element) {
+      const sub = lyric.jpParts.find((p) => p.range[0] <= time && time < p.range[1])
+        ?? lyric.jpParts[0];
+      if (sub.id !== lyric.activeJpPartId) {
+        lyric.activeJpPartId = sub.id;
+        applyRevealClasses(lyric.element, sub);
       }
     }
   }
@@ -601,61 +622,74 @@ export function toggleJpLyrics(val?: boolean): void {
       lyric.element.textContent = lyric.text ?? '';
       lyric.element.style.display = '';
     }
+    // Reset per-sub-part tracking; revealLyrics below re-applies correct classes.
+    lyric.activeJpPartId = undefined;
   }
+  revealLyrics();
 }
 
 // ─── Lyrics Reveal ──────────────────────────────────────────────────
+
+/** Clear any reveal coloring (ansN / ans-all / gradient) from a lyric element. */
+function clearRevealClasses(element: HTMLElement): void {
+  const existing = Array.from(element.classList)
+    .filter((c) => /^ans\d+$/.test(c) || c === 'ans-all');
+  if (existing.length) element.classList.remove(...existing);
+  element.classList.remove('lyric-gradient');
+  element.style.removeProperty('--gradient');
+  element.style.removeProperty('--glow1');
+  element.style.removeProperty('--glow2');
+  element.style.removeProperty('--glow3');
+}
+
+/** Apply reveal coloring for the given mapping, or clear it if not yet revealed. */
+function applyRevealClasses(element: HTMLElement, mapping: MappingEntry): void {
+  clearRevealClasses(element);
+  if (!mapping.ans) { element.removeAttribute('title'); return; }
+  const ans = mapping.ans;
+
+  const songSingers = state.song?.singers ?? [];
+  const isSolo = ans.length === 1;
+  const isAllMembers = ans.length > 1 && arrayEqual(songSingers, ans);
+  const isSubGroup = ans.length > 1 && !isAllMembers;
+
+  const slot = state.reverseMap[mapping.id]?.slot;
+  const revealed =
+    isAllMembers ||
+    arrayEqual(state.singers, ans) ||
+    (slot && (slot.revealed || slot.state === SlotState.Correct));
+
+  if (!revealed) { element.removeAttribute('title'); return; }
+
+  if (isSolo) {
+    element.classList.add(...ans.map((a) => 'ans' + a));
+  } else if (isAllMembers) {
+    element.classList.add('ans-all');
+  } else if (isSubGroup) {
+    const groupColors = getGroupColors(state.group);
+    const colors = ans.map((a) => groupColors[a]).filter(Boolean);
+    if (colors.length >= 2) {
+      element.classList.add('lyric-gradient');
+      element.style.setProperty('--gradient', `linear-gradient(90deg, ${colors.join(', ')})`);
+      element.style.setProperty('--glow1', colors[0]);
+      element.style.setProperty('--glow2', colors[Math.floor(colors.length / 2)]);
+      element.style.setProperty('--glow3', colors[colors.length - 1]);
+    }
+  }
+  element.title = mapToLabel(state.group, ans);
+}
+
 export function revealLyrics(): void {
   for (const lyric of state.lyrics) {
     if (!lyric.element || !lyric.mapping || !lyric.mapping.ans) continue;
-    const mapping = lyric.mapping;
-    const ans = mapping.ans!;
-
-    const songSingers = state.song?.singers ?? [];
-    const isSolo = ans.length === 1;
-    const isAllMembers = ans.length > 1 && arrayEqual(songSingers, ans);
-    const isSubGroup = ans.length > 1 && !isAllMembers;
-
-    let classes = '';
-    if (isSolo) {
-      classes = ans.map((a) => 'ans' + a).join(' ');
-    } else if (isAllMembers) {
-      classes = 'ans-all';
+    // In JP mode, multi-part lines are re-colored per sub-part by highlightLyrics,
+    // so pick whichever sub-part is currently tracked to keep classes consistent.
+    let mapping = lyric.mapping;
+    if (state.jpLyrics && lyric.jpParts) {
+      const active = lyric.jpParts.find((p) => p.id === lyric.activeJpPartId);
+      if (active) mapping = active;
     }
-
-    const label = mapToLabel(state.group, ans);
-    const entry = state.reverseMap[mapping.id];
-    const slot = entry?.slot;
-
-    const revealed =
-      isAllMembers ||
-      arrayEqual(state.singers, ans) ||
-      (slot && (slot.revealed || slot.state === SlotState.Correct));
-
-    if (revealed) {
-      if (classes) lyric.element.classList.add(...classes.split(' '));
-      if (isSubGroup) {
-        const groupColors = getGroupColors(state.group);
-        const colors = ans.map((a) => groupColors[a]).filter(Boolean);
-        if (colors.length >= 2) {
-          lyric.element.classList.add('lyric-gradient');
-          lyric.element.style.setProperty('--gradient',
-            `linear-gradient(90deg, ${colors.join(', ')})`);
-          lyric.element.style.setProperty('--glow1', colors[0]);
-          lyric.element.style.setProperty('--glow2', colors[Math.floor(colors.length / 2)]);
-          lyric.element.style.setProperty('--glow3', colors[colors.length - 1]);
-        }
-      }
-      lyric.element.title = label;
-    } else {
-      if (classes) lyric.element.classList.remove(...classes.split(' '));
-      lyric.element.classList.remove('lyric-gradient');
-      lyric.element.style.removeProperty('--gradient');
-      lyric.element.style.removeProperty('--glow1');
-      lyric.element.style.removeProperty('--glow2');
-      lyric.element.style.removeProperty('--glow3');
-      lyric.element.removeAttribute('title');
-    }
+    applyRevealClasses(lyric.element, mapping);
   }
 }
 
