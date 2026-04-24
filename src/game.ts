@@ -98,6 +98,7 @@ export function loadSong(song: Song): void {
   if (state.song) storeChoices();
 
   _monotonicTime = -1;
+  resetFullComboTracking();
   state.loaded = new Date();
   state.song = song;
   state.group = song.group;
@@ -411,6 +412,7 @@ export function resetChoices(): void {
       btn.classList.remove('active'),
     );
   }
+  resetFullComboTracking();
   revealLyrics();
   updateMeter();
   storeChoices();
@@ -702,13 +704,39 @@ export function revealLyrics(): void {
 }
 
 // ─── Meter ──────────────────────────────────────────────────────────
+let _prevAllCorrect = false;
+let _prevCorrect = 0;
+let _fullComboTimer: number | undefined;
+
 export function updateMeter(): void {
   const meterEl = document.querySelector<HTMLElement>('.meter');
   if (!meterEl) return;
   const correct = getNumCorrectSlots();
   const total = getNumSlotsDiff(state.diff);
   meterEl.textContent = `${correct} / ${total}`;
-  meterEl.classList.toggle('all-correct', correct === total);
+  const allCorrect = total > 0 && correct === total;
+  meterEl.classList.toggle('all-correct', allCorrect);
+  // Only celebrate when `correct` went up to meet `total` — not when `total`
+  // came down (e.g., cycling difficulty back to a level that's already cleared).
+  if (allCorrect && !_prevAllCorrect && correct > _prevCorrect) showFullCombo();
+  _prevAllCorrect = allCorrect;
+  _prevCorrect = correct;
+}
+
+export function resetFullComboTracking(): void {
+  _prevAllCorrect = false;
+  _prevCorrect = 0;
+}
+
+function showFullCombo(): void {
+  const el = document.querySelector<HTMLElement>('.full-combo-banner');
+  if (!el) return;
+  el.classList.remove('show');
+  // force reflow so re-adding the class restarts the animation
+  void el.offsetWidth;
+  el.classList.add('show');
+  if (_fullComboTimer) window.clearTimeout(_fullComboTimer);
+  _fullComboTimer = window.setTimeout(() => el.classList.remove('show'), 2400);
 }
 
 function getNumCorrectSlots(): number {

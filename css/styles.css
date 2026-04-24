@@ -877,6 +877,7 @@ Meter
   margin-bottom: 6px;
   display: inline-block;
   background-color: var(--meter-bg);
+  position: relative;
 }
 .meter.all-correct {
   background-color: #69C95C;
@@ -2757,5 +2758,67 @@ html.dark-mode .edit-mode .navbar {
     border-top: 1px dashed rgba(128, 128, 128, 0.35);
     padding-top: 8px;
     margin-top: 4px;
+  }
+}
+
+/*===============================================
+Full Combo banner — SIF-style celebration on 100%
+===============================================*/
+
+.full-combo-banner {
+  position: absolute;
+  bottom: calc(100% - 100px);
+  left: 50%;
+  transform: translateX(70%);
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+}
+.full-combo-banner.show {
+  visibility: visible;
+  opacity: 1;
+}
+.full-combo-text {
+  font-family: 'Paytone One', 'Patua One', sans-serif;
+  font-size: clamp(1.5rem, 6.5vw, 4.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffe0f2 0%, #ff8bcc 45%, #8ff0ff 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(0 0 1px #ff2a9d)
+    drop-shadow(0 0 1px #ff2a9d)
+    drop-shadow(0 0 1px #ff2a9d)
+    drop-shadow(0 0 1px #ff2a9d)
+    drop-shadow(0 0 12px rgba(127, 240, 255, 0.85))
+    drop-shadow(0 3px 0 rgba(0, 0, 0, 0.4));
+  transform: scale(0.3) rotate(-4deg);
+  opacity: 0;
+}
+.full-combo-banner.show .full-combo-text {
+  animation: fc-pop 1.8s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+@keyframes fc-pop {
+  0%   { transform: scale(0.3) rotate(-4deg); opacity: 0; }
+  18%  { transform: scale(1.18) rotate(-4deg); opacity: 1; }
+  32%  { transform: scale(1)    rotate(-4deg); opacity: 1; }
+  80%  { transform: scale(1)    rotate(-4deg); opacity: 1; }
+  100% { transform: scale(1.08) rotate(-4deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .full-combo-banner.show .full-combo-text {
+    animation: fc-fade 1.4s ease-out forwards;
+    transform: rotate(-4deg);
+  }
+  @keyframes fc-fade {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
   }
 }

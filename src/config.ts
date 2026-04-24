@@ -70,7 +70,7 @@ interface NormalizedJp {
 }
 
 function normalizeLines(cfg: SongConfig): NormalizedJp | undefined {
-  if (!cfg.lines) { console.log(`[legacy] ${cfg.id}`); return undefined; }
+  if (!cfg.lines) { return undefined; }
   const mappingEntries: MappingEntry[] = [];
   const lyricParts: string[] = [];
   const jpTexts: (string | undefined)[] = [];

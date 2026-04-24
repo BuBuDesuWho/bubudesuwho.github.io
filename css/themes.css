@@ -547,6 +547,16 @@ html.dark-mode #lyrics[class*="theme-"] {
   color: var(--lyrics-color) !important;
 }
 
+/* Reset bubudle lyric card / timestamp log to dark base — they pull --t-slot-bg from <html> */
+html.dark-mode[class*="theme-"] .bubudle-lyric-card {
+  background: var(--bg-surface) !important;
+  box-shadow: var(--shadow-medium) !important;
+}
+html.dark-mode[class*="theme-"] .bubudle-ts-log {
+  background: var(--bg-surface) !important;
+  color: var(--text-muted) !important;
+}
+
 /* Reset player bar to dark mode defaults — theme colors are light-mode only */
 html.dark-mode #player-bar[class*="theme-"] {
   background: #181818 !important;

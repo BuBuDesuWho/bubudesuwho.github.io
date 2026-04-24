@@ -104,18 +104,20 @@ export function exportEditedConfig(): (object | string)[] {
       if (typeof l === 'string') return l;
 
       if (l.parts && l.parts.length > 0) {
-        // Consume one mapping entry per part, reconstruct parts array
+        // Consume one mapping entry per part, reconstruct parts array — preserve
+        // any non-edited sibling fields on each part (e.g. lyric_hangul on kpop).
         const updatedParts: LinePart[] = l.parts.map((part) => {
           const updated = state.mapping[mappingIdx++];
           if (!updated) return part;
+          const { lyric: _lyric, range: _range, ans: _ans, ...partExtras } = part as LinePart & Record<string, unknown>;
           const updatedAns = updated.ans ?? [];
           const ans = arrayEqual(updatedAns, state.song!.singers) ? [] : updatedAns;
-          return { lyric: updated.lyric ?? part.lyric, range: [updated.range[0], updated.range[1]], ans } as LinePart;
+          return { lyric: updated.lyric ?? part.lyric, range: [updated.range[0], updated.range[1]], ans, ...partExtras } as LinePart;
         });
+        const { parts: _parts, diff: _diff, ...lineExtras } = l as typeof l & Record<string, unknown>;
         return {
-          ...(l.lyric_jp != null ? { lyric_jp: l.lyric_jp } : {}),
+          ...lineExtras,
           parts: updatedParts,
-          ...(l.tail ? { tail: l.tail } : {}),
           ...(l.diff && l.diff > 1 ? { diff: l.diff } : {}),
         };
       }
@@ -127,12 +129,13 @@ export function exportEditedConfig(): (object | string)[] {
       const updatedAns = updated.ans ?? [];
       const ans = arrayEqual(updatedAns, state.song!.singers) ? [] : updatedAns;
 
+      // Preserve sibling fields like lyric_hangul, lyric_translation, lyric_jp.
+      const { lyric: _lyric, range: _range, ans: _ans, diff: _diff, ...extras } = l as typeof l & Record<string, unknown>;
       return {
         lyric: updated.lyric ?? l.lyric,
-        ...(l.lyric_jp != null ? { lyric_jp: l.lyric_jp } : {}),
         range: [updated.range[0], updated.range[1]],
         ans,
-        ...(l.tail ? { tail: l.tail } : {}),
+        ...extras,
         ...(updated.diff && updated.diff > 1 ? { diff: updated.diff } : {}),
       };
     });
