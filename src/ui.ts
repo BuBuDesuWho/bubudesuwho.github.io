@@ -1,6 +1,7 @@
 import { Song, Slot, LyricToken, GroupName } from './types';
 import { toTimeStr, escapeRegExp, parseURLParams } from './utils';
 import { getGroupColor } from './labels';
+import { getGroup } from './groups';
 import {
   state, toggleChoice, toggleReveal, toggleDiff, toggleAutoscroll,
   toggleThemed, cycleLyricsMode, setLyricsMode, toggleCalls, toggleCallSFX,
@@ -17,6 +18,7 @@ import { loadConfig, loadChangelog } from './config';
 import * as player from './player';
 import { setStorage, getStorage, loadHistory } from './storage';
 import { buildMenu, highlightSongInMenu, attachInstantTip } from './ui-menu';
+import { initKofi } from './kofi';
 
 let preMuteVolume: number | null = null;
 
@@ -75,6 +77,7 @@ export async function initPlayPage(): Promise<void> {
 
   initThemeToggle();
   initPaletteToggle();
+  initKofi();
 }
 
 export function initPaletteToggle(): void {
@@ -133,7 +136,8 @@ function selectSong(song: Song): void {
   if (playBtn) playBtn.style.display = '';
   if (pauseBtn) pauseBtn.style.display = 'none';
 
-  document.title = `BubuDesuWho - ${song.name}`;
+  const brand = import.meta.env.VITE_APP_MODE === 'kpop' ? 'Whoranghae' : 'BubuDesuWho';
+  document.title = `${brand} - ${song.name}`;
   const titleEl = document.getElementById('song-title');
   if (titleEl) {
     titleEl.textContent = song.name;
@@ -151,7 +155,7 @@ function selectSong(song: Song): void {
     if (song.cover) {
       const coverBase = import.meta.env.VITE_COVER_BASE;
       coverEl.src = coverBase
-        ? coverBase + song.cover.replace(/^css\/images\/covers\//, '')
+        ? coverBase + song.cover.replace(/^css\/images\/covers\/(?:kpop\/)?/, '')
         : import.meta.env.BASE_URL + song.cover;
       coverEl.style.display = '';
     } else {
@@ -179,11 +183,21 @@ function selectSong(song: Song): void {
   if (callsBtn) callsBtn.style.display = song.calls.length > 0 ? '' : 'none';
   if (sfxBtn) sfxBtn.style.display = song.calls.length > 0 ? '' : 'none';
 
-  // JP lyrics toggle — show only if song has JP data
+  // Native-lyrics toggle — show only if song has native-script data.
+  // Label/title come from the current song's group.nativeScript so the same
+  // button serves Japanese (JP) and Korean (한).
   const jpBtn = document.getElementById('lyrics-jp-toggle');
   if (jpBtn) {
     jpBtn.style.display = hasJpLyrics() ? '' : 'none';
     jpBtn.classList.toggle('active', state.jpLyrics);
+    const ns = getGroup(song.group)?.nativeScript;
+    if (ns === 'ko') {
+      jpBtn.textContent = '한';
+      jpBtn.title = 'Hangul lyrics';
+    } else {
+      jpBtn.textContent = 'JP';
+      jpBtn.title = 'Japanese lyrics';
+    }
   }
   if (state.jpLyrics && hasJpLyrics()) toggleJpLyrics(true);
 
@@ -228,10 +242,80 @@ function generateSlots(slots: Slot[], group: GroupName): void {
   }
 }
 
+/**
+ * Fallback slot skeleton builder for groups without an HTML <template>.
+ * Iterates members + subunits from the registry. Used for newly-added groups
+ * (e.g. K-pop) that don't ship hand-authored Bootstrap markup.
+ */
+export function buildSlotSkeleton(group: GroupName): HTMLElement {
+  const g = getGroup(group);
+
+  const row = document.createElement('div');
+  row.className = 'row slot';
+
+  const header = document.createElement('div');
+  header.className = 'col-xs-12 col-md-2 slot-header';
+  const headerIcons: [string, string?][] = [
+    ['label label-default timerange'],
+    ['jump-button glyphicon glyphicon-play'],
+    ['check-slot-button glyphicon glyphicon-ok', 'Check this line'],
+    ['reveal-button glyphicon glyphicon-search'],
+    ['reveal-off-button glyphicon glyphicon-search'],
+    ['show-lyrics glyphicon glyphicon-question-sign'],
+  ];
+  for (const [cls, title] of headerIcons) {
+    const el = document.createElement('span');
+    el.className = cls;
+    el.setAttribute('aria-hidden', 'true');
+    if (title) el.title = title;
+    header.appendChild(el);
+  }
+  row.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'col-xs-12 col-md-10 slot-body';
+  const bodyRow = document.createElement('div');
+  bodyRow.className = 'row';
+  body.appendChild(bodyRow);
+
+  const members = document.createElement('div');
+  members.className = 'col-xs-12 slot-members';
+  for (const m of g?.members ?? []) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-primary choice';
+    btn.dataset.value = String(m.id);
+    btn.textContent = m.name;
+    members.appendChild(btn);
+  }
+  bodyRow.appendChild(members);
+
+  if (g?.subunits?.length) {
+    const subs = document.createElement('div');
+    subs.className = 'col-xs-12 slot-subunits';
+    for (const sub of g.subunits) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-primary';
+      btn.dataset.value = [...sub.memberIds].sort((a, b) => a - b).join(',');
+      btn.textContent = sub.name;
+      subs.appendChild(btn);
+    }
+    bodyRow.appendChild(subs);
+  }
+
+  row.appendChild(body);
+  return row;
+}
+
 export function createSlotElement(slot: Slot, group: GroupName): HTMLElement {
-  // Clone the HTML template to preserve Bootstrap grid classes
-  const template = document.getElementById(`${group}-slot-template`) as HTMLTemplateElement;
-  const clone = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+  // Prefer the hand-authored HTML <template> (richer Bootstrap grid, seiyuu
+  // names, mobile shortcut rows). Fall back to registry-driven skeleton for
+  // groups without a template (e.g. newly added K-pop groups).
+  const template = document.getElementById(`${group}-slot-template`) as HTMLTemplateElement | null;
+  const clone = template
+    ? template.content.firstElementChild!.cloneNode(true) as HTMLElement
+    : buildSlotSkeleton(group);
 
   clone.id = `slot${slot.id}`;
   clone.dataset.diff = String(slot.diff);
@@ -856,6 +940,14 @@ export function switchTheme(theme: string | null): void {
   const htmlEl = document.documentElement;
   (htmlEl.className.match(themeRegex) ?? []).forEach(c => htmlEl.classList.remove(c));
   if (theme != null) htmlEl.classList.add(`theme-${theme}`);
+
+  // --play-btn-bg is defined on #player-bar.theme-*, but #kofi-button lives
+  // up in the header. Mirror the resolved value onto <html> so any element
+  // can read it via var(--play-btn-bg).
+  const bar = document.getElementById('player-bar');
+  const barBg = bar ? getComputedStyle(bar).getPropertyValue('--play-btn-bg').trim() : '';
+  if (barBg) htmlEl.style.setProperty('--play-btn-bg', barBg);
+  else htmlEl.style.removeProperty('--play-btn-bg');
 
   // wrap each word in song title with <span class="word"> for per-word theming
   const titleEl = document.getElementById('song-title');

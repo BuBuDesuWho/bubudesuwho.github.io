@@ -130,7 +130,7 @@ export function loadSong(song: Song): void {
   const soundBase = isIOS && iosBase ? iosBase : import.meta.env.VITE_SOUND_BASE;
   const base = import.meta.env.BASE_URL;
   const resolveAudio = (path: string) =>
-    soundBase ? soundBase + path.replace(/^sound\//, '') : base + path;
+    soundBase ? soundBase + path.replace(/^sound\/(?:kpop\/)?/, '') : base + path;
   // iOS Safari can't decode Opus-in-Ogg — pass the .m4a sibling so Howler
   // falls through to AAC when Ogg isn't playable.
   const m4aPath = song.ogg.replace(/\.ogg$/, '.m4a');
@@ -630,12 +630,13 @@ export function toggleJpLyrics(val?: boolean): void {
 
 // ─── Lyrics Reveal ──────────────────────────────────────────────────
 
-/** Clear any reveal coloring (ansN / ans-all / gradient) from a lyric element. */
+/** Clear any reveal coloring (ansN / ans-all / solo / gradient) from a lyric element. */
 function clearRevealClasses(element: HTMLElement): void {
   const existing = Array.from(element.classList)
     .filter((c) => /^ans\d+$/.test(c) || c === 'ans-all');
   if (existing.length) element.classList.remove(...existing);
-  element.classList.remove('lyric-gradient');
+  element.classList.remove('lyric-gradient', 'lyric-solo');
+  element.style.removeProperty('--solo-color');
   element.style.removeProperty('--gradient');
   element.style.removeProperty('--glow1');
   element.style.removeProperty('--glow2');
@@ -663,6 +664,13 @@ function applyRevealClasses(element: HTMLElement, mapping: MappingEntry): void {
 
   if (isSolo) {
     element.classList.add(...ans.map((a) => 'ans' + a));
+    // Generic data-driven solo glow — used when no hardcoded .group-X.ansN rule
+    // matches (e.g. SEVENTEEN). Existing hardcoded rules win on specificity.
+    const soloColor = getGroupColors(state.group)[ans[0]];
+    if (soloColor) {
+      element.classList.add('lyric-solo');
+      element.style.setProperty('--solo-color', soloColor);
+    }
   } else if (isAllMembers) {
     element.classList.add('ans-all');
   } else if (isSubGroup) {

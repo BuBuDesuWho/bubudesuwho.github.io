@@ -30,6 +30,9 @@
     <li>
       <button id="wug-group-button" type="button" class="btn btn-primary group-button" data-value="wug"><img class="group-icon" src="css/images/wug.png"></img></button><button id="nijigasaki-group-button" type="button" class="btn btn-primary group-button" data-value="nijigasaki"><img class="group-icon" src="css/images/nijigasaki.png"></img></button>
     </li>
+    <li>
+      <button id="seventeen-group-button" type="button" class="btn btn-primary group-button" data-value="seventeen"><img class="group-icon" src="css/images/seventeen.png"></img></button>
+    </li>
     <li class="has-feedback">
       <input class="form-control" id="menu-search" autofocus></input>
       <span class="glyphicon glyphicon-search form-control-feedback"></span>
@@ -49,13 +52,18 @@
     <div id="song-controls">
       <div id="jquery_jplayer_1" class="jp-jplayer"></div>
 
-      <!-- Row 1: centered song title + utilities -->
+      <!-- Row 1: centered song title -->
       <div class="song-title-row">
         <h2 id="song-title"></h2>
-        <div class="song-title-utils">
-          <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
-          <button id="palette-toggle" type="button" class="btn btn-default" title="Switch to official color palette">🎨</button>
-          <button id="lyrics-button" type="button" class="btn btn-default">Lyrics</button>
+            <div class="song-title-utils">
+              <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
+              <button id="palette-toggle" type="button" class="btn btn-default" title="Switch to official color palette">🎨</button>
+              <button id="lyrics-button" type="button" class="btn btn-default">Lyrics</button>
+              <a id="lyrics-jp-toggle" type="button" class="btn btn-default" title="Japanese lyrics" style="display: none">JP</a>
+              <span class="kofi-button-wrap">
+                <button id="kofi-button" type="button" title="Support on Ko-fi"><img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi"></button>
+                <button id="kofi-dismiss" type="button" title="Hide until reload" aria-label="Hide Ko-fi button">×</button>
+              </span>
         </div>
       </div>
 
@@ -71,9 +79,8 @@
           <button id="edit-toggle" type="button" class="btn btn-default" title="Toggle Edit Mode"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
         </div>
         <div id="game-settings">
-          <div class="label label-info meter"></div>
           <button id="diff" type="button" class="btn btn-success">Normal</button>
-          <a id="lyrics-jp-toggle" type="button" class="btn btn-default" title="Japanese lyrics" style="display: none">JP</a>
+          <div class="label label-info meter"></div>
         </div>
         <div id="lyrics-menu">
           <a id="lyrics-dl-ass" class="btn btn-default" title="Download lyrics as ASS"><span class="glyphicon glyphicon-align-right" aria-hidden="true"></span> Download</a>
@@ -125,6 +132,13 @@
         You must have an HTML5-compliant browser to play!
       </div>
     </div>
+  </div>
+</div>
+
+<div id="kofi-modal" hidden>
+  <div class="kofi-modal-content">
+    <button class="kofi-modal-close" type="button" aria-label="Close">×</button>
+    <iframe id="kofi-iframe" src="about:blank" title="Support on Ko-fi"></iframe>
   </div>
 </div>
 

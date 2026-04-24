@@ -1,0 +1,27 @@
+{
+  "slug": "saint-aqours-snow",
+  "name": "Saint Aqours Snow",
+  "nameNative": "Saint Aqours Snow",
+  "nativeScript": "ja",
+  "members": [
+    { "id": 1,  "name": "Chika",    "nameNative": "千歌",     "color": "#F0A20B", "colorOfficial": "#FF9547" },
+    { "id": 2,  "name": "You",      "nameNative": "曜",       "color": "#49B9F9", "colorOfficial": "#66C0FF" },
+    { "id": 3,  "name": "Riko",     "nameNative": "梨子",     "color": "#E9A9E8", "colorOfficial": "#FF9EAC" },
+    { "id": 4,  "name": "Hanamaru", "nameNative": "花丸",     "color": "#E6D617", "colorOfficial": "#FFD010" },
+    { "id": 5,  "name": "Ruby",     "nameNative": "ルビィ",   "color": "#FB75E4", "colorOfficial": "#FF6FBE" },
+    { "id": 6,  "name": "Yoshiko",  "nameNative": "善子",     "color": "#898989", "colorOfficial": "#C1CAD4" },
+    { "id": 7,  "name": "Dia",      "nameNative": "ダイヤ",   "color": "#F23B4C", "colorOfficial": "#DB0839" },
+    { "id": 8,  "name": "Kanan",    "nameNative": "果南",     "color": "#13E8AE", "colorOfficial": "#27C1B7" },
+    { "id": 9,  "name": "Mari",     "nameNative": "マリ",     "color": "#AE58EB", "colorOfficial": "#C252C6" },
+    { "id": 10, "name": "Sarah",    "nameNative": "聖良",     "color": "#3AA5DC", "colorOfficial": "#ADC7EC" },
+    { "id": 11, "name": "Leah",     "nameNative": "理亞",     "color": "#FFFFFF", "colorOfficial": "#DDE6ED" }
+  ],
+  "subunits": [
+    { "name": "Aqours",              "memberIds": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+    { "name": "Saint Snow",          "memberIds": [10, 11] },
+    { "name": "2nd years",           "memberIds": [1, 2, 3] },
+    { "name": "1st years",           "memberIds": [4, 5, 6] },
+    { "name": "3rd years",           "memberIds": [7, 8, 9] }
+  ],
+  "colorClass": "aqours-lightblue"
+}

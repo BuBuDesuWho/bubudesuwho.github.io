@@ -15,7 +15,6 @@ function copyAssetsPlugin(): Plugin {
         cpSync(resolve(root, file), resolve(dist, file));
       }
       cpSync(resolve(root, 'css', 'images'), resolve(dist, 'assets', 'images'), { recursive: true });
-      // sound/ hosted on GitHub Releases, only copy call.wav for SFX
       cpSync(resolve(root, 'sound'), resolve(dist, 'sound'), { recursive: true });
     },
   };

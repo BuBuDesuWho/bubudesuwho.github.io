@@ -1,0 +1,16 @@
+{
+  "slug": "wug",
+  "name": "Wake Up, Girls!",
+  "nameNative": "Wake Up, Girls!",
+  "nativeScript": "ja",
+  "members": [
+    { "id": 1, "name": "Mayu",    "nameNative": "真夢",   "color": "#45AE4D", "colorOfficial": "#45AE4D" },
+    { "id": 2, "name": "Airi",    "nameNative": "愛梨",   "color": "#DD418A", "colorOfficial": "#DD418A" },
+    { "id": 3, "name": "Minami",  "nameNative": "みなみ", "color": "#F6C62A", "colorOfficial": "#F6C62A" },
+    { "id": 4, "name": "Yoshino", "nameNative": "芳野",   "color": "#0D72BA", "colorOfficial": "#0D72BA" },
+    { "id": 5, "name": "Nanami",  "nameNative": "菜々美", "color": "#CC1C36", "colorOfficial": "#CC1C36" },
+    { "id": 6, "name": "Kaya",    "nameNative": "香夜",   "color": "#935BAF", "colorOfficial": "#935BAF" },
+    { "id": 7, "name": "Miyu",    "nameNative": "実夢",   "color": "#00B2DC", "colorOfficial": "#00B2DC" }
+  ],
+  "subunits": []
+}

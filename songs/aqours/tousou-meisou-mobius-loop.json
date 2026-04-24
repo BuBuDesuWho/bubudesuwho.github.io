@@ -246,10 +246,14 @@
     {
       "lyric_jp": "やっぱり追いかけられてるだけじゃ",
       "parts": [
-        {"lyric": "Yappari",
-          "range": [221.38, 222.84], "ans": [7, 8, 9]},
+        {"lyric": "Yap",
+          "range": [221.38, 222.84], "ans": [7]},
+        {"lyric": "pa",
+          "range": [222.84, 224.06], "ans": [8]},
+        {"lyric": "ri",
+          "range": [224.1, 224.8], "ans": [9]},
         {"lyric": "Oikakerareteru dake ja",
-          "range": [222.14, 227.17], "ans": []}
+          "range": [224.95, 227.17], "ans": []}
       ]
     },
     {"lyric": "Kaiketsu dekinai koto ga",

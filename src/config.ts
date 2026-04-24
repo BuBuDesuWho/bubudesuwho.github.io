@@ -1,15 +1,37 @@
 import {
-  SongConfig, Song, MappingEntry, SlotBase, SlotDetail, LyricToken,
+  SongConfig, Song, MappingEntry, SlotBase, SlotDetail, LyricToken, Group,
 } from './types';
 import { arrayEqual } from './utils';
+import { registerGroup } from './groups';
 
 let songs: Song[] = [];
+
+async function loadGroups(base: string, mode: 'anime' | 'kpop'): Promise<void> {
+  const resp = await fetch(base + `songs/groups.${mode}.json?t=` + Date.now());
+  if (!resp.ok) {
+    console.warn(`songs/groups.${mode}.json missing (${resp.status}); registry will be empty`);
+    return;
+  }
+  const { groups: slugs } = await resp.json() as { groups: string[] };
+  await Promise.all(slugs.map(async (slug) => {
+    const gr = await fetch(base + 'songs/' + slug + '/group.json?t=' + Date.now());
+    if (!gr.ok) {
+      console.warn(`songs/${slug}/group.json missing (${gr.status})`);
+      return;
+    }
+    const g = await gr.json() as Group;
+    registerGroup(g);
+  }));
+}
 
 export async function loadConfig(): Promise<Song[]> {
   const base = import.meta.env.BASE_URL;
   const raw: SongConfig[] = [];
 
-  const indexResp = await fetch(base + 'songs/index.json?t=' + Date.now());
+  const mode = import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
+  await loadGroups(base, mode);
+
+  const indexResp = await fetch(base + `songs/index.${mode}.json?t=` + Date.now());
   const indexEntries: (string | { file: string; cover?: string })[] = await indexResp.json();
   const results = await Promise.allSettled(
     indexEntries.map(async (entry) => {
@@ -59,9 +81,12 @@ function normalizeLines(cfg: SongConfig): NormalizedJp | undefined {
     if (typeof line === 'string') {
       lyricParts.push(line);
     } else if (line.parts && line.parts.length > 0) {
-      // When JP text is present and spans multiple parts, the first part owns
+      // Native text: accept either lyric_jp or lyric_hangul; the loader is
+      // agnostic to script (group.json's nativeScript drives UI labels).
+      const nativeText = line.lyric_jp ?? line.lyric_hangul;
+      // When native text is present and spans multiple parts, the first part owns
       // the visible glow for the full span (subsequent parts render as display:none).
-      const spansAll = line.lyric_jp != null && line.parts.length > 1
+      const spansAll = nativeText != null && line.parts.length > 1
         ? [line.parts[0].range[0], line.parts[line.parts.length - 1].range[1]] as [number, number]
         : undefined;
       const partMappings: MappingEntry[] = [];
@@ -71,13 +96,13 @@ function normalizeLines(cfg: SongConfig): NormalizedJp | undefined {
         const entry = m as MappingEntry;
         mappingEntries.push(entry);
         partMappings.push(entry);
-        // First part gets the full JP text; subsequent parts get empty string (hidden in JP mode)
-        jpTexts.push(pi === 0 ? line.lyric_jp : (line.lyric_jp != null ? '' : undefined));
+        // First part gets the full native text; subsequent parts get empty string (hidden in native mode)
+        jpTexts.push(pi === 0 ? nativeText : (nativeText != null ? '' : undefined));
         jpRanges.push(pi === 0 ? spansAll : undefined);
         jpParts.push(undefined);
       }
-      // Attach sibling mappings to the first part (only when JP text spans >1 part,
-      // since that's the only scenario where the JP element stays visible across sub-parts).
+      // Attach sibling mappings to the first part (only when native text spans >1 part,
+      // since that's the only scenario where the native element stays visible across sub-parts).
       if (spansAll) {
         jpParts[jpParts.length - line.parts.length] = partMappings;
       }
@@ -85,10 +110,10 @@ function normalizeLines(cfg: SongConfig): NormalizedJp | undefined {
       // lyric appears as a single line rather than one line per part.
       lyricParts.push(line.parts.map(p => '{' + p.lyric + '}').join(' '));
     } else {
-      const { lyric: _l, tail: _t, parts: _p, lyric_jp: _jp, ...m } = line;
+      const { lyric: _l, tail: _t, parts: _p, lyric_jp: _jp, lyric_hangul: _hg, lyric_translation: _tr, ...m } = line;
       mappingEntries.push(m as MappingEntry);
       lyricParts.push('{' + line.lyric + '}');
-      jpTexts.push(line.lyric_jp);
+      jpTexts.push(line.lyric_jp ?? line.lyric_hangul);
       jpRanges.push(undefined);
       jpParts.push(undefined);
     }

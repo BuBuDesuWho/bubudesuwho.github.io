@@ -1,7 +1,7 @@
 import { Song, Slot, SlotState, LineObject, MappingEntry, GroupName, MEMBER_MAPPING } from './types';
 import { loadConfig } from './config';
 import { state, initGameState, loadSong, checkSlot, toggleChoice, toggleReveal } from './game';
-import { initThemeToggle, switchTheme } from './ui';
+import { initThemeToggle, switchTheme, buildSlotSkeleton } from './ui';
 import { buildMenu, toggleMenu } from './ui-menu';
 import * as player from './player';
 import { getStorage, setStorage } from './storage';
@@ -26,6 +26,33 @@ interface LyricCandidate {
 }
 
 function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
+  const singerSet = new Set(singers);
+
+  // Groups without a hand-authored MEMBER_COLUMNS layout use the same
+  // registry-driven skeleton the play page uses (dynamic grid of members
+  // + subunit buttons). This avoids Bootstrap push/pull overlap when there
+  // are no interleaved shortcut columns (e.g. K-pop groups).
+  if (!MEMBER_COLUMNS[bubudleGroup]) {
+    const el = buildSlotSkeleton(bubudleGroup);
+    el.id = `slot${slot.id}`;
+    el.dataset.diff = String(slot.diff);
+    const hdr = el.querySelector<HTMLElement>('.slot-header');
+    if (hdr) hdr.style.display = 'none';
+
+    el.querySelectorAll<HTMLElement>('.slot-body button[data-value]').forEach((btn) => {
+      const members = btn.dataset.value!.split(',').map(Number);
+      const disabled = members.some(m => !singerSet.has(m));
+      if (disabled) {
+        btn.classList.add('disabled');
+      } else {
+        btn.addEventListener('click', () => toggleChoice(btn, slot));
+      }
+      btn.addEventListener('mouseup', () => btn.blur());
+    });
+
+    return el;
+  }
+
   const el = document.createElement('div');
   el.className = 'row slot';
   el.id = `slot${slot.id}`;
@@ -66,7 +93,6 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
       })();
 
   // Applicable shortcuts — only include if all members present in singer set
-  const singerSet = new Set(singers);
   const hasExtras = extraMembers.length > 0;
   const shortcuts = (SHORTCUT_GROUPS[bubudleGroup] ?? []).filter(g =>
     g.members.every(m => singerSet.has(m)) && (!g.extraOnly || hasExtras));

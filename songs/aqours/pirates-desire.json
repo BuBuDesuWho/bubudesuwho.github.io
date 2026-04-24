@@ -9,7 +9,7 @@
   "slots": [
 
   ],
-  "generated": "2026-04-15T01:44:36Z",
+  "generated": "2026-04-23T05:31:11Z",
   "lines": [
     {"lyric": "One two",
       "lyric_jp": "One two",
@@ -28,11 +28,7 @@
       "lyric_jp": "暗い暗い夜の海には魔が宿るのさ",
       "parts": [
         {"lyric": "(Hey!)",
-          "range": [41.93, 42.53], "ans": []},
-        {"lyric": "(Hey!)",
-          "range": [42.53, 43.13], "ans": []},
-        {"lyric": "(Hey!)",
-          "range": [43.13, 44.08], "ans": []},
+          "range": [41.93, 44.08], "ans": []},
         {"lyric": "Kurai kurai yoru no umi ni wa ma ga yadoru no sa",
           "range": [43.38, 50.14], "ans": [2]},
         {"lyric": "( pikapika)",

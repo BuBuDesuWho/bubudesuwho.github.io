@@ -2,7 +2,18 @@ import { Song, GroupName, SortMode } from './types';
 import { escapeRegExp } from './utils';
 import { state } from './game';
 import { getSongs } from './config';
+import { getAllGroups, hasGroup } from './groups';
 import { setStorage, getStorage } from './storage';
+
+/**
+ * Build-mode visibility filter. The registry only holds groups from the
+ * current mode's groups.json (e.g. kpop mode registers just Seventeen,
+ * not the Love-Live groups). Any `.group-button` whose slug isn't in the
+ * registry belongs to the other mode and should be hidden.
+ */
+function groupVisibleInMode(slug: string): boolean {
+  return hasGroup(slug);
+}
 
 export function attachInstantTip(el: HTMLElement, text: string): void {
   let tip: HTMLElement | null = null;
@@ -25,6 +36,13 @@ export function buildMenu(songs: Song[]): void {
   const savedGroup = getStorage('group') as GroupName | null;
   if (savedGroup) state.group = savedGroup;
 
+  // If the current state.group (from default or localStorage) belongs to the
+  // other mode, snap to the first registered group so the menu renders.
+  if (!hasGroup(state.group)) {
+    const first = getAllGroups()[0];
+    if (first) state.group = first.slug;
+  }
+
   const savedSort = getStorage('sort') as SortMode | null;
   if (savedSort && ['index', 'date', 'alpha'].includes(savedSort)) state.sortMode = savedSort;
   // migrate legacy 'group' sort mode
@@ -44,9 +62,12 @@ export function buildMenu(songs: Song[]): void {
   document.getElementById('menu-button')?.addEventListener('click', () => toggleMenu());
 
   document.querySelectorAll<HTMLElement>('.group-button').forEach((btn) => {
+    const slug = btn.dataset.value as GroupName | undefined;
+    if (slug && !groupVisibleInMode(slug)) {
+      btn.style.display = 'none';
+    }
     btn.addEventListener('click', () => {
-      const group = btn.dataset.value as GroupName;
-      switchGroup(group, songs);
+      switchGroup(slug as GroupName, songs);
     });
   });
 

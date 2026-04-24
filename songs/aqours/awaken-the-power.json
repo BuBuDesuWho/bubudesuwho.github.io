@@ -8,7 +8,7 @@
   "slots": [
 
   ],
-  "generated": "2026-04-15T01:41:46Z",
+  "generated": "2026-04-23T05:32:42Z",
   "lines": [
     {"lyric": "Hajimaru toki wa owari no koto nado",
       "lyric_jp": "始まるときは 終わりのことなど",
@@ -175,9 +175,7 @@
         {"lyric": "Seichou shita ne!",
           "range": [178.98, 182.38], "ans": [7, 8, 9, 10], "diff": 3},
         {"lyric": "(Hi! Hi! Hi!)",
-          "range": [181.68, 182.63], "ans": []},
-        {"lyric": "(Hi! Hi! Hi!)",
-          "range": [182.63, 183.23], "ans": []}
+          "range": [181.68, 183.23], "ans": []}
       ]
     },
     {"lyric": "Fighting fighting! Hi!",

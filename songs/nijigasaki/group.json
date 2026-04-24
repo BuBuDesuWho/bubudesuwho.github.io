@@ -1,0 +1,30 @@
+{
+  "slug": "nijigasaki",
+  "name": "Nijigasaki",
+  "nameNative": "虹ヶ咲",
+  "nativeScript": "ja",
+  "members": [
+    { "id": 1,  "name": "Ayumu",    "nameNative": "歩夢",   "color": "#ED7D95", "colorOfficial": "#ED7D95" },
+    { "id": 2,  "name": "Kasumi",   "nameNative": "かすみ", "color": "#E7D600", "colorOfficial": "#E7D600" },
+    { "id": 3,  "name": "Shizuku",  "nameNative": "しずく", "color": "#01B7ED", "colorOfficial": "#01B7ED" },
+    { "id": 4,  "name": "Karin",    "nameNative": "果林",   "color": "#485EC6", "colorOfficial": "#485EC6" },
+    { "id": 5,  "name": "Ai",       "nameNative": "愛",     "color": "#FF5800", "colorOfficial": "#FF5800" },
+    { "id": 6,  "name": "Kanata",   "nameNative": "彼方",   "color": "#A664A0", "colorOfficial": "#A664A0" },
+    { "id": 7,  "name": "Setsuna",  "nameNative": "せつ菜", "color": "#D81C2F", "colorOfficial": "#D81C2F" },
+    { "id": 8,  "name": "Emma",     "nameNative": "エマ",   "color": "#84C36E", "colorOfficial": "#84C36E" },
+    { "id": 9,  "name": "Rina",     "nameNative": "璃奈",   "color": "#9CA5B9", "colorOfficial": "#9CA5B9" },
+    { "id": 10, "name": "Shioriko", "nameNative": "栞子",   "color": "#37B484", "colorOfficial": "#37B484" },
+    { "id": 11, "name": "Lanzhu",   "nameNative": "ランジュ","color": "#F8C8C4", "colorOfficial": "#F8C8C4" },
+    { "id": 12, "name": "Mia",      "nameNative": "ミア",   "color": "#A9A898", "colorOfficial": "#A9A898" },
+    { "id": 13, "name": "Yu",       "nameNative": "優",     "color": "#1D1D1D", "colorOfficial": "#1D1D1D" }
+  ],
+  "subunits": [
+    { "name": "DiverDiva", "memberIds": [4, 5] },
+    { "name": "A·ZU·NA",   "memberIds": [1, 3, 7] },
+    { "name": "QU4RTZ",    "memberIds": [2, 6, 8, 9] },
+    { "name": "R3BIRTH",   "memberIds": [10, 11, 12] },
+    { "name": "1st years", "memberIds": [2, 3, 9, 10] },
+    { "name": "2nd years", "memberIds": [1, 5, 7, 11] },
+    { "name": "3rd years", "memberIds": [4, 6, 8, 12] }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "muse",
+  "name": "μ's",
+  "nameNative": "μ's",
+  "nativeScript": "ja",
+  "members": [
+    { "id": 1, "name": "Honoka", "nameNative": "穂乃果", "color": "#F28541", "colorOfficial": "#F38500" },
+    { "id": 2, "name": "Eli",    "nameNative": "絵里",   "color": "#00B2DC", "colorOfficial": "#7AEEFF" },
+    { "id": 3, "name": "Kotori", "nameNative": "ことり", "color": "#8A9294", "colorOfficial": "#CEBFBF" },
+    { "id": 4, "name": "Umi",    "nameNative": "海未",   "color": "#0D72BA", "colorOfficial": "#1769FF" },
+    { "id": 5, "name": "Rin",    "nameNative": "凛",     "color": "#F6C62A", "colorOfficial": "#FFF832" },
+    { "id": 6, "name": "Maki",   "nameNative": "真姫",   "color": "#CC1C36", "colorOfficial": "#FF503E" },
+    { "id": 7, "name": "Nozomi", "nameNative": "希",     "color": "#935BAF", "colorOfficial": "#C455F6" },
+    { "id": 8, "name": "Hanayo", "nameNative": "花陽",   "color": "#45AE4D", "colorOfficial": "#6AE673" },
+    { "id": 9, "name": "Nico",   "nameNative": "にこ",   "color": "#DD418A", "colorOfficial": "#FF4F91" }
+  ],
+  "subunits": [
+    { "name": "Printemps",  "memberIds": [1, 3, 8] },
+    { "name": "lily white", "memberIds": [4, 5, 7] },
+    { "name": "BiBi",       "memberIds": [2, 6, 9] },
+    { "name": "2nd years",  "memberIds": [1, 3, 4] },
+    { "name": "1st years",  "memberIds": [5, 6, 8] },
+    { "name": "3rd years",  "memberIds": [2, 7, 9] }
+  ],
+  "colorClass": "muse-pink"
+}

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
+    "dev:kpop": "vite --mode kpop",
     "build": "tsc --noEmit && vite build",
+    "build:kpop": "tsc --noEmit && vite build --mode kpop && node scripts/copy-assets.js",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

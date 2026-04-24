@@ -300,6 +300,16 @@ Group filter buttons (sidebar)
   background-color: #FFD28A;
   border-color: #F39800;
 }
+/* Generic fallback — groups without a hardcoded #<slug>-group-button rule
+   get their tint from inline --group-accent vars (set from group.json). */
+.group-button:focus,
+.hoverable .group-button:hover:not(.active) {
+  background-color: var(--group-accent-hover, inherit);
+}
+.group-button.active {
+  background-color: var(--group-accent, inherit);
+  border-color: var(--group-accent-dark, inherit);
+}
 .group-icon {
   padding: 5px;
   max-height: 100%;
@@ -519,11 +529,10 @@ html.dark-mode nav.navbar {
 }
 
 .song-title-utils {
-  position: absolute;
-  right: 0;
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 #bubudle-subunit-filter.bubudle-subunit-row {
@@ -572,6 +581,90 @@ html.dark-mode nav.navbar {
   font-size: 16px;
   line-height: 1;
   padding: 4px 8px;
+}
+
+#kofi-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--play-btn-bg, var(--accent, #29abe0));
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+#kofi-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+#kofi-button img {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.kofi-button-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.kofi-button-wrap[hidden] { display: none; }
+#kofi-dismiss {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.kofi-button-wrap:hover #kofi-dismiss,
+#kofi-dismiss:focus-visible { opacity: 1; }
+
+#kofi-modal[hidden] { display: none; }
+.kofi-modal-content {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  width: min(92vw, 360px);
+  height: min(80vh, 520px);
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+}
+.kofi-modal-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  color: #333;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.kofi-modal-close:hover { background: rgba(0, 0, 0, 0.15); }
+#kofi-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 .navbar-title-row {
@@ -805,7 +898,9 @@ html.dark-mode .label.label-info {
   color: var(--text-muted);
 }
 
-
+.label.label-info{
+  margin-top: 6px;
+}
 /*===============================================
 Sidebar
 ===============================================*/
@@ -1178,6 +1273,30 @@ html.dark-mode .slot.slot-correct.slot-active {
   padding: 2px;
 }
 
+/* Responsive grid layout for registry-built slot skeletons (groups without
+   a hand-authored <template>, e.g. Seventeen). Cells auto-fit so column
+   widths stay aligned regardless of label length. Love-Live groups keep
+   using their Bootstrap btn-group-vertical markup and are unaffected. */
+.slot-members,
+.slot-subunits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 3px;
+  padding: 2px 60px;
+}
+.slot-subunits {
+  margin-top: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.slot-members > .btn,
+.slot-subunits > .btn {
+  margin: 0;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Setsuna (Tomoriru) is the longest nijigasaki label — trim horizontal
    padding so it stays on one line. */
 html.group-nijigasaki #slots button[data-value="7"].btn {
@@ -1448,6 +1567,27 @@ html.dark-mode .lyric.lyric-active.karaoke {
       0 0 8px var(--glow2),
       0 0 12px var(--glow3),
       0 0 12px var(--glow3);
+}
+
+/* Generic solo / all-members glow fallbacks — driven by runtime CSS vars.
+   Kick in for any group without a hardcoded .group-X rule below (e.g. seventeen).
+   Lower specificity than the .group-{muse|aqours|wug|nijigasaki} rules that follow,
+   so Love-Live groups still use their hand-tuned colors. */
+.lyric.lyric-active.lyric-solo {
+  color: #ffffff;
+  text-shadow:
+    0px 0px 6px color-mix(in srgb, var(--solo-color, #888) 80%, black),
+    0px 0px 6px color-mix(in srgb, var(--solo-color, #888) 80%, black),
+    0px 0px 6px color-mix(in srgb, var(--solo-color, #888) 80%, black),
+    0px 0px 15px var(--solo-color, #888);
+}
+.lyric.lyric-active.ans-all {
+  color: #ffffff;
+  text-shadow:
+    0px 0px 6px color-mix(in srgb, var(--group-glow-primary, #5a5a5a) 70%, black),
+    0px 0px 6px color-mix(in srgb, var(--group-glow-primary, #5a5a5a) 70%, black),
+    0px 0px 6px color-mix(in srgb, var(--group-glow-primary, #5a5a5a) 70%, black),
+    0px 0px 15px var(--group-glow-primary, #888);
 }
 
 /* All-members glow — group official color, matches solo style.
@@ -2018,12 +2158,6 @@ Media queries
   #game-settings,
   #lyrics-menu {
     width: 40%;
-  }
-  #song-title {
-    width: 85%;
-  }
-  #lyrics-button {
-    width: 15%;
   }
   .slot-header {
     padding-left: 0px;
