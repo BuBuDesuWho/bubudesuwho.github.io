@@ -10,7 +10,14 @@ const V = `?v=${__BUILD_VERSION__}`;
 const songCache = new Map<string, Song>();
 const indexCache = new Map<string, { file: string; cover?: string; menu: MenuSong }>();
 let indexPromise: Promise<MenuSong[]> | null = null;
+let groupsPromise: Promise<void> | null = null;
 const inFlight = new Map<string, Promise<Song | undefined>>();
+
+export function ensureGroups(): Promise<void> {
+  if (groupsPromise) return groupsPromise;
+  groupsPromise = loadGroups(import.meta.env.BASE_URL, getMode());
+  return groupsPromise;
+}
 
 async function loadGroups(base: string, mode: 'anime' | 'kpop'): Promise<void> {
   const resp = await fetch(base + `songs/groups.${mode}.json` + V);
@@ -41,7 +48,7 @@ async function ensureIndex(): Promise<MenuSong[]> {
   const base = import.meta.env.BASE_URL;
   const mode = getMode();
   indexPromise = (async () => {
-    await loadGroups(base, mode);
+    await ensureGroups();
     const indexResp = await fetch(base + `songs/index.${mode}.json` + V);
     const entries = await indexResp.json() as IndexEntry[];
     const out: MenuSong[] = [];

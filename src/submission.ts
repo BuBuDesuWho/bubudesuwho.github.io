@@ -1,6 +1,7 @@
 import { GroupName, MEMBER_MAPPING, MEMBER_COLORS } from './types';
 import { initThemeToggle } from './ui';
 import { toggleMenu } from './ui-menu';
+import { ensureGroups } from './config';
 import { MEMBER_COLUMNS, SHORTCUT_GROUPS, ShortcutGroup } from './bubudle-config';
 import EXAMPLE_LYRICS_V3 from './submission-example.json';
 
@@ -93,12 +94,6 @@ function shortcutsFor(group: GroupName): ShortcutGroup[] {
   return base.filter(s =>
     !s.extraOnly && s.members.every(m => all.has(m))
   );
-}
-
-function arraysEqualAsSet(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) return false;
-  const s = new Set(a);
-  return b.every(x => s.has(x));
 }
 
 function parseRomajiText(text: string): Entry[] {
@@ -246,15 +241,20 @@ function renderChipStrip(strip: HTMLElement, entryIndex: number) {
         btn.type = 'button';
         btn.className = 'submission-chip submission-chip-shortcut';
         btn.textContent = s.label;
-        const isActive = arraysEqualAsSet(entry.ans, s.members);
-        if (isActive) btn.classList.add('selected');
+        const current = new Set(entry.ans);
+        const allOn = s.members.every(m => current.has(m));
+        if (allOn) btn.classList.add('selected');
         btn.addEventListener('click', () => {
-          // Toggle: if already exactly this set, clear; else replace with this set
-          if (arraysEqualAsSet(entry.ans, s.members)) {
-            entry.ans = [];
+          // Additive toggle: if every shortcut member is already selected, drop
+          // just those members; otherwise add them on top of existing picks.
+          const sel = new Set(entry.ans);
+          const everyOn = s.members.every(m => sel.has(m));
+          if (everyOn) {
+            for (const m of s.members) sel.delete(m);
           } else {
-            entry.ans = [...s.members].sort((a, b) => a - b);
+            for (const m of s.members) sel.add(m);
           }
+          entry.ans = [...sel].sort((a, b) => a - b);
           renderChipStrip(strip, entryIndex);
         });
         colEl.appendChild(btn);
@@ -368,11 +368,18 @@ function updateDownloadEnabled() {
   }
 }
 
-export function initSubmissionPage() {
+export async function initSubmissionPage() {
   initThemeToggle();
 
   toggleMenu(window.innerWidth >= 1200);
   document.getElementById('menu-button')?.addEventListener('click', () => toggleMenu());
+
+  await ensureGroups();
+
+  const available = Object.keys(MEMBER_MAPPING) as GroupName[];
+  if (!available.includes(state.group) && available.length > 0) {
+    state.group = available[0];
+  }
 
   const groupSelect = document.getElementById('submission-group') as HTMLSelectElement;
   populateGroupSelect(groupSelect);

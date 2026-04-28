@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fb96be">
+
+<title>BubuDesuWho - Submit Lyrics</title>
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+<link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
+<link type="text/css" href="css/styles.css?ver=20260420" rel="stylesheet" />
+
+</head>
+<body class="submission-page">
+
+<div id="sidebar" class="sidebar-collapsed">
+  <ul class="sidebar-nav">
+    <li><a class="select-info" href="index.html">About</a></li>
+    <li><a class="select-info" href="changelog.html">Changelog</a></li>
+    <li><a class="select-info" href="stats.html">Stats</a></li>
+    <li><a class="select-info" href="bubudle.html">Bubudle</a></li>
+    <li><a class="select-info active" href="submission.html">Submit</a></li>
+  </ul>
+</div>
+
+<div class="main">
+  <span id="menu-button" class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+
+  <nav class="navbar navbar-default">
+  <div class="container">
+  <div class="row"><div class="col-xs-10 col-xs-offset-2 col-sm-11 col-sm-offset-1 navbar-title-row">
+      <h1 class="dia-red">Submit Lyrics</h1>
+      <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
+  </div></div>
+  </div>
+  </nav>
+
+  <div class="container"><div class="row"><div class="col-xs-12 info-content">
+
+    <p>Import a lyrics file, assign singers per line, and download a
+    <code>lyrics</code> JSON. Lines can be split, merged, or separated by
+    blank section breaks.</p>
+
+    <div class="submission-controls">
+      <label class="submission-field">
+        <span class="submission-label">Group</span>
+        <select id="submission-group" class="form-control"></select>
+      </label>
+      <label class="submission-field">
+        <span class="submission-label">Song name</span>
+        <input id="submission-song-name" class="form-control" type="text" placeholder="e.g. WONDERFUL STORIES" />
+      </label>
+      <label class="submission-field">
+        <span class="submission-label">Romaji file</span>
+        <input id="submission-file" class="form-control" type="file" accept=".txt,text/plain" />
+      </label>
+      <div class="submission-actions">
+        <button id="submission-example" type="button" class="btn btn-info">Show example</button>
+        <button id="submission-add-line" type="button" class="btn btn-default">Add line</button>
+        <button id="submission-add-sep" type="button" class="btn btn-default">Add blank</button>
+        <button id="submission-clear" type="button" class="btn btn-default">Clear</button>
+        <button id="submission-download" type="button" class="btn btn-primary" disabled>Download JSON</button>
+      </div>
+    </div>
+
+    <div id="submission-filename-preview" class="submission-filename-preview"></div>
+
+    <hr>
+
+    <div id="submission-entries" class="submission-entries">
+      <p class="submission-empty">No lines yet — import a romaji file or click <em>Add line</em>.</p>
+    </div>
+
+  </div></div></div>
+</div>
+
+<template id="submission-lyric-template">
+  <div class="submission-entry submission-entry-lyric">
+    <div class="submission-entry-main">
+      <input class="form-control submission-entry-text" type="text" />
+      <div class="submission-chip-strip"></div>
+    </div>
+    <div class="submission-entry-actions">
+      <button type="button" class="btn btn-xs btn-default submission-split" title="Split at caret">Split</button>
+      <button type="button" class="btn btn-xs btn-default submission-merge" title="Merge with previous line">&#8593; Merge</button>
+      <button type="button" class="btn btn-xs btn-default submission-insert-line" title="Insert blank line below">+ Line</button>
+      <button type="button" class="btn btn-xs btn-default submission-insert-sep" title="Insert section break below">+ Break</button>
+      <button type="button" class="btn btn-xs btn-danger submission-delete" title="Delete line">&times;</button>
+    </div>
+  </div>
+</template>
+
+<template id="submission-separator-template">
+  <div class="submission-entry submission-entry-separator">
+    <span class="submission-separator-label">&mdash; section break &mdash;</span>
+    <button type="button" class="btn btn-xs btn-danger submission-delete" title="Delete separator">&times;</button>
+  </div>
+</template>
+
+<script type="module" src="/src/main.ts"></script>
+<script>
+  if (!('ontouchstart' in window) && !(navigator.msMaxTouchPoints > 0)) {
+    document.documentElement.classList.add('hoverable');
+  }
+</script>
+</body>
+</html>
