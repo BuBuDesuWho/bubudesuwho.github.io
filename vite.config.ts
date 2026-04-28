@@ -21,6 +21,24 @@ function copyAssetsPlugin(): Plugin {
   };
 }
 
+function cfBeaconPlugin(): Plugin {
+  return {
+    name: 'cf-beacon',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        if (!html.includes('__CF_BEACON_TOKEN__')) return;
+        const token = process.env.CF_BEACON_TOKEN;
+        if (token) return html.replace(/__CF_BEACON_TOKEN__/g, token);
+        return html.replace(
+          /\s*<!-- Cloudflare Web Analytics -->[\s\S]*?<!-- End Cloudflare Web Analytics -->/g,
+          '',
+        );
+      },
+    },
+  };
+}
+
 function resolveBuildVersion(): string {
   if (process.env.VERCEL_GIT_COMMIT_SHA) return process.env.VERCEL_GIT_COMMIT_SHA;
   if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA;
@@ -35,7 +53,7 @@ export default defineConfig(({ command }) => ({
   root: '.',
   base: '/',
   publicDir: false,
-  plugins: [copyAssetsPlugin()],
+  plugins: [copyAssetsPlugin(), cfBeaconPlugin()],
   define: {
     __BUILD_VERSION__: JSON.stringify(resolveBuildVersion()),
   },
