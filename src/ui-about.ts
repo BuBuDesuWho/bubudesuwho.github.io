@@ -28,10 +28,28 @@ function updateThemeToggleLabel(): void {
   btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
 }
 
+// Vercel deploy rewrites the sister-site hostname so cross-mode links point
+// at the Vercel host instead of GH Pages. GitHub *repo* URLs (github.com/.../
+// *.github.io) are left alone — those resolve via the github.com domain.
+function rewriteSisterSiteLinks(): void {
+  if (!location.hostname.endsWith('.vercel.app')) return;
+  for (const a of Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))) {
+    const url = new URL(a.href, location.href);
+    if (url.hostname === 'bubudesuwho.github.io') {
+      url.hostname = 'bubudesuwho.vercel.app';
+      a.href = url.toString();
+    } else if (url.hostname === 'whoranghae.github.io') {
+      url.hostname = 'whoranghae.vercel.app';
+      a.href = url.toString();
+    }
+  }
+}
+
 export async function initAboutPage(): Promise<void> {
   const songs = await loadIndex();
   buildMenu(songs);
   initThemeToggle();
+  rewriteSisterSiteLinks();
 }
 
 export async function initChangelogPage(): Promise<void> {
@@ -43,8 +61,6 @@ export async function initChangelogPage(): Promise<void> {
   const container = document.getElementById('changelog');
   if (!container) return;
 
-  // On the Vercel deployment, rewrite cross-site links so the sister-site
-  // mention in the changelog points to the Vercel host instead of GH Pages.
   if (location.hostname.endsWith('.vercel.app')) {
     for (const entry of data) {
       entry.change = entry.change
