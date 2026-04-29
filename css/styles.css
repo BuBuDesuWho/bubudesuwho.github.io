@@ -751,6 +751,34 @@ html.dark-mode .main {
   cursor: pointer;
 }
 
+#menu-button-bottom {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 3001;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--menu-btn-color);
+  font-size: 1.4em;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  justify-content: center;
+}
+body:has(#player-bar) #menu-button-bottom {
+  bottom: calc(var(--player-bar-h) + 16px);
+}
+@media (max-width: 1199px) {
+  #menu-button-bottom {
+    display: flex;
+  }
+}
+
 .row {
   margin-bottom: 10px;
 }
@@ -1301,8 +1329,12 @@ html.dark-mode .slot.slot-correct.slot-active {
   margin-top: 1px;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
-/* TWICE has exactly 9 members — force 3×3 instead of letting auto-fit pack
-   them into 4 columns (which gives an uneven 3/2/2/2 layout). */
+/* K-pop groups have larger rosters (7–13) where auto-fit produces awkward
+   2-column layouts at typical viewport widths. Force a uniform 3-column grid
+   so the slot picker stays readable across all kpop groups. */
+html.group-bts .slot-members,
+html.group-seventeen .slot-members,
+html.group-stray-kids .slot-members,
 html.group-twice .slot-members {
   grid-template-columns: repeat(3, 1fr);
 }
@@ -2140,8 +2172,18 @@ Media queries
   .meter {
     padding: 3px;
   }
+  /* Reclaim horizontal space on phones — default 60px gutters squish the
+     slot-picker grid (especially the 3-col kpop groups). */
+  .slot-members,
+  .slot-subunits {
+    padding: 2px 10px;
+  }
+  #player-bar #volume-slider {
+    width: 80px;
+  }
   #player-bar .player-vol {
-    display: none;
+    margin-left: 8px;
+    gap: 6px;
   }
   #lyrics-container #lyrics,
   #lyrics-container.full #lyrics {
@@ -2156,8 +2198,8 @@ Media queries
   #player-bar #progress-slider {
     max-width: 180px;
   }
-  #player-bar .player-vol {
-    display: none;
+  #player-bar #volume-slider {
+    width: 50px;
   }
   #song-title {
     font-size: 24px;
@@ -2189,6 +2231,9 @@ Media queries
 @media (max-width: 450px) {
   #player-bar #progress-slider {
     max-width: 120px;
+  }
+  #player-bar #volume-slider {
+    width: 36px;
   }
 }
 

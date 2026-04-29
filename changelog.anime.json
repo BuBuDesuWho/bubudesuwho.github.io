@@ -1,5 +1,45 @@
 [
   {
+    "date": "04/28/2026",
+    "change": "Phone view tightened — slot picker, sidebar nav, and the player bar now lay out cleanly at narrow widths instead of overlapping each other"
+  },
+  {
+    "date": "04/27/2026",
+    "change": "Faster page loads — songs are fetched on demand instead of all upfront, the menu manifest is slimmer, and hashed assets cache aggressively across visits"
+  },
+  {
+    "date": "04/25/2026",
+    "change": "Added a <code>Hints</code> button — turn it on to show a <em>Singers: N</em> badge under each slot for the songs you can't crack"
+  },
+  {
+    "date": "04/25/2026",
+    "change": "Bubudle: added a <strong>Daily</strong> mode (one shared clip per day across all players) and an <em>All</em> scope so you can play across every group at once"
+  },
+  {
+    "date": "04/24/2026",
+    "change": "Added a <strong>FULL COMBO</strong> banner that flashes when you finish a song at 100%"
+  },
+  {
+    "date": "04/24/2026",
+    "change": "BubuDesuWho is now packaged as an <strong>Android app</strong> — same site, no browser frame"
+  },
+  {
+    "date": "04/24/2026",
+    "change": "On mobile, the sidebar now layers above the player bar so the menu stops getting pinned underneath when you open it mid-song"
+  },
+  {
+    "date": "04/23/2026",
+    "change": "Added a small Ko-fi tip jar (top-left popover, dismissible) — totally optional, but if this game has been worth your time, tips are very welcome >.<"
+  },
+  {
+    "date": "04/20/2026",
+    "change": "Multi-part lyric lines now color-shift through each singer in sync with the audio, instead of holding a single color for the whole line"
+  },
+  {
+    "date": "04/20/2026",
+    "change": "iOS Safari audio fallback — the player now loads an AAC sibling alongside the Opus master, so iPhones (which refuse to decode Opus-in-Ogg) can actually play sound"
+  },
+  {
     "date": "04/19/2026",
     "change": "Re-encoded all audio from the original FLAC sources to OGG Opus, replacing the existing lower quality OGG Vorbis files with much higher fidelity versions"
   },

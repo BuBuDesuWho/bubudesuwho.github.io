@@ -43,6 +43,16 @@ export async function initChangelogPage(): Promise<void> {
   const container = document.getElementById('changelog');
   if (!container) return;
 
+  // On the Vercel deployment, rewrite cross-site links so the sister-site
+  // mention in the changelog points to the Vercel host instead of GH Pages.
+  if (location.hostname.endsWith('.vercel.app')) {
+    for (const entry of data) {
+      entry.change = entry.change
+        .replace(/bubudesuwho\.github\.io/g, 'bubudesuwho.vercel.app')
+        .replace(/whoranghae\.github\.io/g, 'whoranghae.vercel.app');
+    }
+  }
+
   for (const song of songs) {
     const repl = `<a href="#${song.id}" class="change-song-name ${getGroupColor(song.group) ?? ''}">${song.name}</a>`;
     for (const entry of data) {

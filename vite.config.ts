@@ -1,6 +1,6 @@
 import { defineConfig, Plugin } from 'vite';
 import { resolve } from 'path';
-import { cpSync } from 'fs';
+import { cpSync, existsSync } from 'fs';
 import { execFileSync } from 'child_process';
 
 function copyAssetsPlugin(): Plugin {
@@ -12,8 +12,10 @@ function copyAssetsPlugin(): Plugin {
       for (const dir of ['css', 'fonts', 'songs']) {
         cpSync(resolve(root, dir), resolve(dist, dir), { recursive: true });
       }
-      for (const file of ['changelog.json']) {
-        cpSync(resolve(root, file), resolve(dist, file));
+      // Each PAGE_REPO ships only its own mode's changelog; copy whichever is present.
+      for (const file of ['changelog.anime.json', 'changelog.kpop.json']) {
+        const src = resolve(root, file);
+        if (existsSync(src)) cpSync(src, resolve(dist, file));
       }
       cpSync(resolve(root, 'css', 'images'), resolve(dist, 'assets', 'images'), { recursive: true });
       cpSync(resolve(root, 'sound'), resolve(dist, 'sound'), { recursive: true });

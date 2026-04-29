@@ -423,6 +423,7 @@ function preprocessLyrics(
 }
 
 export async function loadChangelog(): Promise<{ date: string; change: string }[]> {
-  const resp = await fetch(import.meta.env.BASE_URL + 'changelog.json');
+  const mode = getMode();
+  const resp = await fetch(import.meta.env.BASE_URL + `changelog.${mode}.json`);
   return resp.json();
 }

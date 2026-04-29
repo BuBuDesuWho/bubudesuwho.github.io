@@ -1,6 +1,6 @@
 import { GroupName, MEMBER_MAPPING, MEMBER_COLORS } from './types';
 import { initThemeToggle } from './ui';
-import { toggleMenu } from './ui-menu';
+import { toggleMenu, setupMobileMenuButton } from './ui-menu';
 import { ensureGroups } from './config';
 import { MEMBER_COLUMNS, SHORTCUT_GROUPS, ShortcutGroup } from './bubudle-config';
 import EXAMPLE_LYRICS_V3 from './submission-example.json';
@@ -373,6 +373,7 @@ export async function initSubmissionPage() {
 
   toggleMenu(window.innerWidth >= 1200);
   document.getElementById('menu-button')?.addEventListener('click', () => toggleMenu());
+  setupMobileMenuButton();
 
   await ensureGroups();
 

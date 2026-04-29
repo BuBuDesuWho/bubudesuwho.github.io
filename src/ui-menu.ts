@@ -59,6 +59,7 @@ export function buildMenu(songs: MenuSong[]): void {
   toggleMenu(window.innerWidth >= 1200);
 
   document.getElementById('menu-button')?.addEventListener('click', () => toggleMenu());
+  setupMobileMenuButton();
 
   document.querySelectorAll<HTMLElement>('.group-button').forEach((btn) => {
     const slug = btn.dataset.value as GroupName | undefined;
@@ -183,11 +184,15 @@ function switchGroup(group: GroupName, songs: MenuSong[]): void {
   });
 
   const htmlEl = document.documentElement;
-  htmlEl.classList.remove('group-muse', 'group-aqours', 'group-wug', 'group-nijigasaki');
+  const stripGroupClasses = (el: Element) => {
+    const stale = Array.from(el.classList).filter((c) => c.startsWith('group-'));
+    el.classList.remove(...stale);
+  };
+  stripGroupClasses(htmlEl);
   htmlEl.classList.add(`group-${group}`);
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
-    sidebar.classList.remove('group-muse', 'group-aqours', 'group-wug', 'group-nijigasaki');
+    stripGroupClasses(sidebar);
     sidebar.classList.add(`group-${group}`);
   }
 
@@ -274,6 +279,17 @@ export function highlightSongInMenu(id: string): void {
   const el = document.querySelector<HTMLElement>(`.sidebar-nav a[data-song-id="${CSS.escape(id)}"]`);
   el?.classList.add('active');
   el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+export function setupMobileMenuButton(): void {
+  if (document.getElementById('menu-button-bottom')) return;
+  const btn = document.createElement('button');
+  btn.id = 'menu-button-bottom';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Toggle menu');
+  btn.innerHTML = '<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>';
+  btn.addEventListener('click', () => toggleMenu());
+  document.body.appendChild(btn);
 }
 
 export function toggleMenu(show?: boolean): void {

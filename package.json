@@ -8,6 +8,8 @@
     "dev:kpop": "vite --mode kpop",
     "build": "tsc --noEmit && vite build",
     "build:kpop": "tsc --noEmit && vite build --mode kpop && node scripts/copy-assets.js",
+    "build:android": "bash scripts/build-android.sh anime",
+    "build:android:kpop": "bash scripts/build-android.sh kpop",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
