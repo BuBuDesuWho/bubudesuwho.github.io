@@ -63,6 +63,60 @@ function animOn(): boolean {
 }
 function saveAnim(on: boolean): void { setStorage(ANIM_KEY, on ? '1' : '0'); }
 
+// Manual-position state — set when the user long-presses + drags the buddy
+// to a custom spot. Sticky across pages/reloads so the placement persists.
+//
+// Stored as { right, bottom } from the viewport edges so the bottom-right
+// corner is the anchor — size changes grow the wrap toward the top-left,
+// keeping the control buttons (positioned right:0/26/52/78, bottom:8px)
+// visually pinned in place across S/M/L/XL.
+//
+// Position is bucketed by viewport width so phone / narrow-window / wide
+// each remember their own placement. Buckets mirror the CSS breakpoints:
+// narrow ≤ 600 < medium ≤ 1199 < wide.
+const POS_KEY = 'buddy-pos';
+const HOLD_MS = 250;        // long-press threshold to enter drag mode
+const MOVE_CANCEL_PX = 8;   // movement before threshold cancels the hold
+type BuddyPos = { right: number; bottom: number };
+type Bucket = 'narrow' | 'medium' | 'wide';
+type PosMap = Partial<Record<Bucket, BuddyPos>>;
+function bucket(): Bucket {
+  const w = window.innerWidth;
+  if (w <= 600) return 'narrow';
+  if (w <= 1199) return 'medium';
+  return 'wide';
+}
+function loadPosMap(): PosMap {
+  const raw = getStorage(POS_KEY);
+  if (!raw) return {};
+  try {
+    const p = JSON.parse(raw);
+    if (p && typeof p === 'object' && !Array.isArray(p)) {
+      const out: PosMap = {};
+      for (const k of ['narrow', 'medium', 'wide'] as const) {
+        const v = p[k];
+        if (v && typeof v.right === 'number' && typeof v.bottom === 'number') out[k] = v;
+      }
+      return out;
+    }
+  } catch { /* corrupt */ }
+  return {};
+}
+function loadPos(): BuddyPos | null {
+  return loadPosMap()[bucket()] ?? null;
+}
+function savePos(p: BuddyPos): void {
+  const map = loadPosMap();
+  map[bucket()] = p;
+  setStorage(POS_KEY, JSON.stringify(map));
+}
+function clampPos(p: BuddyPos, w: number, h: number): BuddyPos {
+  return {
+    right:  Math.max(0, Math.min(p.right,  window.innerWidth - w)),
+    bottom: Math.max(0, Math.min(p.bottom, window.innerHeight - h)),
+  };
+}
+
 // Total Mastery for a member, from the cache stats.ts writes during render.
 // Falls back to 0 if the user hasn't visited the stats page this session.
 function totalMasteryPct(group: string, id: number): number {
@@ -200,7 +254,118 @@ function mount(group: string, id: number): void {
     setTimeout(() => wrap.remove(), 240);
   });
 
+  // Long-press to drag. Distinct from a quick tap (which toggles controls):
+  //   pointerdown → start hold timer → if held HOLD_MS without moving past
+  //   MOVE_CANCEL_PX, enter drag mode and follow the pointer until release.
+  // didDrag suppresses the trailing click so dragging doesn't also toggle
+  // the controls overlay.
+  let holdTimer: number | null = null;
+  let dragging = false;
+  let didDrag = false;
+  let pStartX = 0, pStartY = 0;
+  let origRight = 0, origBottom = 0;
+  const applyPos = (p: BuddyPos) => {
+    const w = wrap.offsetWidth || 168;
+    const h = wrap.offsetHeight || 220;
+    const c = clampPos(p, w, h);
+    wrap.style.right = c.right + 'px';
+    wrap.style.bottom = c.bottom + 'px';
+    wrap.style.left = 'auto';
+    wrap.style.top = 'auto';
+  };
+  const cancelHold = () => {
+    if (holdTimer != null) { clearTimeout(holdTimer); holdTimer = null; }
+  };
+  img.addEventListener('pointerdown', (e) => {
+    if (e.button && e.button !== 0) return;
+    pStartX = e.clientX;
+    pStartY = e.clientY;
+    const rect = wrap.getBoundingClientRect();
+    origRight  = window.innerWidth  - (rect.left + rect.width);
+    origBottom = window.innerHeight - (rect.top  + rect.height);
+    didDrag = false;
+    cancelHold();
+    holdTimer = window.setTimeout(() => {
+      dragging = true;
+      try { img.setPointerCapture(e.pointerId); } catch { /* may already be released */ }
+      wrap.classList.add('dragging');
+    }, HOLD_MS);
+  });
+  img.addEventListener('pointermove', (e) => {
+    if (!dragging) {
+      if (holdTimer != null) {
+        const dx = Math.abs(e.clientX - pStartX);
+        const dy = Math.abs(e.clientY - pStartY);
+        if (dx > MOVE_CANCEL_PX || dy > MOVE_CANCEL_PX) cancelHold();
+      }
+      return;
+    }
+    e.preventDefault();
+    didDrag = true;
+    // Pointer moved (dx, dy) → bottom-right anchor moves the opposite way.
+    applyPos({
+      right:  origRight  - (e.clientX - pStartX),
+      bottom: origBottom - (e.clientY - pStartY),
+    });
+  });
+  const endDrag = (e: PointerEvent) => {
+    cancelHold();
+    if (!dragging) return;
+    if (img.hasPointerCapture(e.pointerId)) img.releasePointerCapture(e.pointerId);
+    wrap.classList.remove('dragging');
+    if (didDrag) {
+      const rect = wrap.getBoundingClientRect();
+      savePos({
+        right:  window.innerWidth  - (rect.left + rect.width),
+        bottom: window.innerHeight - (rect.top  + rect.height),
+      });
+    }
+    dragging = false;
+  };
+  img.addEventListener('pointerup', endDrag);
+  img.addEventListener('pointercancel', endDrag);
+
+  // Touch devices have no hover, so tap the portrait to reveal/hide the
+  // control buttons. Tap anywhere else dismisses them.
+  img.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (didDrag) { didDrag = false; return; }
+    wrap.classList.toggle('controls-on');
+  });
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target as Node)) wrap.classList.remove('controls-on');
+  });
+
   frame.appendChild(img);
   wrap.append(frame, idolBtn, animBtn, sizeBtn, close);
   document.body.appendChild(wrap);
+
+  // Restore a previously-dragged position, clamped to the current viewport
+  // so a phone-rotated or resized window can't strand the buddy off-screen.
+  // Crossing a bucket boundary on resize re-reads from the new bucket — if
+  // nothing's saved there, clear inline styles so the CSS default applies.
+  const clearInline = () => {
+    wrap.style.right = '';
+    wrap.style.bottom = '';
+    wrap.style.left = '';
+    wrap.style.top = '';
+  };
+  const restoreForBucket = () => {
+    const cur = loadPos();
+    if (cur) applyPos(cur);
+    else clearInline();
+  };
+  const initial = loadPos();
+  if (initial) requestAnimationFrame(() => applyPos(initial));
+  let lastBucket: Bucket = bucket();
+  window.addEventListener('resize', () => {
+    const b = bucket();
+    if (b !== lastBucket) {
+      lastBucket = b;
+      restoreForBucket();
+    } else {
+      const cur = loadPos();
+      if (cur) applyPos(cur);  // re-clamp same-bucket position to new viewport
+    }
+  });
 }

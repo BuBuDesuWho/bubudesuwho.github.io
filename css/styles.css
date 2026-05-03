@@ -3623,7 +3623,9 @@ html.dark-mode .setlist-star {
   bottom: -5px;
   width: 168px;
   height: 220px;
-  z-index: 9000;
+  /* Below #player-bar (3000), #menu-button-bottom (3001), #sidebar (3500) so
+     those overlay the buddy when they meet. Still above generic content. */
+  z-index: 2999;
   pointer-events: none;
   transition: width 0.2s ease, height 0.2s ease;
 }
@@ -3653,7 +3655,17 @@ html.dark-mode .setlist-star {
   object-position: bottom center;
   pointer-events: auto;
   transition: transform 0.16s ease-in;
+  /* Long-press-to-drag: keep mobile scroll from racing the hold timer. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
+@media (hover: hover) {
+  .buddy-img { cursor: grab; }
+}
+.buddy.dragging { transition: none; }
+.buddy.dragging .buddy-img { cursor: grabbing; }
+.buddy.dragging .buddy-frame { animation: none; }
 .buddy-frame.flipping .buddy-img {
   transform: scaleX(0);
   transition: transform 0.16s ease-in;
@@ -3695,14 +3707,20 @@ html.dark-mode .setlist-star {
   opacity: 0.35 !important;
   background: rgba(0, 0, 0, 0.35);
 }
-.buddy:hover .buddy-close,
-.buddy:hover .buddy-size-btn,
-.buddy:hover .buddy-idol-btn,
-.buddy:hover .buddy-anim-btn,
+@media (hover: hover) {
+  .buddy:hover .buddy-close,
+  .buddy:hover .buddy-size-btn,
+  .buddy:hover .buddy-idol-btn,
+  .buddy:hover .buddy-anim-btn { opacity: 1; }
+}
 .buddy-close:focus-visible,
 .buddy-size-btn:focus-visible,
 .buddy-idol-btn:focus-visible,
-.buddy-anim-btn:focus-visible {
+.buddy-anim-btn:focus-visible,
+.buddy.controls-on .buddy-close,
+.buddy.controls-on .buddy-size-btn,
+.buddy.controls-on .buddy-idol-btn,
+.buddy.controls-on .buddy-anim-btn {
   opacity: 1;
 }
 .buddy-idol-btn.locked:hover { background: rgba(0, 0, 0, 0.35); }
@@ -3726,16 +3744,26 @@ html.dark-mode .setlist-star {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
 }
+/* Mirror the breakpoint that reveals #menu-button-bottom (the bottom-right
+   hamburger at bottom:16px / right:16px) — as soon as that button appears
+   we have to clear the bottom-right zone, or buddy + hamburger overlap. */
+@media (max-width: 1199px) {
+  .buddy { left: 8px; right: auto; bottom: 8px; }
+}
+/* Lift the buddy above #player-bar on play.html so it doesn't cover the
+   transport controls. Mirrors the pattern used by #menu-button-bottom. */
+body:has(#player-bar) .buddy {
+  bottom: calc(var(--player-bar-h) - 5px);
+}
+@media (max-width: 1199px) {
+  body:has(#player-bar) .buddy {
+    bottom: calc(var(--player-bar-h) + 8px);
+  }
+}
 @media (max-width: 600px) {
-  .buddy { right: 8px; bottom: 8px; }
   .buddy.size-small  { width: 90px;  height: 120px; }
   .buddy.size-medium { width: 130px; height: 170px; }
   .buddy.size-large  { width: 180px; height: 240px; }
   .buddy.size-xl     { width: 240px; height: 320px; }
-  .buddy-close,
-  .buddy-size-btn,
-  .buddy-idol-btn,
-  .buddy-anim-btn { opacity: 1; }
-  .buddy-idol-btn.locked { opacity: 0.35 !important; }
 }
 
