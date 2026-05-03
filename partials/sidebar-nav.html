@@ -1,0 +1,26 @@
+<ul class="sidebar-nav">
+  <li><a class="select-info" href="index.html">About</a></li>
+  <li><a class="select-info" href="changelog.html">Changelog</a></li>
+  <li><a class="select-info" href="stats.html">Stats</a></li>
+  <li><a class="select-info" href="bubudle.html">Bubudle</a></li>
+  <li id="bubudle-all-group-li" style="display:none">
+    <button id="bubudle-all-group-button" type="button" class="btn btn-primary group-button group-button-all" title="Today's daily across all groups">All</button>
+  </li>
+  <li>
+    <button id="muse-group-button" type="button" class="btn btn-primary group-button" data-value="muse"><img class="group-icon" loading="lazy" src="css/images/muse.png"></img></button><button id="aqours-group-button" type="button" class="btn btn-primary group-button" data-value="aqours"><img class="group-icon" loading="lazy" src="css/images/aqours.png"></img></button>
+  </li>
+  <li>
+    <button id="wug-group-button" type="button" class="btn btn-primary group-button" data-value="wug"><img class="group-icon" loading="lazy" src="css/images/wug.png"></img></button><button id="nijigasaki-group-button" type="button" class="btn btn-primary group-button" data-value="nijigasaki"><img class="group-icon" loading="lazy" src="css/images/nijigasaki.png"></img></button><button id="liella-group-button" type="button" class="btn btn-primary group-button" data-value="liella"><img class="group-icon" loading="lazy" src="css/images/liella.svg"></img></button>
+  </li>
+  <li>
+    <button id="seventeen-group-button" type="button" class="btn btn-primary group-button" data-value="seventeen"><img class="group-icon" loading="lazy" src="css/images/seventeen.png"></img></button><button id="twice-group-button" type="button" class="btn btn-primary group-button" data-value="twice"><img class="group-icon" loading="lazy" src="css/images/twice.png"></img></button><button id="stray-kids-group-button" type="button" class="btn btn-primary group-button" data-value="stray-kids"><img class="group-icon" loading="lazy" src="css/images/stray-kids.png"></img></button><button id="bts-group-button" type="button" class="btn btn-primary group-button" data-value="bts"><img class="group-icon" loading="lazy" src="css/images/bts.png"></img></button>
+  </li>
+  <li class="has-feedback">
+    <input class="form-control" id="menu-search" autofocus></input>
+    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+  </li>
+  <li class="sort-toggle-wrap">
+    <button type="button" class="sort-btn active" data-sort="date">Date</button><button type="button" class="sort-btn" data-sort="alpha">A–Z</button><button type="button" class="group-toggle-btn" id="group-toggle">Group</button>
+  </li>
+</ul>
+<script>(function(){var p=location.pathname.split('/').pop()||'index.html';if(p==='index.kpop.html'||p==='')p='index.html';var l=document.querySelector('.sidebar-nav a[href="'+p+'"]');if(l)l.classList.add('active');})();</script>

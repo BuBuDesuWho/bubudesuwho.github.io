@@ -1,7 +1,21 @@
 import { defineConfig, Plugin } from 'vite';
 import { resolve } from 'path';
-import { cpSync, existsSync } from 'fs';
+import { cpSync, existsSync, readFileSync } from 'fs';
 import { execFileSync } from 'child_process';
+
+function htmlPartialsPlugin(): Plugin {
+  return {
+    name: 'html-partials',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        return html.replace(/<!--\s*@include\s+(\S+)\s*-->/g, (_match, partialPath) => {
+          return readFileSync(resolve(__dirname, partialPath), 'utf-8');
+        });
+      },
+    },
+  };
+}
 
 function copyAssetsPlugin(): Plugin {
   return {
@@ -37,7 +51,7 @@ export default defineConfig(({ command }) => ({
   root: '.',
   base: '/',
   publicDir: false,
-  plugins: [copyAssetsPlugin()],
+  plugins: [htmlPartialsPlugin(), copyAssetsPlugin()],
   define: {
     __BUILD_VERSION__: JSON.stringify(resolveBuildVersion()),
   },
