@@ -6,6 +6,7 @@ import { getGroup } from './groups';
 import { getGroupColor } from './labels';
 import { MenuSong, GroupName } from './types';
 import { getFavorite, setFavorite, clearFavorite } from './favorite';
+import { resetBuddy } from './buddy';
 
 // One-time recovery seed (after the 2026-05-02 wipe). Holds per-member raw
 // counts that get added on top of whatever the user accumulates from then on.
@@ -17,6 +18,21 @@ function loadMasterySnapshot(): MasterySnapshot | null {
   const raw = getStorage('hist-mastery-snapshot');
   if (!raw) return null;
   try { return JSON.parse(raw) as MasterySnapshot; } catch { return null; }
+}
+
+// Per-(group, member) total slot-ans appearances across the entire catalog —
+// built at deploy time by scripts/build-index.js. Used as the denominator for
+// Total Mastery so it reflects every line the member sang, not just lines from
+// songs the user has played.
+type CatalogTotals = Record<GroupName, Record<string, number>>;
+async function loadCatalogTotals(): Promise<CatalogTotals> {
+  const base = (import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL) as string;
+  const mode = import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
+  try {
+    const resp = await fetch(`${base}songs/totals.${mode}.json`);
+    if (!resp.ok) return {};
+    return await resp.json() as CatalogTotals;
+  } catch { return {}; }
 }
 
 const MEMBER_DIAL_MIN_TOTAL = 3;
@@ -50,7 +66,7 @@ interface PlayAggregate {
 }
 
 export async function initStatsPage(): Promise<void> {
-  const songs = await loadIndex();
+  const [songs, catalogTotals] = await Promise.all([loadIndex(), loadCatalogTotals()]);
   buildMenu(songs);
   initThemeToggle();
 
@@ -67,9 +83,19 @@ export async function initStatsPage(): Promise<void> {
   document.getElementById('stats-body')?.classList.remove('hidden');
 
   renderRibbon(plays);
-  renderMastery(plays);
+  renderMastery(plays, catalogTotals);
   renderSetlist(plays);
   renderUntried(songs, plays);
+  wireResetBuddy();
+}
+
+function wireResetBuddy(): void {
+  const row = document.getElementById('reset-buddy-row');
+  const btn = document.getElementById('reset-buddy');
+  if (!row || !btn) return;
+  if (!getFavorite()) return;  // nothing to reset until they pick a buddy
+  row.classList.remove('hidden');
+  btn.addEventListener('click', () => resetBuddy());
 }
 
 // ─── Aggregation ────────────────────────────────────────────────────
@@ -118,9 +144,10 @@ function buildPlay(songsByName: Map<string, MenuSong>) {
   };
 }
 
-function aggregateMembers(plays: PlayAggregate[]): MemberStat[] {
+function aggregateMembers(plays: PlayAggregate[], catalogTotals: CatalogTotals): MemberStat[] {
   const stats = new Map<string, MemberStat>();
 
+  // Numerator + Member-Mastery denominator: drawn from play history.
   for (const p of plays) {
     if (!p.group) continue;
     if (!getGroup(p.group)) continue;
@@ -140,7 +167,6 @@ function aggregateMembers(plays: PlayAggregate[]): MemberStat[] {
           s = { group: canon.group, groupName: canonGroup.name, id: canon.id, name: m.name, color: m.color, correctAttempted: 0, attempted: 0, totalLines: 0 };
           stats.set(key, s);
         }
-        s.totalLines += 1;
         if (attempted) {
           s.attempted += 1;
           // chosen ids are in the song's group id-space; canonicalization
@@ -170,7 +196,32 @@ function aggregateMembers(plays: PlayAggregate[]): MemberStat[] {
       }
       s.correctAttempted += seed.correct;
       s.attempted        += seed.total;
-      s.totalLines       += seed.total;
+    }
+  }
+
+  // Total-Mastery denominator: catalog-wide slot count, canonicalized so
+  // extension groups (aqours-miku, saint-aqours-snow) fold into the parent's
+  // member entry. Members the user has never tried (no history) still get
+  // populated here so Total Mastery can show full-roster coverage gates.
+  for (const [groupSlug, members] of Object.entries(catalogTotals)) {
+    const group = getGroup(groupSlug);
+    if (!group) continue;
+    for (const [idStr, count] of Object.entries(members)) {
+      const id = Number(idStr);
+      if (!Number.isFinite(id)) continue;
+      const canon = canonicalMember(groupSlug, id);
+      const canonGroup = getGroup(canon.group);
+      if (!canonGroup) continue;
+      const m = canonGroup.members.find(mm => mm.id === canon.id)
+             ?? canonGroup.supplementaryMembers?.find(mm => mm.id === canon.id);
+      if (!m) continue;
+      const key = `${canon.group}:${canon.id}`;
+      let s = stats.get(key);
+      if (!s) {
+        s = { group: canon.group, groupName: canonGroup.name, id: canon.id, name: m.name, color: m.color, correctAttempted: 0, attempted: 0, totalLines: 0 };
+        stats.set(key, s);
+      }
+      s.totalLines += count;
     }
   }
 
@@ -223,8 +274,8 @@ function renderRibbon(plays: PlayAggregate[]): void {
   if (streakCell) streakCell.textContent = String(computeStreak(plays));
 }
 
-function renderMastery(plays: PlayAggregate[]): void {
-  const all = aggregateMembers(plays);
+function renderMastery(plays: PlayAggregate[], catalogTotals: CatalogTotals): void {
+  const all = aggregateMembers(plays, catalogTotals);
   // Snapshot for the buddy on other pages — gates idolization at 20%.
   setStorage('mastery-cache', JSON.stringify(all.map(s => ({
     group: s.group, id: s.id,
@@ -250,7 +301,9 @@ function renderMasteryInto(containerId: string, sectionId: string, stats: Member
 function buildDial(s: MemberStat, mode: MasteryMode): HTMLElement {
   const denom = denomFor(s, mode);
   const num = s.correctAttempted;
-  const pct = Math.round((num / denom) * 100);
+  // Clamp: catalog drift (slots removed since a play) or snapshot-seeded
+  // attempted with no matching catalog entry can push num past denom.
+  const pct = Math.min(100, Math.round((num / denom) * 100));
   const tile = document.createElement('div');
   tile.className = 'member-dial';
   tile.style.setProperty('--c', s.color);

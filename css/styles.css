@@ -3317,6 +3317,15 @@ Stats page — editorial / liner-notes redesign
   }
 }
 
+.buddy-reset-row {
+  margin: 12px 0 0;
+  text-align: right;
+}
+.buddy-reset-row .btn {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
 .member-dial {
   position: relative;
   display: flex;
@@ -3423,6 +3432,9 @@ Stats page — editorial / liner-notes redesign
 .member-dial.is-favorite .member-fav {
   opacity: 1;
   color: var(--c);
+}
+@media (max-width: 600px) {
+  .member-fav { right: -4px; }
 }
 .member-dial.is-favorite .member-portrait {
   box-shadow:
@@ -3748,7 +3760,7 @@ html.dark-mode .setlist-star {
    hamburger at bottom:16px / right:16px) — as soon as that button appears
    we have to clear the bottom-right zone, or buddy + hamburger overlap. */
 @media (max-width: 1199px) {
-  .buddy { left: 8px; right: auto; bottom: 8px; }
+  .buddy { left: 8px; right: auto; bottom: -5px; }
 }
 /* Lift the buddy above #player-bar on play.html so it doesn't cover the
    transport controls. Mirrors the pattern used by #menu-button-bottom. */
@@ -3757,7 +3769,7 @@ body:has(#player-bar) .buddy {
 }
 @media (max-width: 1199px) {
   body:has(#player-bar) .buddy {
-    bottom: calc(var(--player-bar-h) + 8px);
+    bottom: calc(var(--player-bar-h) - 5px);
   }
 }
 @media (max-width: 600px) {

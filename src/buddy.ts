@@ -110,13 +110,6 @@ function savePos(p: BuddyPos): void {
   map[bucket()] = p;
   setStorage(POS_KEY, JSON.stringify(map));
 }
-function clampPos(p: BuddyPos, w: number, h: number): BuddyPos {
-  return {
-    right:  Math.max(0, Math.min(p.right,  window.innerWidth - w)),
-    bottom: Math.max(0, Math.min(p.bottom, window.innerHeight - h)),
-  };
-}
-
 // Total Mastery for a member, from the cache stats.ts writes during render.
 // Falls back to 0 if the user hasn't visited the stats page this session.
 function totalMasteryPct(group: string, id: number): number {
@@ -265,11 +258,11 @@ function mount(group: string, id: number): void {
   let pStartX = 0, pStartY = 0;
   let origRight = 0, origBottom = 0;
   const applyPos = (p: BuddyPos) => {
-    const w = wrap.offsetWidth || 168;
-    const h = wrap.offsetHeight || 220;
-    const c = clampPos(p, w, h);
-    wrap.style.right = c.right + 'px';
-    wrap.style.bottom = c.bottom + 'px';
+    // No clamping — the user's saved offset is honored exactly, even if it
+    // ends up partially or fully off-screen. Recovery is via the "Reset
+    // buddy" button on the stats page.
+    wrap.style.right = p.right + 'px';
+    wrap.style.bottom = p.bottom + 'px';
     wrap.style.left = 'auto';
     wrap.style.top = 'auto';
   };
@@ -358,14 +351,33 @@ function mount(group: string, id: number): void {
   const initial = loadPos();
   if (initial) requestAnimationFrame(() => applyPos(initial));
   let lastBucket: Bucket = bucket();
+  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
+    // Soft keyboards open/close fire resize but only change height — ignore
+    // those so the buddy doesn't slide around while typing.
+    if (window.innerWidth === lastWidth) return;
+    lastWidth = window.innerWidth;
     const b = bucket();
     if (b !== lastBucket) {
       lastBucket = b;
       restoreForBucket();
-    } else {
-      const cur = loadPos();
-      if (cur) applyPos(cur);  // re-clamp same-bucket position to new viewport
     }
   });
+}
+
+// Recovery hook for the stats page — clears any custom drag position and
+// the session-dismiss flag, then re-mounts if the buddy was dismissed or
+// resets the live element back to its CSS default corner.
+export function resetBuddy(): void {
+  try { localStorage.removeItem(POS_KEY); } catch { /* private mode */ }
+  try { sessionStorage.removeItem(DISMISS_KEY); } catch { /* private mode */ }
+  const wrap = document.getElementById('buddy');
+  if (wrap) {
+    wrap.style.right = '';
+    wrap.style.bottom = '';
+    wrap.style.left = '';
+    wrap.style.top = '';
+  } else {
+    initBuddy();
+  }
 }
