@@ -3,414 +3,354 @@
   "ogg": "sound/self_control.ogg",
   "id": "self-control",
   "group": "saint-aqours-snow",
+  "released": "2020-09-09",
+  "album": "LoveLive! Series 9th Anniversary ラブライブ！フェス Blu-ray Memorial BOX",
+  "trackPosition": 1,
+  "albumMbid": "0283bf73-f512-4ae9-95c5-1feb850036d3",
   "added": "2026-04",
   "hidden": true,
   "slots": [
 
   ],
+  "generated": "2026-05-03T21:34:36Z",
   "lines": [
-    {"lyric": "(CashMoneyAP)",
-      "lyric_jp": "(CashMoneyAP)",
-      "range": [1.51, 6.03], "ans": []},
-    {"lyric": "(DJ Swift on the track)",
-      "lyric_jp": "(DJ Swift on the track)",
-      "range": [6.03, 12.62], "ans": []},
     {
-      "lyric_jp": "I'ma leave it with what I came here for, now what you sayin'?",
+      "lyric_jp": "最高だと言われたいよ 真剣だよ We gotta go!",
       "parts": [
         {"lyric": "Saikou da to iwaretai yo shinken da yo",
-          "range": [12.62, 15.65], "ans": [11], "diff": 2},
+          "range": [6.11, 9.87], "ans": [10]},
         {"lyric": "We gotta go!",
-          "range": [15.65, 16.35], "ans": []}
+          "range": [9.17, 12.4], "ans": []}
       ]
     },
     "",
     {"lyric": "Yume wa yume demo kantan ni todokanai",
-      "lyric_jp": "You don't wan' take it there, don't go there with us, nah",
-      "range": [16.17, 18.36], "ans": [11], "diff": 2},
+      "lyric_jp": "夢は夢でも簡単に届かない",
+      "range": [22.05, 26.2], "ans": [10]},
     {"lyric": "Tokubetsu na mono mezasou janai ka",
-      "lyric_jp": "You don't wan' take it there, don't go there with us, nah",
-      "range": [18.36, 19.39], "ans": [11], "diff": 2},
-    {"lyric": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "lyric_jp": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "range": [18.91, 22.34], "ans": []},
-    {"lyric": "And we ain't come here for to lose, we want it all",
-      "lyric_jp": "And we ain't come here for to lose, we want it all",
-      "range": [22.34, 25.18], "ans": []},
-    {"lyric": "Smokin' drugs 'cause I need it",
-      "lyric_jp": "Smokin' drugs 'cause I need it",
-      "range": [25.18, 27.1], "ans": []},
+      "lyric_jp": "特別なもの目指そうじゃないか",
+      "range": [26.2, 29.79], "ans": [10]},
+    {"lyric": "Sono tame dakara naitari shinai",
+      "lyric_jp": "そのためだから泣いたりしない",
+      "range": [29.79, 33.66], "ans": [10]},
     {
-      "lyric_jp": "So I could be calm instead of dangerous when you see me",
+      "lyric_jp": "敵は誰？ 敵は弱い自分の影さ",
       "parts": [
-        {"lyric": "Sono tame dakara naitari shinai",
-          "range": [27.1, 28.13], "ans": [11], "diff": 2},
         {"lyric": "Teki wa dare? Teki wa yowai jibun no",
-          "range": [28.13, 29.14], "ans": []},
+          "range": [33.66, 38.65], "ans": [10, 11]},
         {"lyric": "Kage sa",
-          "range": [29.14, 30.18], "ans": [11], "diff": 2}
+          "range": [37.95, 39.5], "ans": [10]}
       ]
     },
-    {"lyric": "You niggas know we quick to let it blow for any reason",
-      "lyric_jp": "You niggas know we quick to let it blow for any reason",
-      "range": [30.18, 33.56], "ans": []},
     "",
     {
-      "lyric_jp": "Kick down yo' door, post up on yo' front porch, and we ain't leavin'",
+      "lyric_jp": "わかるでしょう？ (影さ...)",
       "parts": [
         {"lyric": "(kage sa... dame nanda!)",
-          "range": [33.56, 34.36], "ans": [10], "diff": 2},
+          "range": [39.39, 40.92], "ans": [11]},
         {"lyric": "Wakaru deshou?",
-          "range": [34.36, 35.04], "ans": [11], "diff": 2},
-        {"lyric": "Yowai kokoro ja dame nanda to",
-          "range": [35.04, 36.41], "ans": [11], "diff": 2},
-        {"lyric": "Kanjiyou",
-          "range": [36.41, 36.87], "ans": [11], "diff": 2}
+          "range": [40.22, 41.58], "ans": [10]}
       ]
     },
+    {"lyric": "Yowai kokoro ja dame nanda to",
+      "lyric_jp": "弱い心じゃダメなんだと (ダメなんだ！）",
+      "range": [41.58, 45.38], "ans": [10]},
     {
-      "lyric_jp": "When my grandma died, I had to beat the odds and it weren't easy",
+      "lyric_jp": "感じよう しっかり いま立ってる場所",
       "parts": [
+        {"lyric": "Kanjiyou",
+          "range": [45.38, 47.34], "ans": [10]},
         {"lyric": "Shikkari",
-          "range": [36.87, 37.55], "ans": [10], "diff": 2},
+          "range": [46.64, 48.06], "ans": [11]},
         {"lyric": "Ima tatteru basho",
-          "range": [37.55, 39.66], "ans": []},
-        {"lyric": "Self control!!",
-          "range": [39.66, 40.01], "ans": []}
+          "range": [47.36, 51.34], "ans": []}
       ]
     },
-    {"lyric": "When Boozilla died, I almost lost my mind, broke me to pieces",
-      "lyric_jp": "When Boozilla died, I almost lost my mind, broke me to pieces",
-      "range": [39.54, 42.63], "ans": []},
+    {"lyric": "Self control!!",
+      "lyric_jp": "SELF CONTROL!!",
+      "range": [51.34, 53.15], "ans": []},
     "",
     {
-      "lyric_jp": "We was slangin' nines for Dump and all the rest, it ain't no secret",
+      "lyric_jp": "最高！ (One more chance time!)",
       "parts": [
         {"lyric": "Saikou!",
-          "range": [42.63, 42.93], "ans": [11], "diff": 2},
+          "range": [53.15, 54.91], "ans": [10]},
         {"lyric": "(One more chance time!)",
-          "range": [42.93, 44.71], "ans": [10], "diff": 2},
+          "range": [54.52, 56.2], "ans": [11]}
+      ]
+    },
+    {
+      "lyric_jp": "言われたいみんなにね （最高だと言われたいよ）",
+      "parts": [
         {"lyric": "Iwaretai minna ni ne",
-          "range": [44.71, 46.54], "ans": [11], "diff": 2}
+          "range": [56.19, 59.12], "ans": [10]},
+        {"lyric": "(Saikou da to iwaretai yo)",
+          "range": [58.48, 60.37], "ans": [11]}
       ]
     },
-    {"lyric": "38 across my neck, we be them boys you don't want beef with",
-      "lyric_jp": "38 across my neck, we be them boys you don't want beef with",
-      "range": [46.04, 49.04], "ans": []},
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [59.78, 61.48], "ans": [11]},
     {
-      "lyric_jp": "Smokin' drugs, smelly when I hit the door, 'cause I need it",
+      "lyric_jp": "最高！ (One more chance time!)",
       "parts": [
-        {"lyric": "(saikou da to iwaretai yo)",
-          "range": [49.04, 50.35], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [50.35, 51.49], "ans": [10], "diff": 2},
         {"lyric": "Saikou!",
-          "range": [51.49, 51.89], "ans": [11], "diff": 2},
+          "range": [61.48, 62.84], "ans": [10]},
         {"lyric": "(One more chance time!)",
-          "range": [51.89, 52.99], "ans": [10], "diff": 2}
+          "range": [62.44, 64.16], "ans": [11]}
       ]
     },
     {
-      "lyric_jp": "I ain't the one, these pussy niggas know I be fiendin'",
+      "lyric_jp": "言わせるって決めたんだよ （真剣だよ遊びじゃない）",
       "parts": [
         {"lyric": "Iwaseru tte kimetanda yo",
-          "range": [52.17, 52.99], "ans": [11], "diff": 2},
+          "range": [64.25, 67.5], "ans": [10]},
         {"lyric": "(shinken da yo asobi janai)",
-          "range": [52.99, 55.05], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [55.05, 56.15], "ans": [10], "diff": 2}
+          "range": [66.8, 68.23], "ans": [11]}
       ]
     },
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [67.82, 69.83], "ans": [11]},
     "",
+    {"lyric": "Tooku no hikari e motto Baby!",
+      "lyric_jp": "遠くの光へもっとBaby!",
+      "range": [69.83, 72.02], "ans": [10]},
+    {"lyric": "Issho ni tobitai motto Baby!",
+      "lyric_jp": "一緒に跳びたいもっとBaby!",
+      "range": [72.02, 73.99], "ans": [11]},
     {
-      "lyric_jp": "I bought the car with diamonds 'round my throat, bitch, I'm beamin'",
-      "parts": [
-        {"lyric": "Tooku no hikari e motto Baby!",
-          "range": [55.43, 56.15], "ans": [11], "diff": 2},
-        {"lyric": "Issho ni tobitai motto Baby!",
-          "range": [56.15, 58.12], "ans": [10], "diff": 2}
-      ]
-    },
-    {
-      "lyric_jp": "I don't think them niggas can't see me",
+      "lyric_jp": "ふるえる指先知ってても見ないで",
       "parts": [
         {"lyric": "Furueru yubisaki shittete mo",
-          "range": [58.12, 59.47], "ans": [11], "diff": 2},
+          "range": [73.99, 77.31], "ans": [10]},
         {"lyric": "Minaide",
-          "range": [59.47, 59.98], "ans": []},
+          "range": [76.61, 78.17], "ans": []}
+      ]
+    },
+    {
+      "lyric_jp": "大切なのは SELF CONTROL!!",
+      "parts": [
         {"lyric": "Taisetsu na no wa self control!!",
-          "range": [59.98, 60.5], "ans": []}
+          "range": [78.17, 82.23], "ans": []},
+        {"lyric": "“Seira kamon!”",
+          "range": [81.53, 87.84], "ans": [11]}
       ]
     },
-    {"lyric": "I be paranoid while I'm leanin'",
-      "lyric_jp": "I be paranoid while I'm leanin'",
-      "range": [59.72, 62.02], "ans": []},
     "",
-    {"lyric": "“Seira kamon!”",
-      "lyric_jp": "Smokin' drugs 'cause I need it",
-      "range": [62.02, 64.28], "ans": [10], "diff": 2},
-    {"lyric": "So I could be calm instead of dangerous when you see me",
-      "lyric_jp": "So I could be calm instead of dangerous when you see me",
-      "range": [64.28, 67.05], "ans": []},
-    {"lyric": "You niggas know we quick to let it blow for any reason",
-      "lyric_jp": "You niggas know we quick to let it blow for any reason",
-      "range": [67.05, 70.6], "ans": []},
     "",
+    {"lyric": "Koi da ai da to sawagitakunai",
+      "lyric_jp": "恋だ愛だと騒ぎたくない",
+      "range": [89.99, 94.2], "ans": [10]},
+    {"lyric": "Kodoku na hou ga todokisou dakara",
+      "lyric_jp": "孤独なほうが届きそうだから",
+      "range": [94.2, 98.01], "ans": [10]},
+    {"lyric": "Saa damatte ugoite Breakdown jaa dasei no yoru kara Breakout",
+      "lyric_jp": "さあ黙って動いて Breakdown じゃあ惰性の夜から Breakout",
+      "range": [98.01, 102.16], "ans": [11]},
+    {"lyric": "Mou wakatte irunda kodoku ga jibun wo takameru koto",
+      "lyric_jp": "もうわかっているんだ 孤独が自分を高めるコト",
+      "range": [102.16, 106.04], "ans": [11]},
+    {"lyric": "Ima subete kachitai tada mae dake miru tte kimeta yo",
+      "lyric_jp": "いま全て勝ちたい ただ前だけ見るって決めたよ",
+      "range": [106.04, 109.69], "ans": [11]},
     {
-      "lyric_jp": "Kick down yo' door, post up on yo' front porch, and we ain't leavin'",
+      "lyric_jp": "敵は誰？ 敵は強い自分の恐怖さ",
       "parts": [
-        {"lyric": "Koi da ai da to sawagitakunai",
-          "range": [70.6, 71.13], "ans": [11], "diff": 2},
-        {"lyric": "Kodoku na hou ga todokisou dakara",
-          "range": [71.13, 71.72], "ans": [11], "diff": 2},
-        {"lyric": "Saa damatte ugoite Breakdown jaa dasei no yoru kara Breakout",
-          "range": [71.72, 72.66], "ans": [10], "diff": 2},
-        {"lyric": "Mou wakatte irunda kodoku ga jibun wo takameru koto",
-          "range": [72.66, 74.74], "ans": [10], "diff": 2}
-      ]
-    },
-    {
-      "lyric_jp": "I'ma leave it with what I came here for, now what you sayin'?",
-      "parts": [
-        {"lyric": "Ima subete kachitai tada mae dake miru tte kimeta yo",
-          "range": [74.74, 76.14], "ans": [10], "diff": 2},
         {"lyric": "Teki wa dare? Teki wa tsuyoi jibun no",
-          "range": [76.14, 77.88], "ans": []},
+          "range": [109.69, 114.57], "ans": [10, 11]},
         {"lyric": "Kyoufu sa",
-          "range": [77.88, 78.2], "ans": [11], "diff": 2}
+          "range": [113.87, 115.5], "ans": [10]}
       ]
     },
     "",
     {
-      "lyric_jp": "You don't wan' take it there, don't go there with us, nah",
+      "lyric_jp": "わかるでしょう？ (恐怖を...)",
       "parts": [
         {"lyric": "(kyoufu wo... suterunda!)",
-          "range": [77.88, 78.4], "ans": [10], "diff": 2},
+          "range": [115.36, 117], "ans": [11]},
         {"lyric": "Wakaru deshou?",
-          "range": [78.4, 79.59], "ans": [11], "diff": 2},
-        {"lyric": "Tsuyoi osore wo sutenakucha",
-          "range": [79.59, 81.09], "ans": [11], "diff": 2},
+          "range": [116.3, 117.62], "ans": [10]}
+      ]
+    },
+    {"lyric": "Tsuyoi osore wo sutenakucha",
+      "lyric_jp": "強い怖れを捨てなくちゃ (捨てるんだ！)",
+      "range": [117.62, 121.51], "ans": [10]},
+    {
+      "lyric_jp": "誓うよ 君を 凄い場所へと 連れてくよ",
+      "parts": [
         {"lyric": "Chikau yo",
-          "range": [81.09, 81.58], "ans": [11], "diff": 2}
-      ]
-    },
-    {"lyric": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "lyric_jp": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "range": [80.94, 83.99], "ans": []},
-    {"lyric": "And we ain't come here for to lose, we want it all",
-      "lyric_jp": "And we ain't come here for to lose, we want it all",
-      "range": [83.99, 86.65], "ans": []},
-    {"lyric": "Whole lot of racks on the VVs",
-      "lyric_jp": "Whole lot of racks on the VVs",
-      "range": [86.65, 88.44], "ans": []},
-    {
-      "lyric_jp": "I'm so slime, got a Glock when they greet me",
-      "parts": [
+          "range": [121.51, 123.36], "ans": [10]},
         {"lyric": "Kimi wo",
-          "range": [88.44, 89.04], "ans": [10], "diff": 2},
+          "range": [122.66, 124.12], "ans": [11]},
         {"lyric": "Sugoi basho e to tsureteku yo",
-          "range": [89.04, 90.51], "ans": []}
+          "range": [123.42, 129.41], "ans": []}
       ]
     },
-    {"lyric": "Got a whole lot of people that need me",
-      "lyric_jp": "Got a whole lot of people that need me",
-      "range": [89.63, 91.29], "ans": []},
-    {"lyric": "Bust yo' head all over the right thing",
-      "lyric_jp": "Bust yo' head all over the right thing",
-      "range": [91.29, 92.96], "ans": []},
-    {"lyric": "I ain't got nothin' but a dub and a Black Card inside of my Amiri jeans",
-      "lyric_jp": "I ain't got nothin' but a dub and a Black Card inside of my Amiri jeans",
-      "range": [92.96, 96.05], "ans": []},
-    "",
-    "[next-col]",
     {
-      "lyric_jp": "I just want head, can't fuck in the bed",
+      "lyric_jp": "最強！ (Best life, best mind!)",
       "parts": [
         {"lyric": "Saikyou!",
-          "range": [96.05, 96.51], "ans": [11], "diff": 2},
+          "range": [129.41, 130.87], "ans": [10]},
         {"lyric": "(Best life, best mind!)",
-          "range": [96.51, 96.83], "ans": [10], "diff": 2},
+          "range": [130.54, 132.19], "ans": [11]}
+      ]
+    },
+    {
+      "lyric_jp": "ほかに代わりはないでしょ （最強だと思いこんで）",
+      "parts": [
         {"lyric": "Hoka ni kawari wa nai desho",
-          "range": [96.83, 97.75], "ans": [11], "diff": 2}
-      ]
-    },
-    {
-      "lyric_jp": "It's just some things don't excite me",
-      "parts": [
+          "range": [132.15, 135.28], "ans": [10]},
         {"lyric": "(saikyou da to omoikonde)",
-          "range": [97.75, 99.25], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [99.25, 99.52], "ans": [10], "diff": 2},
+          "range": [134.58, 136.39], "ans": [11]}
+      ]
+    },
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [135.75, 137.29], "ans": [11]},
+    {
+      "lyric_jp": "最強！ (Best life, best mind!)",
+      "parts": [
         {"lyric": "Saikyou!",
-          "range": [99.52, 99.7], "ans": [11], "diff": 2}
-      ]
-    },
-    {
-      "lyric_jp": "Testin' yo' gun inside of the backyard, let it hit, get your aim up",
-      "parts": [
+          "range": [137.29, 138.27], "ans": [10]},
         {"lyric": "(Best life, best mind!)",
-          "range": [98.78, 99.3], "ans": [10], "diff": 2},
-        {"lyric": "Kawai nado inainda to",
-          "range": [99.3, 100.34], "ans": [11], "diff": 2},
-        {"lyric": "(chouten shika hoshikunai ne)",
-          "range": [100.34, 101.49], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [101.49, 102.12], "ans": [10], "diff": 2}
+          "range": [139.05, 140.22], "ans": [11]}
       ]
     },
-    {"lyric": "My youngin' official, he wait in yo' backyard",
-      "lyric_jp": "My youngin' official, he wait in yo' backyard",
-      "range": [102.12, 103.8], "ans": []},
-    {"lyric": "And I call him to bang through",
-      "lyric_jp": "And I call him to bang through",
-      "range": [103.8, 105.51], "ans": []},
-    {"lyric": "Wake up in the morning, get fresh as a bitch",
-      "lyric_jp": "Wake up in the morning, get fresh as a bitch",
-      "range": [105.51, 106.76], "ans": []},
-    "",
     {
-      "lyric_jp": "I'ma walk into you in some Margielas",
+      "lyric_jp": "代わりなどいないんだと （頂点しか欲しくないね）",
       "parts": [
-        {"lyric": "Kienai hikari ga kitto Baby!",
-          "range": [106.76, 107.99], "ans": [11], "diff": 2},
-        {"lyric": "Watashi wo yonderu kitto Baby!",
-          "range": [107.99, 109.26], "ans": [10], "diff": 2}
+        {"lyric": "Kawai nado inainda to",
+          "range": [140.17, 143.03], "ans": [10]},
+        {"lyric": "(chouten shika hoshikunai ne)",
+          "range": [142.53, 144.36], "ans": [11]}
       ]
     },
-    {"lyric": "And the way we gon' dump at the boy with the stick",
-      "lyric_jp": "And the way we gon' dump at the boy with the stick",
-      "range": [108.36, 109.77], "ans": []},
-    {"lyric": "I'ma finish him off with a foner",
-      "lyric_jp": "I'ma finish him off with a foner",
-      "range": [109.77, 111.42], "ans": []},
-    {"lyric": "I be thinkin' about Dump all over the time",
-      "lyric_jp": "I be thinkin' about Dump all over the time",
-      "range": [111.42, 113.34], "ans": []},
-    {"lyric": "This shit just don't feel right",
-      "lyric_jp": "This shit just don't feel right",
-      "range": [113.34, 114.61], "ans": []},
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [143.74, 145.83], "ans": [11]},
+    "",
+    {"lyric": "Kienai hikari ga kitto Baby!",
+      "lyric_jp": "消えない光がきっとBaby!",
+      "range": [145.83, 147.77], "ans": [10]},
+    {"lyric": "Watashi wo yonderu kitto Baby!",
+      "lyric_jp": "私を呼んでるきっとBaby!",
+      "range": [147.77, 150.04], "ans": [11]},
     {
-      "lyric_jp": "I don't go to no club, I be takin' these drugs",
+      "lyric_jp": "迷いの溜息飲みこんだ覚悟で",
       "parts": [
         {"lyric": "Mayoi no tameiki nomikonda",
-          "range": [114.61, 115.49], "ans": [11], "diff": 2},
+          "range": [150.04, 153.13], "ans": [10]},
         {"lyric": "Kakugo de",
-          "range": [115.49, 116.07], "ans": []},
-        {"lyric": "Hashiri tsudzukeru self control!!",
-          "range": [116.07, 116.96], "ans": []}
+          "range": [152.43, 154.38], "ans": []}
       ]
     },
-    {"lyric": "Ridin' and keepin' that steel tight",
-      "lyric_jp": "Ridin' and keepin' that steel tight",
-      "range": [116.12, 117.24], "ans": []},
-    {"lyric": "Every night 'fore I sleep",
-      "lyric_jp": "Every night 'fore I sleep",
-      "range": [117.24, 118.4], "ans": []},
+    {"lyric": "Hashiri tsudzukeru self control!!",
+      "lyric_jp": "SELF CONTROL!!",
+      "range": [157.05, 162.13], "ans": []},
     "",
-    {
-      "lyric_jp": "I think 'bout the north side where I grew up, now hold tight",
-      "parts": [
-        {"lyric": "Saikyou da to omoikonde",
-          "range": [118.4, 120.55], "ans": [11], "diff": 2},
-        {"lyric": "Chouten e to We gotta go!",
-          "range": [120.55, 121.21], "ans": []}
-      ]
-    },
+    "[next-col]",
+    {"lyric": "Saikyou da to omoikonde",
+      "lyric_jp": "最強だと思いこんで",
+      "range": [162.13, 164.23], "ans": [10]},
+    {"lyric": "Chouten e to We gotta go!",
+      "lyric_jp": "頂点へと We gotta go!",
+      "range": [164.23, 165.48], "ans": []},
     "",
-    {
-      "lyric_jp": "Player, I put you to sleep before you could see",
-      "parts": [
-        {"lyric": "(control yeah!)",
-          "range": [120.51, 120.67], "ans": [11], "diff": 2},
-        {"lyric": "Yume wa yume da to owaru nante dekinai to kidzuitanda",
-          "range": [120.67, 122.17], "ans": [10], "diff": 2},
-        {"lyric": "Hayaku hayaku to koe ni dashite tairo zenbu keshichae",
-          "range": [122.17, 122.73], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [122.73, 123.16], "ans": []}
-      ]
-    },
-    {"lyric": "Pull up where you be and it's on sight",
-      "lyric_jp": "Pull up where you be and it's on sight",
-      "range": [122.22, 124.17], "ans": []},
-    {
-      "lyric_jp": "I'ma leave it with what I came here for, now what you sayin'?",
-      "parts": [
-        {"lyric": "(control yeah!)",
-          "range": [124.17, 124.42], "ans": [11], "diff": 2},
-        {"lyric": "Tsuyoi tsuyoi to omoikonde yowasa wo tsubusu mainichi",
-          "range": [124.42, 125.84], "ans": [10], "diff": 2},
-        {"lyric": "Soto e soto e to mukau Energy kyou wa kyou no shinkakei",
-          "range": [125.84, 127.2], "ans": [10], "diff": 2},
-        {"lyric": "Dance now! Dance now!",
-          "range": [127.2, 127.56], "ans": []}
-      ]
-    },
-    "",
-    {
-      "lyric_jp": "You don't wan' take it there, don't go there with us, nah",
-      "parts": [
-        {"lyric": "Saikou!",
-          "range": [127.56, 127.87], "ans": [11], "diff": 2},
-        {"lyric": "(One more chance time Yeah!)",
-          "range": [127.87, 128.64], "ans": [10], "diff": 2},
-        {"lyric": "Iwaretai minna ni ne",
-          "range": [128.64, 129.33], "ans": [11], "diff": 2},
-        {"lyric": "(saikou da to iwaretai yo)",
-          "range": [129.33, 130.25], "ans": [10], "diff": 2}
-      ]
-    },
-    {"lyric": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "lyric_jp": "Walked in with a Styrofoam cup with plenty racks off in my hands",
-      "range": [130.25, 133.46], "ans": []},
-    {
-      "lyric_jp": "And we ain't come here for to lose, we want it all",
-      "parts": [
-        {"lyric": "Dance now! Dance now!",
-          "range": [133.46, 134.03], "ans": [10], "diff": 2},
-        {"lyric": "Saikou!",
-          "range": [134.03, 134.63], "ans": [11], "diff": 2},
-        {"lyric": "(One more chance time!)",
-          "range": [134.63, 135.65], "ans": [10], "diff": 2},
-        {"lyric": "Iwaseru tte kimetanda yo",
-          "range": [135.65, 136.74], "ans": [11], "diff": 2}
-      ]
-    },
-    {"lyric": "Smokin' drugs 'cause I need it",
-      "lyric_jp": "Smokin' drugs 'cause I need it",
-      "range": [136.74, 138.7], "ans": []},
-    {"lyric": "(shinken da yo asobi janai)",
-      "lyric_jp": "So I could be calm instead of dangerous when you see me",
-      "range": [138.7, 140.64], "ans": [10], "diff": 2},
+    {"lyric": "(Control yeah!)",
+      "lyric_jp": "CONTROL yeah!",
+      "range": [165.48, 166.12], "ans": [10]},
+    {"lyric": "Yume wa yume da to owaru nante dekinai to kidzuitanda",
+      "lyric_jp": "夢は夢だと終わるなんて できないと気付いたんだ",
+      "range": [166.12, 169.66], "ans": [11]},
+    {"lyric": "Hayaku hayaku to koe ni dashite tairo zenbu keshichae",
+      "lyric_jp": "早く早くと声に出して 退路ぜんぶ消しちゃえ",
+      "range": [169.66, 173.57], "ans": [11]},
     {"lyric": "Dance now! Dance now!",
-      "lyric_jp": "So I could be calm instead of dangerous when you see me",
-      "range": [140.64, 141.8], "ans": [10], "diff": 2},
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [173.57, 177.21], "ans": []},
+    {"lyric": "(Control yeah!)",
+      "lyric_jp": "CONTROL yeah!",
+      "range": [177.21, 178.1], "ans": [10]},
+    {"lyric": "Tsuyoi tsuyoi to omoikonde yowasa wo tsubusu mainichi",
+      "lyric_jp": "強い強いと思いこんで 弱さをつぶす毎日",
+      "range": [178.1, 181.52], "ans": [11]},
+    {"lyric": "Soto e soto e to mukau Energy kyou wa kyou no shinkakei",
+      "lyric_jp": "外へ外へと向かうEnergy 今日は今日の進化形",
+      "range": [181.52, 185.79], "ans": [11]},
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [185.79, 191.31], "ans": []},
     "",
     {
-      "lyric_jp": "You niggas know we quick to let it blow for any reason",
+      "lyric_jp": "最高！ (One more chance time! yeah!)",
       "parts": [
-        {"lyric": "Tooku no hikari e motto Baby!",
-          "range": [141.8, 142.86], "ans": [11], "diff": 2},
-        {"lyric": "Issho ni tobitai motto Baby!",
-          "range": [142.86, 143.82], "ans": [10], "diff": 2},
-        {"lyric": "Furueru yubisaki shittete mo",
-          "range": [143.82, 144.97], "ans": [11], "diff": 2},
-        {"lyric": "Minaide",
-          "range": [144.97, 145.36], "ans": []}
+        {"lyric": "Saikou!",
+          "range": [191.31, 192.92], "ans": [10]},
+        {"lyric": "(One more chance time Yeah!)",
+          "range": [192.58, 194.56], "ans": [11]}
       ]
     },
     {
-      "lyric_jp": "Kick down yo' door, post up on yo' front porch, and we ain't leavin'",
+      "lyric_jp": "言われたいみんなにね （最高だと言われたいよ）",
       "parts": [
-        {"lyric": "Taisetsu na no wa",
-          "range": [145.36, 159.93], "ans": []},
-        {"lyric": "Self control!!",
-          "range": [159.93, 166.18], "ans": [11], "diff": 2},
-        {"lyric": "Hashiri tsudzukeru",
-          "range": [166.18, 180.75], "ans": []},
-        {"lyric": "Self control!!",
-          "range": [180.75, 187], "ans": []}
+        {"lyric": "Iwaretai minna ni ne",
+          "range": [194.27, 197.14], "ans": [10]},
+        {"lyric": "(Saikou da to iwaretai yo)",
+          "range": [196.48, 198.37], "ans": [11]}
       ]
-    }
+    },
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [197.76, 199.41], "ans": [11]},
+    {
+      "lyric_jp": "最高！ (One more chance time!)",
+      "parts": [
+        {"lyric": "Saikou!",
+          "range": [199.41, 200.79], "ans": [10]},
+        {"lyric": "(One more chance time!)",
+          "range": [200.46, 202.19], "ans": [11]}
+      ]
+    },
+    {
+      "lyric_jp": "言わせるって決めたんだよ （真剣だよ遊びじゃない）",
+      "parts": [
+        {"lyric": "Iwaseru tte kimetanda yo",
+          "range": [202.23, 205.12], "ans": [10]},
+        {"lyric": "(shinken da yo asobi janai)",
+          "range": [204.42, 206.23], "ans": [11]}
+      ]
+    },
+    {"lyric": "Dance now! Dance now!",
+      "lyric_jp": "Dance now! Dance now!",
+      "range": [205.78, 207.83], "ans": [11]},
+    "",
+    {"lyric": "Tooku no hikari e motto Baby!",
+      "lyric_jp": "遠くの光へもっとBaby!",
+      "range": [207.83, 209.95], "ans": [10]},
+    {"lyric": "Issho ni tobitai motto Baby!",
+      "lyric_jp": "一緒に跳びたいもっとBaby!",
+      "range": [209.95, 211.93], "ans": [11]},
+    {
+      "lyric_jp": "ふるえる指先知ってても見ないで",
+      "parts": [
+        {"lyric": "Furueru yubisaki shittete mo",
+          "range": [211.93, 215.34], "ans": [10]},
+        {"lyric": "Minaide",
+          "range": [214.64, 216.38], "ans": []}
+      ]
+    },
+    {"lyric": "Taisetsu na no wa",
+      "lyric_jp": "大切なのは",
+      "range": [216.38, 218.85], "ans": []},
+    {"lyric": "Self control!!",
+      "lyric_jp": "SELF CONTROL!!",
+      "range": [218.85, 222.28], "ans": [10]},
+    {"lyric": "Hashiri tsudzukeru",
+      "lyric_jp": "走り続ける",
+      "range": [222.28, 225.08], "ans": []},
+    {"lyric": "Self control!!",
+      "lyric_jp": "SELF CONTROL!!",
+      "range": [225.08, 228.4], "ans": [10, 11]}
   ]
 }

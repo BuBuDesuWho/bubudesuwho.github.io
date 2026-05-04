@@ -3,6 +3,11 @@
   "ogg": "sound/paradise_live.ogg",
   "id": "paradise-live",
   "group": "muse",
+  "released": "2014-01-29",
+  "album": "タカラモノズ / Paradise Live",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "b4856b11-d7e6-4134-ab06-af2616b150d4",
   "added": "2026-04",
   "hidden": false,
   "slots": [

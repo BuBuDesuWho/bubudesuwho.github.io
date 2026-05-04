@@ -44,13 +44,30 @@ export function buildMenu(songs: MenuSong[]): void {
 
   const savedSort = getStorage('sort') as SortMode | null;
   if (savedSort && ['index', 'date', 'alpha'].includes(savedSort)) state.sortMode = savedSort;
-  // migrate legacy 'group' sort mode
+  // migrate legacy 'group' sort mode (was a sort+grouping combo)
   if ((getStorage('sort') as string) === 'group') {
     state.sortMode = 'date';
-    state.groupBySubunit = true;
+    state.groupBy = IS_KPOP ? { subunit: false, album: true } : { subunit: true, album: false };
   }
-  const savedGroupBy = getStorage('groupBySubunit');
-  if (savedGroupBy != null) state.groupBySubunit = savedGroupBy === 'true';
+  // migrate legacy `groupBySubunit` boolean → groupBy flags. The legacy
+  // flag meant "the natural grouping for this mode" — subunit on anime,
+  // album on kpop.
+  const legacyGroup = getStorage('groupBySubunit');
+  if (legacyGroup === 'true') {
+    state.groupBy = IS_KPOP ? { subunit: false, album: true } : { subunit: true, album: false };
+  } else if (legacyGroup === 'false') {
+    state.groupBy = { subunit: false, album: false };
+  }
+  // Newer storage: comma-separated flag list ('', 'subunit', 'album',
+  // 'subunit,album'). Parse permissively.
+  const savedGroupBy = getStorage('groupBy');
+  if (savedGroupBy != null) {
+    const flags = savedGroupBy.split(',').map((s) => s.trim());
+    state.groupBy = {
+      subunit: flags.includes('subunit'),
+      album: flags.includes('album'),
+    };
+  }
 
   switchGroup(state.group, songs);
   updateSortButton();
@@ -82,9 +99,23 @@ export function buildMenu(songs: MenuSong[]): void {
     });
   });
 
+  // Both toggles flip their flag independently — when both are on, songs
+  // bucket by subunit first then album. (Subunit hidden for kpop.)
+  const persistGroupBy = () => {
+    const flags: string[] = [];
+    if (state.groupBy.subunit) flags.push('subunit');
+    if (state.groupBy.album) flags.push('album');
+    setStorage('groupBy', flags.join(','));
+  };
   document.getElementById('group-toggle')?.addEventListener('click', () => {
-    state.groupBySubunit = !state.groupBySubunit;
-    setStorage('groupBySubunit', String(state.groupBySubunit));
+    state.groupBy.subunit = !state.groupBy.subunit;
+    persistGroupBy();
+    updateGroupToggle();
+    switchGroup(state.group, songs);
+  });
+  document.getElementById('album-toggle')?.addEventListener('click', () => {
+    state.groupBy.album = !state.groupBy.album;
+    persistGroupBy();
     updateGroupToggle();
     switchGroup(state.group, songs);
   });
@@ -102,7 +133,11 @@ function updateSortButton(): void {
 }
 
 function updateGroupToggle(): void {
-  document.getElementById('group-toggle')?.classList.toggle('active', state.groupBySubunit);
+  document.getElementById('group-toggle')?.classList.toggle('active', state.groupBy.subunit);
+  document.getElementById('album-toggle')?.classList.toggle('active', state.groupBy.album);
+  // KPop has no subunit data — hide that button entirely.
+  const subunitBtn = document.getElementById('group-toggle');
+  if (subunitBtn && IS_KPOP) subunitBtn.style.display = 'none';
 }
 
 const SUBUNIT_ORDER: Record<string, number> = {
@@ -127,52 +162,77 @@ function subunitLabel(group: GroupName, subunit: string): string {
 
 const IS_KPOP = import.meta.env.VITE_APP_MODE === 'kpop';
 
+/** Section key is "subunitalbum" so the renderer can decide whether
+ *  to print one combined header or fall back to a single-axis label.
+ *  Empty fields stay empty so unmapped songs collapse into one bucket. */
 function sectionKey(song: MenuSong): string {
-  return IS_KPOP ? (song.album ?? '') : (song.subunit ?? '');
+  const sub = state.groupBy.subunit ? (song.subunit ?? '') : '';
+  const alb = state.groupBy.album ? (song.album ?? '') : '';
+  return sub + '' + alb;
 }
 
 function sectionLabel(group: GroupName, key: string): string {
-  if (IS_KPOP) return key || '(No album)';
-  return subunitLabel(group, key);
+  const [sub, alb] = key.split('');
+  const subLabel = state.groupBy.subunit ? subunitLabel(group, sub) : '';
+  const albLabel = state.groupBy.album ? (alb || '(No album)') : '';
+  if (state.groupBy.subunit && state.groupBy.album) return `${subLabel} · ${albLabel}`;
+  return state.groupBy.album ? albLabel : subLabel;
 }
 
 function sortSongs(filtered: MenuSong[]): MenuSong[] {
   const sorted = filtered.slice();
+  const grpOn = state.groupBy.subunit || state.groupBy.album;
 
-  if (state.sortMode === 'index' && !state.groupBySubunit) return sorted;
+  if (state.sortMode === 'index' && !grpOn) return sorted;
 
   const byDate = (a: MenuSong, b: MenuSong) =>
     (a.released ?? '9999').localeCompare(b.released ?? '9999') || a.name.localeCompare(b.name);
   const byAlpha = (a: MenuSong, b: MenuSong) => a.name.localeCompare(b.name);
+  // Within an album, prefer track-position order when both songs carry it
+  // (keeps eg "TOKIMEKI Runners album" tracks in disc order).
+  const byTrack = (a: MenuSong, b: MenuSong) => {
+    const ta = a.trackPosition;
+    const tb = b.trackPosition;
+    if (ta != null && tb != null) return ta - tb;
+    return byDate(a, b);
+  };
   const base = state.sortMode === 'alpha' ? byAlpha : state.sortMode === 'date' ? byDate : () => 0;
 
-  if (state.groupBySubunit) {
-    if (IS_KPOP) {
-      // Album order = earliest release date in that album (chronological).
-      const albumDate = new Map<string, string>();
-      for (const s of filtered) {
-        const k = sectionKey(s);
-        const d = s.released ?? '9999';
-        const prev = albumDate.get(k);
-        if (prev == null || d.localeCompare(prev) < 0) albumDate.set(k, d);
-      }
-      sorted.sort((a, b) => {
-        const ka = sectionKey(a);
-        const kb = sectionKey(b);
-        const da = albumDate.get(ka) ?? '9999';
-        const db = albumDate.get(kb) ?? '9999';
-        return da.localeCompare(db) || ka.localeCompare(kb) || base(a, b);
-      });
-    } else {
-      sorted.sort((a, b) => {
-        const ga = SUBUNIT_ORDER[a.subunit ?? ''] ?? 99;
-        const gb = SUBUNIT_ORDER[b.subunit ?? ''] ?? 99;
-        return ga - gb || base(a, b);
-      });
-    }
-  } else {
+  if (!grpOn) {
     sorted.sort(base);
+    return sorted;
   }
+
+  // Album → earliest release date in that album, used as the chronological
+  // ordering key when album grouping is active.
+  const albumDate = new Map<string, string>();
+  if (state.groupBy.album) {
+    for (const s of filtered) {
+      const k = s.album ?? '';
+      const d = s.released ?? '9999';
+      const prev = albumDate.get(k);
+      if (prev == null || d.localeCompare(prev) < 0) albumDate.set(k, d);
+    }
+  }
+
+  sorted.sort((a, b) => {
+    if (state.groupBy.subunit) {
+      const ga = SUBUNIT_ORDER[a.subunit ?? ''] ?? 99;
+      const gb = SUBUNIT_ORDER[b.subunit ?? ''] ?? 99;
+      if (ga !== gb) return ga - gb;
+    }
+    if (state.groupBy.album) {
+      const ka = a.album ?? '';
+      const kb = b.album ?? '';
+      const da = albumDate.get(ka) ?? '9999';
+      const db = albumDate.get(kb) ?? '9999';
+      const cmp = da.localeCompare(db) || ka.localeCompare(kb);
+      if (cmp !== 0) return cmp;
+      // Within an album, default sort uses track position when available.
+      if (state.sortMode === 'index') return byTrack(a, b);
+    }
+    return base(a, b);
+  });
   return sorted;
 }
 
@@ -211,8 +271,9 @@ function switchGroup(group: GroupName, songs: MenuSong[]): void {
   const sorted = sortSongs(filtered);
   let lastSection: string | null = null;
 
+  const grpOn = state.groupBy.subunit || state.groupBy.album;
   for (const song of sorted) {
-    if (state.groupBySubunit) {
+    if (grpOn) {
       const section = sectionKey(song);
       if (section !== lastSection) {
         const header = document.createElement('li');

@@ -3,6 +3,11 @@
   "ogg": "sound/wild_stars.ogg",
   "id": "wild-stars",
   "group": "muse",
+  "released": "2013-01-23",
+  "album": "僕らは今のなかで",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "ffe22e7f-47e4-4927-8f6c-d3652500e411",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,11 @@
   "ogg": "sound/wonder_zone.ogg",
   "id": "wonder-zone",
   "group": "muse",
+  "released": "2013-03-06",
+  "album": "これからのSomeday / Wonder zone",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "5b1d2ba7-f6a3-4a28-8ad9-6e44fcdc0b22",
   "added": "2026-04",
   "hidden": false,
   "slots": [

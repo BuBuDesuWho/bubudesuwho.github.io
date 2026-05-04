@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2015-10-07",
+  "album": "君のこころは輝いてるかい?",
+  "releaseType": "Single",
+  "trackPosition": 3,
+  "albumMbid": "b55fec06-d7a8-4758-ac85-b3061c086d41",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [1, 2, 3]},

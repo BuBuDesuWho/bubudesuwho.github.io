@@ -3,6 +3,11 @@
   "ogg": "sound/cutie_panther.ogg",
   "id": "cp",
   "group": "muse",
+  "released": "2013-07-24",
+  "album": "Cutie Panther",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "6d04a2c1-a57e-4bea-8244-5efc7ce33c2d",
   "legacy": true,
   "hidden": false,
   "slots": [

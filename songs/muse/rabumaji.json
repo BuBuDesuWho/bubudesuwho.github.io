@@ -3,6 +3,11 @@
   "ogg": "sound/love_marginal.ogg",
   "id": "rabumaji",
   "group": "muse",
+  "released": "2011-05-25",
+  "album": "Love marginal",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "3a69973e-1222-4005-8879-51c12cbf1fdf",
   "legacy": true,
   "hidden": false,
   "slots": [

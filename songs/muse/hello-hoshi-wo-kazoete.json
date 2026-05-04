@@ -3,6 +3,10 @@
   "ogg": "sound/hello_hoshi_wo_kazoete.ogg",
   "id": "hello-hoshi-wo-kazoete",
   "group": "muse",
+  "released": "2015-07-01",
+  "album": "Angelic Angel / Hello, 星を数えて",
+  "releaseType": "Single",
+  "albumMbid": "72207f43-e89a-4027-940e-1d06ed0b3199",
   "added": "2026-04",
   "hidden": false,
   "slots": [

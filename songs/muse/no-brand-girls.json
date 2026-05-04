@@ -3,6 +3,11 @@
   "ogg": "sound/no_brand_girls.ogg",
   "id": "no-brand-girls",
   "group": "muse",
+  "released": "2013-04-03",
+  "album": "No brand girls / START:DASH!!",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "e49df1cd-44a1-4201-9bec-9dedc14189a7",
   "added": "2026-04",
   "hidden": false,
   "slots": [

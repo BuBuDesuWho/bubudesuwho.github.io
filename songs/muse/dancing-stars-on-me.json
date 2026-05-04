@@ -3,6 +3,11 @@
   "ogg": "sound/dancing_stars_on_me.ogg",
   "id": "dancing-stars-on-me",
   "group": "muse",
+  "released": "2014-06-11",
+  "album": "Love wing bell / Dancing stars on me!",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "04492e7d-7bb7-4f02-ab76-0ff585aa8dbc",
   "added": "2026-04",
   "hidden": false,
   "slots": [

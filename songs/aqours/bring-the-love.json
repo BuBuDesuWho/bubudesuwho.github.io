@@ -2,251 +2,290 @@
   "name": "Bring the LOVE!",
   "ogg": "sound/bring_the_love.ogg",
   "id": "bring-the-love",
-  "group": "aqours",
+  "group": "saint-aqours-snow",
   "hidden": true,
   "added": "2026-04",
   "slots": [
 
   ],
+  "generated": "2026-05-03T21:38:41Z",
   "lines": [
-    {"lyric": "Singing on motto motto (Hey!)",
-      "lyric_jp": "I've been waiting for so long for your love",
-      "range": [44.78, 46.1], "ans": []},
+    {
+      "lyric_jp": "作词 : Ayaka Miyake",
+      "parts": [
+        {"lyric": "Bring the love!",
+          "range": [0, 0.45], "ans": []},
+        {"lyric": "Kousaka Honoka",
+          "range": [0.05, 0.5], "ans": [11]},
+        {"lyric": "Shibuya Kanon Hinoshita Kaho",
+          "range": [0.5, 1], "ans": [11]}
+      ]
+    },
+    "",
+    {"lyric": "Uehara Ayumu",
+      "lyric_jp": "作曲 : Quemika/Carlos K./Furuppe",
+      "range": [1, 1.5], "ans": [11]},
+    "",
+    {
+      "lyric_jp": "Singing on もっともっと",
+      "parts": [
+        {"lyric": "(Yeah~! Go! Love Live!)",
+          "range": [11.83, 13.11], "ans": []},
+        {"lyric": "Singing on motto motto (Hey!)",
+          "range": [13.11, 14.71], "ans": []}
+      ]
+    },
+    "",
     {"lyric": "Dreaming on motto (Feel it now!)",
-      "lyric_jp": "I've been waiting for so long for your love",
-      "range": [46.1, 47.68], "ans": []},
+      "lyric_jp": "Dreaming on もっと",
+      "range": [14.71, 17.4], "ans": []},
     {"lyric": "Singing on motto motto (Hey!)",
-      "lyric_jp": "I've been waiting for so long for your love",
-      "range": [47.68, 51.78], "ans": []},
+      "lyric_jp": "Singing on もっともっと",
+      "range": [17.4, 22.28], "ans": []},
     "",
+    {"lyric": "Hitorikiri no heya zutto sono egao wo sagashiteta",
+      "lyric_jp": "1人きりの部屋ずっと その笑顔を探してた",
+      "range": [22.28, 28.14], "ans": [11]},
     {
-      "lyric_jp": "Oh, don't you know, don't you know",
+      "lyric_jp": "モニター越し 光るライト 長い夜",
       "parts": [
-        {"lyric": "Hitorikiri no heya zutto",
-          "range": [51.78, 52.7], "ans": [7]},
-        {"lyric": "Sono egao wo sagashiteta",
-          "range": [52.7, 53.66], "ans": []},
         {"lyric": "MONITAAgoshi",
-          "range": [53.66, 53.99], "ans": [4]},
+          "range": [28.14, 30.79], "ans": [10]},
         {"lyric": "Hikaru raito nagai yoru",
-          "range": [53.99, 55.34], "ans": [9]}
+          "range": [30.09, 33.68], "ans": [11]}
       ]
     },
     "",
+    {"lyric": "Ano hi kimi to hanashita yume e mune ga kogaretekunda",
+      "lyric_jp": "あの日キミと話した 夢へ胸が焦がれてくんだ",
+      "range": [33.46, 39.52], "ans": [11]},
     {
-      "lyric_jp": "I've been waiting for so long?",
-      "parts": [
-        {"lyric": "Ano hi kimi to hanashita",
-          "range": [55.34, 57.8], "ans": [7]},
-        {"lyric": "Yume e mune ga kogaretekunda",
-          "range": [57.8, 60.74], "ans": []}
-      ]
-    },
-    {
-      "lyric_jp": "I've been waiting for so long, for so long",
+      "lyric_jp": "Whoa whoa whoa ｢会いたい｣",
       "parts": [
         {"lyric": "Whoa whoa whoa",
-          "range": [59.94, 61.22], "ans": []},
+          "range": [39.52, 42.01], "ans": []},
         {"lyric": "“aitai”",
-          "range": [61.22, 62.01], "ans": [4]},
-        {"lyric": "Whoa whoa whoa",
-          "range": [62.01, 63.06], "ans": []},
-        {"lyric": "Ano kumo wo koete",
-          "range": [63.06, 64.94], "ans": [9]}
+          "range": [41.31, 43.24], "ans": [10]}
       ]
     },
-    {"lyric": "Won't you bring it to me?",
-      "lyric_jp": "Won't you bring it to me?",
-      "range": [64.25, 67.15], "ans": []},
+    {
+      "lyric_jp": "Whoa whoa whoa あの雲を越えて",
+      "parts": [
+        {"lyric": "Whoa whoa whoa",
+          "range": [42.41, 44.22], "ans": []},
+        {"lyric": "Ano kumo wo koete",
+          "range": [43.52, 45.75], "ans": [11]}
+      ]
+    },
     "",
     {
-      "lyric_jp": "I've been waiting for so long, for so long",
+      "lyric_jp": "My Heart 離れ離れでも",
       "parts": [
         {"lyric": "My Heart",
-          "range": [67.15, 67.63], "ans": []},
+          "range": [45.21, 47.2], "ans": []},
         {"lyric": "Hanarebanare demo",
-          "range": [67.63, 69.55], "ans": [7]},
+          "range": [46.5, 48.17], "ans": [11]}
+      ]
+    },
+    {
+      "lyric_jp": "Your Heart 心は一緒なんだ",
+      "parts": [
         {"lyric": "Your Heart",
-          "range": [69.55, 70.51], "ans": []},
+          "range": [47.94, 49.37], "ans": []},
         {"lyric": "Kokoro wa issho nanda",
-          "range": [70.51, 72.42], "ans": [9]}
-      ]
-    },
-    {"lyric": "Aketeku sora kimi no moto e We ride the wave",
-      "lyric_jp": "Won't you bring it to me?",
-      "range": [72.42, 92.15], "ans": [2]},
-    {"lyric": "(Go! Love Live!)",
-      "range": [90.15, 92.15], "ans": []},
-    "",
-    {
-      "lyric_jp": "I was in the checkout line",
-      "parts": [
-        {"lyric": "Bokura Loving! Loving! Loving! kono basho de (Hey!)",
-          "range": [92.15, 93.79], "ans": []},
-        {"lyric": "Jumping! Jumping! Jumping! yatto aeta (Hey!)",
-          "range": [93.79, 94.96], "ans": []},
-        {"lyric": "Kimi to",
-          "range": [94.96, 95.25], "ans": [2]},
-        {"lyric": "Boku no omoi",
-          "range": [95.25, 95.93], "ans": [2]}
+          "range": [48.67, 50.72], "ans": [11]}
       ]
     },
     {
-      "lyric_jp": "Checking out the mighty fine",
+      "lyric_jp": "明けてく空 キミの元へ We ride the wave",
       "parts": [
-        {"lyric": "Kasane kanaderu sutoorii",
-          "range": [94.95, 95.24], "ans": [2]},
-        {"lyric": "Utaou Loving! Loving! Loving! saikou no doriimu (Hey!)",
-          "range": [95.24, 95.78], "ans": []},
-        {"lyric": "Jumping! Jumping! Jumping! Kagayaku saki e (ai wo tsunaide)",
-          "range": [95.78, 96.15], "ans": []},
-        {"lyric": "Iku yo Be as one! Kono sekai de",
-          "range": [96.15, 97.48], "ans": []}
+        {"lyric": "Aketeku sora kimi no moto e We ride the wave",
+          "range": [50.68, 56.64], "ans": [2]},
+        {"lyric": "(Go! Love Live!)",
+          "range": [55.94, 56.89], "ans": []}
       ]
     },
-    "",
-    {"lyric": "Singing on motto motto (Hey!)",
-      "lyric_jp": "By the time I got to the parking lot",
-      "range": [97.48, 98.28], "ans": []},
-    {"lyric": "Dreaming on motto (Feel it now!)",
-      "lyric_jp": "By the time I got to the parking lot",
-      "range": [98.28, 99.25], "ans": []},
-    {"lyric": "Singing on motto motto (Hey!)",
-      "lyric_jp": "By the time I got to the parking lot",
-      "range": [99.25, 100.47], "ans": []},
-    "",
-    {
-      "lyric_jp": "I took home more than what I bought",
-      "parts": [
-        {"lyric": "Wo yizhi hén xidngjian ni!",
-          "range": [100.47, 100.94], "ans": [4]},
-        {"lyric": "Tooku hanaretete mo",
-          "range": [100.94, 101.52], "ans": [9]},
-        {"lyric": "Kokoro sarani atsuku Feel",
-          "range": [101.52, 102.27], "ans": []},
-        {"lyric": "Moksori deullyeojwo",
-          "range": [102.27, 103.52], "ans": []}
-      ]
-    },
-    {"lyric": "You're my tenderness, my chocolate drop",
-      "lyric_jp": "You're my tenderness, my chocolate drop",
-      "range": [103.52, 106.77], "ans": []},
-    {
-      "lyric_jp": "Don't you ever let your good lovin' stop",
-      "parts": [
-        {"lyric": "Saa te to te tsunaide ikou",
-          "range": [106.77, 107.32], "ans": []},
-        {"lyric": "Harewataru sora e Let’s go",
-          "range": [107.32, 107.78], "ans": [7]},
-        {"lyric": "Oh we're gonna flow to the heights unknown",
-          "range": [107.78, 108.33], "ans": [9]},
-        {"lyric": "Mirai hikari michiteru hou e",
-          "range": [108.33, 108.92], "ans": [4]}
-      ]
-    },
-    "",
-    {
-      "lyric_jp": "I said, \"Don't you ever let your good lovin' stop",
-      "parts": [
-        {"lyric": "Hajimari no peeji kara",
-          "range": [108.92, 109.95], "ans": [5]},
-        {"lyric": "Our Days",
-          "range": [109.95, 110.26], "ans": []},
-        {"lyric": "Mou kazoe kirenai",
-          "range": [110.26, 111.19], "ans": [4]},
-        {"lyric": "Our Wish egao to nukumori to",
-          "range": [111.19, 112.42], "ans": []}
-      ]
-    },
-    {
-      "lyric_jp": "Don't you ever let your good lovin' stop\"",
-      "parts": [
-        {"lyric": "Arata na asu e dekakeyou We'll find a way",
-          "range": [112.42, 113.33], "ans": [7, 9], "diff": 2},
-        {"lyric": "Hibike Loving! Loving! Loving! kono merodii (Hey!)",
-          "range": [113.33, 114.24], "ans": []},
-        {"lyric": "Jumping! Jumping! Jumping! kaze ni nori (Hey!)",
-          "range": [114.24, 114.91], "ans": []}
-      ]
-    },
-    {"lyric": "(Go! Love Live!)",
-      "range": [112.91, 114.91], "ans": []},
-    {"lyric": "Bring me your love",
-      "lyric_jp": "Bring me your love",
-      "range": [114.91, 117.55], "ans": []},
-    {"lyric": "Yume to yume de",
-      "lyric_jp": "Stay here with me",
-      "range": [117.55, 118.83], "ans": [2]},
-    {"lyric": "Toki wo koete",
-      "lyric_jp": "Stay here with me",
-      "range": [118.83, 120.44], "ans": [2]},
-    {"lyric": "Bring me your love",
-      "lyric_jp": "Bring me your love",
-      "range": [120.44, 125.18], "ans": []},
-    {"lyric": "Kanaeru sutoorii!",
-      "lyric_jp": "I'll be right here, waiting for you",
-      "range": [125.18, 126.15], "ans": []},
-    {"lyric": "Utaou Loving! Loving! Loving! saikou no doriimu (Hey!)",
-      "lyric_jp": "I'll be right here, waiting for you",
-      "range": [126.15, 128.31], "ans": []},
-    {"lyric": "Jumping! Jumping! Jumping! Kagayaku saki e (ai wo tsunaide)",
-      "lyric_jp": "I'll be right here, waiting for you",
-      "range": [128.31, 130.47], "ans": []},
-    {"lyric": "Iku yo Be as one! Ima mirai e",
-      "lyric_jp": "I'll be right here, waiting for you",
-      "range": [130.47, 131.89], "ans": []},
-    "",
-    "[next-col]",
-    {
-      "lyric_jp": "You're my tenderness, my chocolate drop",
-      "parts": [
-        {"lyric": "Watashitachi saikou no toki wo tsunaideku",
-          "range": [131.89, 133.59], "ans": [5]},
-        {"lyric": "Kagirinaku hirogaru",
-          "range": [133.59, 134.62], "ans": [7]},
-        {"lyric": "Jiyuu na sora de",
-          "range": [134.62, 135.23], "ans": [5]},
-        {"lyric": "Dokomademo",
-          "range": [135.23, 135.77], "ans": []}
-      ]
-    },
-    {"lyric": "Don't you ever let your good lovin' stop",
-      "lyric_jp": "Don't you ever let your good lovin' stop",
-      "range": [135.19, 140.42], "ans": []},
     "",
     {"lyric": "Bokura Loving! Loving! Loving! kono basho de (Hey!)",
-      "lyric_jp": "Bring me, bring me, bring me your love",
-      "range": [140.42, 154.48], "ans": []},
+      "lyric_jp": "僕ら Loving! Loving! Loving! この場所で",
+      "range": [56.89, 60.75], "ans": []},
+    {"lyric": "Jumping! Jumping! Jumping! yatto aeta (Hey!)",
+      "lyric_jp": "Jumping! Jumping! Jumping! やっと会えた",
+      "range": [60.75, 62.9], "ans": []},
     {
-      "lyric_jp": "I'll be right here waiting for you",
+      "lyric_jp": "キミと僕の思い重ね 奏でるストーリー",
       "parts": [
-        {"lyric": "Jumping! Jumping! Jumping! yatto aeta (Hey!)",
-          "range": [154.48, 155.53], "ans": []},
         {"lyric": "Kimi to",
-          "range": [155.53, 155.76], "ans": [2]},
-        {"lyric": "Boku no omoi",
-          "range": [155.76, 156.25], "ans": [2]},
-        {"lyric": "Kasane kanaderu sutoorii",
-          "range": [156.25, 158.03], "ans": [2]}
+          "range": [62.9, 63.91], "ans": [2]},
+        {"lyric": "Boku no",
+          "range": [63.21, 64.75], "ans": [11]},
+        {"lyric": "Omoi",
+          "range": [64.05, 65.47], "ans": [2]},
+        {"lyric": "Kasane",
+          "range": [64.77, 66.01], "ans": [11]},
+        {"lyric": "Kanaderu sutoorii",
+          "range": [65.31, 68.25], "ans": [2]}
       ]
     },
     {"lyric": "Utaou Loving! Loving! Loving! saikou no doriimu (Hey!)",
-      "lyric_jp": "I'll be right here waiting for you",
-      "range": [158.03, 159.01], "ans": []},
+      "lyric_jp": "歌おう Loving! Loving! Loving! 最高のドリーム",
+      "range": [68.25, 71.91], "ans": []},
     {"lyric": "Jumping! Jumping! Jumping! Kagayaku saki e (ai wo tsunaide)",
-      "lyric_jp": "I'll be right here waiting for you",
-      "range": [159.01, 159.93], "ans": []},
+      "lyric_jp": "Jumping! Jumping! Jumping! 輝く先へ(愛を繋いで)",
+      "range": [71.91, 76.67], "ans": []},
+    {"lyric": "Iku yo Be as one! Kono sekai de",
+      "lyric_jp": "いくよ Be as one! この世界で",
+      "range": [76.67, 80.21], "ans": []},
+    "",
+    {"lyric": "Singing on motto motto (Hey!)",
+      "lyric_jp": "Singing on もっともっと",
+      "range": [80.21, 83.1], "ans": []},
+    {"lyric": "Dreaming on motto (Feel it now!)",
+      "lyric_jp": "Dreaming on もっと",
+      "range": [83.1, 85.85], "ans": []},
+    {"lyric": "Singing on motto motto (Hey!)",
+      "lyric_jp": "Singing on もっともっと",
+      "range": [85.85, 90.06], "ans": []},
+    "",
+    {
+      "lyric_jp": "遠く離れてても心さらに熱くFeel",
+      "parts": [
+        {"lyric": "Wo yizhi hén xidngjian ni!",
+          "range": [91.29, 92.14], "ans": [10]},
+        {"lyric": "Tooku hanaretete mo",
+          "range": [91.44, 92.69], "ans": [11]},
+        {"lyric": "Kokoro sarani atsuku Feel",
+          "range": [92.69, 93.67], "ans": [11]},
+        {"lyric": "Moksori deullyeojwo",
+          "range": [93.67, 94.43], "ans": [11]}
+      ]
+    },
+    {"lyric": "Saa te to te tsunaide ikou",
+      "lyric_jp": "さぁ手と手繋いでいこう",
+      "range": [95.3, 97.14], "ans": [11]},
+    {"lyric": "Harewataru sora e Let’s go",
+      "lyric_jp": "晴れ渡る空へLet’s go",
+      "range": [97.14, 98.12], "ans": [11]},
+    {"lyric": "Oh we're gonna flow to the heights unknown",
+      "lyric_jp": "Oh we’re gonna flow to the heights unknown",
+      "range": [98.12, 99.69], "ans": [11]},
+    {"lyric": "Mirai hikari michiteru hou e",
+      "lyric_jp": "未来光り満ちてる方へ",
+      "range": [99.69, 100.8], "ans": [10]},
+    "",
+    {"lyric": "Hajimari no peeji kara",
+      "lyric_jp": "始まりのページから",
+      "range": [100.8, 102.39], "ans": [11]},
+    {
+      "lyric_jp": "Our Days もう数えきれない",
+      "parts": [
+        {"lyric": "Our Days",
+          "range": [102.39, 104.14], "ans": []},
+        {"lyric": "Mou kazoe kirenai",
+          "range": [103.44, 105.34], "ans": [10]}
+      ]
+    },
+    {
+      "lyric_jp": "Our Wish 笑顔と温もりと",
+      "parts": [
+        {"lyric": "Our Wish",
+          "range": [105.34, 106.95], "ans": []},
+        {"lyric": "Egao to nukumori to",
+          "range": [106.25, 108.21], "ans": [11]}
+      ]
+    },
+    {
+      "lyric_jp": "新たな明日へ出かけよう We’ll find a way",
+      "parts": [
+        {"lyric": "Arata na asu e dekakeyou We'll find a way",
+          "range": [108.21, 112.51], "ans": [11]},
+        {"lyric": "(Go! Love Live!)",
+          "range": [111.81, 112.76], "ans": []}
+      ]
+    },
+    {"lyric": "Hibike Loving! Loving! Loving! kono merodii (Hey!)",
+      "lyric_jp": "響け Loving! Loving! Loving! このメロディー",
+      "range": [112.76, 116.57], "ans": []},
+    {"lyric": "Jumping! Jumping! Jumping! kaze ni nori (Hey!)",
+      "lyric_jp": "Jumping! Jumping! Jumping! 風に乗り",
+      "range": [116.57, 119.22], "ans": []},
+    {
+      "lyric_jp": "夢と夢で時間(とき)を超えて 叶えるストーリー！",
+      "parts": [
+        {"lyric": "Yume to",
+          "range": [119.22, 120.19], "ans": [11]},
+        {"lyric": "Yume de",
+          "range": [119.49, 121.39], "ans": [2]},
+        {"lyric": "Toki wo",
+          "range": [120.8, 121.79], "ans": [11]},
+        {"lyric": "Koete",
+          "range": [121.09, 122.19], "ans": [2]},
+        {"lyric": "Kanaeru sutoorii!",
+          "range": [121.49, 124.08], "ans": [11]}
+      ]
+    },
+    {"lyric": "Utaou Loving! Loving! Loving! saikou no doriimu (Hey!)",
+      "lyric_jp": "歌おう Loving! Loving! Loving! 最高のドリーム",
+      "range": [124.08, 127.8], "ans": []},
+    {"lyric": "Jumping! Jumping! Jumping! Kagayaku saki e (ai wo tsunaide)",
+      "lyric_jp": "Jumping! Jumping! Jumping! 輝く先へ(愛を繋いで)",
+      "range": [127.8, 132.44], "ans": []},
+    {"lyric": "Iku yo Be as one! Ima mirai e",
+      "lyric_jp": "いくよ Be as one! 今 未来へ",
+      "range": [132.44, 138.18], "ans": []},
+    "",
+    "[next-col]",
+    {"lyric": "Watashitachi saikou no toki wo tsunaideku",
+      "lyric_jp": "わたしたち 最高の瞬間(とき)を繋いでく",
+      "range": [153.62, 158.31], "ans": [11]},
+    {"lyric": "Kagirinaku hirogaru jiyuu na sora de",
+      "lyric_jp": "限りなく広がる 自由な空で",
+      "range": [158.31, 165.59], "ans": [11]},
+    {"lyric": "Dokomademo",
+      "lyric_jp": "どこまでも",
+      "range": [165.59, 169.97], "ans": []},
+    "",
+    {"lyric": "Bokura Loving! Loving! Loving! kono basho de (Hey!)",
+      "lyric_jp": "僕ら Loving! Loving! Loving! この場所で",
+      "range": [169.97, 173.67], "ans": []},
+    {"lyric": "Jumping! Jumping! Jumping! yatto aeta (Hey!)",
+      "lyric_jp": "Jumping! Jumping! Jumping! やっと会えた",
+      "range": [173.67, 175.9], "ans": []},
+    {
+      "lyric_jp": "キミと僕の思い重ね 奏でるストーリー",
+      "parts": [
+        {"lyric": "Kimi to",
+          "range": [175.9, 176.91], "ans": [2]},
+        {"lyric": "Boku no",
+          "range": [176.21, 177.81], "ans": [11]},
+        {"lyric": "Omoi",
+          "range": [177.11, 178.47], "ans": [2]},
+        {"lyric": "Kasane",
+          "range": [177.77, 179.15], "ans": [11]},
+        {"lyric": "Kanaderu sutoorii",
+          "range": [178.45, 181.24], "ans": [2]}
+      ]
+    },
+    {"lyric": "Utaou Loving! Loving! Loving! saikou no doriimu (Hey!)",
+      "lyric_jp": "歌おう Loving! Loving! Loving! 最高のドリーム",
+      "range": [181.24, 184.92], "ans": []},
+    {"lyric": "Jumping! Jumping! Jumping! Kagayaku saki e (ai wo tsunaide)",
+      "lyric_jp": "Jumping! Jumping! Jumping! 輝く先へ(愛を繋いで)",
+      "range": [184.92, 189.72], "ans": []},
     {"lyric": "Iku yo Be as one! kono sekai kara (We live with love)",
-      "lyric_jp": "I'll be right here waiting for you",
-      "range": [159.93, 160.83], "ans": []},
-    {"lyric": "Kimi to boku to hikari no saki e",
-      "lyric_jp": "I'll be right here waiting for you",
-      "range": [160.83, 218], "ans": []},
-    {"lyric": "(Yeah~!)",
-      "range": [216, 218], "ans": []},
-    {"lyric": "(Yeah~!)",
-      "range": [216, 218], "ans": []},
-    {"lyric": "(Hey! Hey! Hey!)",
-      "range": [216, 218], "ans": []}
+      "lyric_jp": "いくよ Be as one! この世界から",
+      "range": [189.72, 195.26], "ans": []},
+    {
+      "lyric_jp": "キミと僕と光の先へ",
+      "parts": [
+        {"lyric": "Kimi to boku to hikari no saki e",
+          "range": [195.26, 199.14], "ans": []},
+        {"lyric": "(Yeah~!)",
+          "range": [199.14, 200.34], "ans": []},
+        {"lyric": "(Hey! Hey! Hey!)",
+          "range": [200.34, 200.94], "ans": []}
+      ]
+    },
+    ""
   ]
 }

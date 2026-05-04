@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2017-04-05",
+  "album": "HAPPY PARTY TRAIN",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "5a7d1078-3897-409a-9d66-a6958b222ef8",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [1, 2, 3]},

@@ -3,6 +3,11 @@
   "ogg": "sound/kira_kira_sensation.ogg",
   "id": "kira-kira-sensation",
   "group": "muse",
+  "released": "2014-07-09",
+  "album": "KiRa-KiRa Sensation! / Happy maker!",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "0149bbfa-7af3-4fde-a841-633db726877f",
   "added": "2026-04",
   "hidden": false,
   "slots": [

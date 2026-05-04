@@ -3,6 +3,11 @@
   "ogg": "sound/shangri_la_shower.ogg",
   "id": "shangri-la-shower",
   "group": "muse",
+  "released": "2014-10-01",
+  "album": "Shangri-La Shower",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "cc765897-d2ff-49a6-8dcd-7fb54bf85972",
   "added": "2026-04",
   "hidden": false,
   "slots": [

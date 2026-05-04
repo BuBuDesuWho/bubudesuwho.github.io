@@ -3,6 +3,11 @@
   "ogg": "sound/diamond_princess_no_yuutsu.ogg",
   "id": "diamond-princess-no-yuutsu",
   "group": "muse",
+  "released": "2011-06-22",
+  "album": "ダイヤモンドプリンセスの憂鬱",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "670b00ef-1105-4655-b61d-4666a2fcff6f",
   "added": "2026-04",
   "hidden": false,
   "slots": [

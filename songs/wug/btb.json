@@ -3,6 +3,11 @@
   "ogg": "sound/beyond_the_bottom.ogg",
   "id": "btb",
   "group": "wug",
+  "released": "2015-12-09",
+  "album": "Beyond the Bottom",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "c5efe395-1ebb-4a82-82bf-408c48f76140",
   "legacy": true,
   "hidden": false,
   "slots": [

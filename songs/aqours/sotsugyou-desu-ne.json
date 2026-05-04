@@ -3,6 +3,11 @@
   "ogg": "sound/sotsugyou_desu_ne.ogg",
   "id": "sotsugyou-desu-ne",
   "group": "aqours",
+  "released": "2018-06-22",
+  "album": "卒業ですね",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "486f3f68-9988-46ee-a576-2f395bba114a",
   "added": "2026-04",
   "hidden": false,
   "slots": [

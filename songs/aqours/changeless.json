@@ -3,6 +3,11 @@
   "ogg": "sound/changeless.ogg",
   "id": "changeless",
   "group": "aqours",
+  "released": "2019-12-04",
+  "album": "Braveheart Coaster",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "74cd7532-c091-4183-b947-76b02cc5a369",
   "added": "2026-04",
   "hidden": false,
   "slots": [

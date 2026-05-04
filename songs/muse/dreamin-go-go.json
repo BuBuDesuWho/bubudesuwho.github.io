@@ -3,6 +3,11 @@
   "ogg": "sound/dreamin_go_go.ogg",
   "id": "dreamin-go-go",
   "group": "muse",
+  "released": "2015-01-14",
+  "album": "μ’s Go→Go! LoveLive! 2015 〜Dream Sensation!〜 プレミアムチケット特典CD",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "1ddf43bd-f0b8-4771-b3bc-1fe29e121be7",
   "added": "2026-04",
   "hidden": false,
   "slots": [

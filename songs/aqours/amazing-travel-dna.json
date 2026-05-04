@@ -3,6 +3,11 @@
   "ogg": "sound/amazing_travel_dna.ogg",
   "id": "amazing-travel-dna",
   "group": "aqours",
+  "released": "2019-12-11",
+  "album": "Amazing Travel DNA",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "afc57b06-7eab-49cd-9a1e-5e73fb0e9094",
   "added": "2026-04",
   "hidden": false,
   "slots": [

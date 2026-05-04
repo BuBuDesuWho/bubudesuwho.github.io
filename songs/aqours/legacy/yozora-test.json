@@ -3,11 +3,14 @@
   "ogg": "sound/yozora_wa_nandemo_shitteru_no.ogg",
   "id": "yozora-test",
   "group": "aqours",
+  "released": "2016-05-11",
+  "album": "元気全開DAY! DAY! DAY!",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "93dab04e-34ea-457a-804d-540938ecdedf",
   "legacy": true,
   "hidden": true,
-  "slots": [
-
-  ],
+  "slots": [],
   "lines": [
     {
       "parts": [

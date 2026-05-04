@@ -3,6 +3,11 @@
   "ogg": "sound/7_girls_war.ogg",
   "id": "7war",
   "group": "wug",
+  "released": "2014-02-26",
+  "album": "7 Girls War",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "45f74a38-d7a0-40ab-a969-9b8451ebb357",
   "legacy": true,
   "hidden": false,
   "slots": [

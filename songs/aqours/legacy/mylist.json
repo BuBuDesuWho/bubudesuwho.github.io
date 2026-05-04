@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2017-11-15",
+  "album": "勇気はどこに?君の胸に!",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "266cd7d2-f719-4c10-ba59-3116cc3035fd",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]},

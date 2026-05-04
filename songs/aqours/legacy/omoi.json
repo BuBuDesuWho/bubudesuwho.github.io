@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-11-09",
+  "album": "想いよひとつになれ / MIRAI TICKET",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "ac664d72-652b-47d5-8139-1fdb0f9a93b8",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 2]},

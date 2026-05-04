@@ -3,6 +3,11 @@
   "ogg": "sound/junai_lens.ogg",
   "id": "junai-lens",
   "group": "muse",
+  "released": "2013-01-09",
+  "album": "μ's Best Album Best Live! collection",
+  "releaseType": "Album",
+  "trackPosition": 8,
+  "albumMbid": "4414862a-cf38-431a-8437-1a7edb5c5e2d",
   "added": "2026-04",
   "hidden": false,
   "slots": [

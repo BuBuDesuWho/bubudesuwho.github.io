@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-09-14",
+  "album": "夢で夜空を照らしたい / 未熟DREAMER",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "ddcad0e4-df66-4952-8bf7-73a72f66057e",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]},

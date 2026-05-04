@@ -3,6 +3,11 @@
   "ogg": "sound/neuron_neuron.ogg",
   "id": "neuron-neuron",
   "group": "muse",
+  "released": "2013-04-24",
+  "album": "PS3専用ソフト『神様と運命革命のパラドクス』キャラクターソングアルバム 天使たちの福音〜feat.μ's",
+  "releaseType": "Album",
+  "trackPosition": 10,
+  "albumMbid": "70d6dfab-d2c1-470a-9c74-2cb41c4702ad",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,11 @@
   "ogg": "sound/snow_halation.ogg",
   "id": "snow-halation",
   "group": "muse",
+  "released": "2010-12-22",
+  "album": "Snow halation",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "3e93d8cc-5052-49aa-a789-484a0cbb1f78",
   "added": "2026-04",
   "hidden": false,
   "slots": [

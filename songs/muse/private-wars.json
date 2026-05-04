@@ -3,6 +3,10 @@
   "ogg": "sound/private_wars.ogg",
   "id": "private-wars",
   "group": "muse",
+  "released": "2014-08-27",
+  "album": "『ラブライブ！』TVアニメ２期 オリジナルサウンドトラック 「Notes of School idol days ～Glory～」",
+  "releaseType": "Album",
+  "albumMbid": "6136de4a-eb94-4365-aa52-54be4d9b7266",
   "added": "2026-04",
   "hidden": false,
   "slots": [

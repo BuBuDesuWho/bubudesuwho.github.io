@@ -3,6 +3,11 @@
   "ogg": "sound/endless_parade.ogg",
   "id": "endless-parade",
   "group": "muse",
+  "released": "2014-02-03",
+  "album": "ENDLESS PARADE",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "0e7b80d5-6bcd-42a9-be5e-f3f9a389e761",
   "added": "2026-04",
   "hidden": false,
   "slots": [

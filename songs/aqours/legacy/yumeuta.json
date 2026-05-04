@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-08-24",
+  "album": "ユメ語るよりユメ歌おう",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "c763f0db-9c72-4e73-850f-78336fe14168",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [6, 8]}

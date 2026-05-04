@@ -3,6 +3,10 @@
   "ogg": "sound/storm_in_lover.ogg",
   "id": "storm-in-lover",
   "group": "muse",
+  "released": "2015-12-15",
+  "album": "μ's オリジナルソングCD",
+  "releaseType": "Single",
+  "albumMbid": "977eec74-407f-4b8b-b871-843adf7fdebc",
   "added": "2026-04",
   "hidden": false,
   "slots": [
