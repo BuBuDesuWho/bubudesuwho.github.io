@@ -31,8 +31,8 @@ Each theme sets --t-* variables on html.theme-X.
 ===============================================*/
 
 .navbar[class*="theme-"]              { background: var(--t-navbar-bg, revert); }
-.slot[class*="theme-"]                { background-color: var(--t-slot-bg, var(--slot-idle)); }
-.slot.slot-active[class*="theme-"]    { background-color: var(--t-slot-active-bg, var(--slot-active)); }
+.slot[class*="theme-"]:not(.slot-correct):not(.slot-wrong)             { background-color: var(--t-slot-bg, var(--slot-idle)); }
+.slot.slot-active[class*="theme-"]:not(.slot-correct):not(.slot-wrong) { background-color: var(--t-slot-active-bg, var(--slot-active)); }
 .meter[class*="theme-"]               { background: var(--t-meter-bg, var(--meter-bg)); }
 #check[class*="theme-"]               { background: var(--t-check-bg, var(--accent)); border-color: var(--t-check-dark, var(--accent-dark)); }
 #check[class*="theme-"]:hover,
