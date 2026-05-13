@@ -1,5 +1,37 @@
 [
   {
+    "date": "05/03/2026",
+    "change": "Sidebar now offers an <strong>Album</strong> grouping — sort songs by their release album (works on its own or stacked with Subunit)"
+  },
+  {
+    "date": "05/03/2026",
+    "change": "Stats page redesign — <em>Total Mastery</em> dials with idol portraits, deduped across overlapping rosters, plus a profile <strong>Export/Import</strong> JSON to move your progress between devices"
+  },
+  {
+    "date": "05/03/2026",
+    "change": "New <strong>Buddy</strong> companion (Aqours) — heart members from the stats page (10%+ Mastery to favorite, 20%+ Mastery to idolize), then pin one as a floating portrait that follows you around the site with size and animation controls"
+  },
+  {
+    "date": "05/03/2026",
+    "change": "Added 24 more songs across Aqours, Nijigasaki, and Liella"
+  },
+  {
+    "date": "05/02/2026",
+    "change": "Added <strong>Liella!</strong> — brand-new group with 50+ songs, purple theme, member portraits with per-member glow, and a JP toggle that swaps song titles alongside the lyrics"
+  },
+  {
+    "date": "05/02/2026",
+    "change": "Added 13 more Aqours songs (from cocomilk22002's lyric blog)"
+  },
+  {
+    "date": "05/01/2026",
+    "change": "Added 18 more Nijigasaki songs"
+  },
+  {
+    "date": "04/30/2026",
+    "change": "Mobile play page: added a bottom <code>Check</code> button so you can verify answers one-handed"
+  },
+  {
     "date": "04/28/2026",
     "change": "Phone view tightened — slot picker, sidebar nav, and the player bar now lay out cleanly at narrow widths instead of overlapping each other"
   },
