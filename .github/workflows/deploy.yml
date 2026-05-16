@@ -1,3 +1,7 @@
+# Pages build/deploy workflow for the CONSUMER repos (BubuDesuWho / Whoranghae).
+# Kept here as a template — NOT under .github/workflows/ — so GitHub Actions
+# does not run it on the GanbaWhoby source repo (which has no Pages site).
+# deploy-page.sh copies this to $PAGE_REPO/.github/workflows/deploy.yml.
 name: Deploy to GitHub Pages
 
 on:

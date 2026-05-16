@@ -1708,6 +1708,34 @@ html.dark-mode .lyric.lyric-active {
       0 0 12px var(--glow3);
 }
 
+/* Subgroup gradient glow — restated at higher specificity so the multi-singer
+   glow wins over the generic rules that otherwise outrank `.lyric-gradient`
+   (0,3,0). switchTheme() puts `theme-*` on each `.lyric` element, which
+   disables the `:not([class*="theme-"])` group/pastel rules below — so with a
+   theme on, the gradient falls through to whatever generic rule is left:
+     - dark mode: `html.dark-mode .lyric.lyric-active` (0,3,1) flattens it to
+       the dim blue default (the themed-aqours-in-dark case);
+     - `.dark-mode .lyric.lyric-active.karaoke` (0,4,0) flattens karaoke songs.
+   With no theme, the flat light-mode μ's/Niji/Liella pastel rules (0,5,1)
+   break it instead. (themes.css:43's themed shadow is also (0,3,0) but loses
+   the tie since styles.css loads after themes.css.)
+   The themed (0,4,0) and dark-mode (0,4,1) selectors are group-agnostic; the
+   light-mode pastel selectors target only the override groups. */
+.lyric.lyric-active.lyric-gradient[class*="theme-"],
+html.dark-mode .lyric.lyric-active.lyric-gradient,
+html.group-muse:not(.dark-mode) .lyric.lyric-active.lyric-gradient:not([class*="theme-"]),
+html.group-nijigasaki:not(.dark-mode) .lyric.lyric-active.lyric-gradient:not([class*="theme-"]),
+html.group-liella:not(.dark-mode) .lyric.lyric-active.lyric-gradient:not([class*="theme-"]) {
+  color: #ffffff;
+  text-shadow:
+      0 0 4px var(--glow1),
+      0 0 4px var(--glow1),
+      0 0 8px var(--glow2),
+      0 0 8px var(--glow2),
+      0 0 12px var(--glow3),
+      0 0 12px var(--glow3);
+}
+
 /* Generic solo / all-members glow fallbacks — driven by runtime CSS vars.
    Kick in for any group without a hardcoded .group-X rule below (e.g. seventeen).
    Lower specificity than the .group-{muse|aqours|wug|nijigasaki} rules that follow,
