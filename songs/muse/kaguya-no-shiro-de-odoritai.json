@@ -3,6 +3,11 @@
   "ogg": "sound/kaguya_no_shiro_de_odoritai.ogg",
   "id": "kaguya-no-shiro-de-odoritai",
   "group": "muse",
+  "released": "2013-02-06",
+  "album": "きっと青春が聞こえる",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "50b52619-99f4-409a-b8d2-c4280585964e",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,11 @@
   "ogg": "sound/kitto_seishun_ga_kikoeru.ogg",
   "id": "kitto-seishun-ga-kikoeru",
   "group": "muse",
+  "released": "2013-02-06",
+  "album": "きっと青春が聞こえる",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "50b52619-99f4-409a-b8d2-c4280585964e",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,11 @@
   "ogg": "sound/love_pulsar.ogg",
   "id": "love-pulsar",
   "group": "aqours",
+  "released": "2019-11-27",
+  "album": "New Romantic Sailors",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "349a879a-08d9-43f8-ba12-eff0bb3898bd",
   "added": "2026-04",
   "hidden": false,
   "slots": [

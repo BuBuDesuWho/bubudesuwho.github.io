@@ -36,7 +36,7 @@ export const state: GameState = {
   scrollSlotLock: null,
   scrollLyricLock: null,
   sortMode: 'index',
-  groupBySubunit: false,
+  groupBy: { subunit: false, album: false },
   editMode: false,
   jpLyrics: false,
   callSFXch: 0,

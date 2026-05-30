@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-11-23",
+  "album": "ジングルベルがとまらない",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "3ddda36a-41fa-469f-a753-d7afa7b12730",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]},

@@ -3,6 +3,11 @@
   "ogg": "sound/natsuiro_egao_de_1_2_jump.ogg",
   "id": "natsuiro-egao-de-12jump",
   "group": "muse",
+  "released": "2011-08-24",
+  "album": "夏色えがおで1, 2, Jump!",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "25e3e1b3-2aa6-4cc7-9b5e-838af2837db5",
   "added": "2026-04",
   "hidden": false,
   "slots": [

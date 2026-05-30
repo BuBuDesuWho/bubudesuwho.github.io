@@ -3,6 +3,11 @@
   "ogg": "sound/gokujou_smile.ogg",
   "id": "gokusuma",
   "group": "wug",
+  "released": "2015-03-18",
+  "album": "Wake Up, Best!",
+  "releaseType": "Album",
+  "trackPosition": 12,
+  "albumMbid": "167d31b1-7432-41c8-960b-5080011565a1",
   "legacy": true,
   "hidden": false,
   "slots": [

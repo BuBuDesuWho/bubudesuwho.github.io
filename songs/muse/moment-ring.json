@@ -3,6 +3,10 @@
   "ogg": "sound/moment_ring.ogg",
   "id": "moment-ring",
   "group": "muse",
+  "released": "2016-03-02",
+  "album": "MOMENT RING",
+  "releaseType": "Single",
+  "albumMbid": "048bb746-88fd-479a-9280-7f9be0f6afb3",
   "added": "2026-04",
   "hidden": false,
   "slots": [

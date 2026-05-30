@@ -5,12 +5,14 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-06-08",
+  "album": "Strawberry Trapper",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "76e9a04d-2b31-4c05-9174-93e099b5a336",
   "subunit": "guilty-kiss",
   "added": "2026-04",
   "hidden": false,
-  "slots": [
-
-  ],
+  "slots": [],
   "lines": [
     {"lyric": "Wow wow wow",
       "lyric_jp": "Wow wow wow",

@@ -3,6 +3,11 @@
   "ogg": "sound/someday_of_my_life.ogg",
   "id": "someday-of-my-life",
   "group": "muse",
+  "released": "2013-01-09",
+  "album": "μ's Best Album Best Live! collection",
+  "releaseType": "Album",
+  "trackPosition": 4,
+  "albumMbid": "4414862a-cf38-431a-8437-1a7edb5c5e2d",
   "added": "2026-04",
   "hidden": false,
   "slots": [

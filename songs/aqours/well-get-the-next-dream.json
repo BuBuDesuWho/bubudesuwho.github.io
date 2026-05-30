@@ -3,6 +3,11 @@
   "ogg": "sound/well_get_the_next_dream.ogg",
   "id": "well-get-the-next-dream",
   "group": "aqours",
+  "released": "2021-06-23",
+  "album": "We’ll get the next dream!!!",
+  "releaseType": "Album",
+  "trackPosition": 1,
+  "albumMbid": "c846476d-f3e8-4227-b214-6c5b6d9031f5",
   "added": "2026-04",
   "hidden": false,
   "slots": [

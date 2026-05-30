@@ -3,6 +3,11 @@
   "ogg": "sound/sugao_de_kiss_me.ogg",
   "id": "sugaokiss",
   "group": "wug",
+  "released": "2015-08-26",
+  "album": "少女交響曲",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "ac2b2604-6656-4b8e-9a5e-9bab11127fa8",
   "legacy": true,
   "hidden": false,
   "slots": [

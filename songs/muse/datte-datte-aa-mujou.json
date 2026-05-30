@@ -3,6 +3,11 @@
   "ogg": "sound/datte_datte_aa_mujou.ogg",
   "id": "datte-datte-aa-mujou",
   "group": "muse",
+  "released": "2014-04-23",
+  "album": "それは僕たちの奇跡",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "00f405f7-b725-4a5c-b553-82626e01e77b",
   "added": "2026-04",
   "hidden": false,
   "slots": [

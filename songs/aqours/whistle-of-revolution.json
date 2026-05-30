@@ -3,6 +3,11 @@
   "ogg": "sound/whistle_of_revolution.ogg",
   "id": "whistle-of-revolution",
   "group": "aqours",
+  "released": "2021-06-02",
+  "album": "ある日…永遠みたいに!",
+  "releaseType": "Album",
+  "trackPosition": 2,
+  "albumMbid": "e718d1e2-ad28-431f-99b9-0d8afd219552",
   "added": "2026-04",
   "hidden": false,
   "slots": [

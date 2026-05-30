@@ -3,6 +3,11 @@
   "ogg": "sound/music_s_t_a_r_t.ogg",
   "id": "music-start",
   "group": "muse",
+  "released": "2013-11-27",
+  "album": "Music S.T.A.R.T!!",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "d2634e78-c782-4342-98e2-40285baf6d60",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,11 @@
   "ogg": "sound/bokura_no_live_kimi_to_no_life.ogg",
   "id": "borarara",
   "group": "muse",
+  "released": "2010-08-13",
+  "album": "僕らのLIVE 君とのLIFE",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "a1a82e4a-862e-4638-9c8a-84d9c0f21746",
   "legacy": true,
   "hidden": false,
   "slots": [

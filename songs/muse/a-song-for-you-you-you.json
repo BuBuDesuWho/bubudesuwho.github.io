@@ -3,6 +3,10 @@
   "ogg": "sound/a_song_for_you_you_you.ogg",
   "id": "a-song-for-you-you-you",
   "group": "muse",
+  "released": "2020-03-25",
+  "album": "A song for You! You? You!!",
+  "releaseType": "Single",
+  "albumMbid": "8b09755b-de63-48b3-932a-f73e73bf9cb0",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,10 @@
   "ogg": "sound/arashi_no_naka_no_koi_dakara.ogg",
   "id": "arashi-no-naka-no-koi-dakara",
   "group": "muse",
+  "released": "2015-10-28",
+  "album": "HEART to HEART!",
+  "releaseType": "Single",
+  "albumMbid": "e5ee3674-e7d7-417e-9429-0a160402d6f9",
   "added": "2026-04",
   "hidden": false,
   "slots": [

@@ -3,6 +3,10 @@
   "ogg": "sound/bokutachi_wa_hitotsu_no_hikari.ogg",
   "id": "bokuhika",
   "group": "muse",
+  "released": "2015-07-15",
+  "album": "僕たちはひとつの光 / Future style",
+  "releaseType": "Single",
+  "albumMbid": "27150fae-9b86-4b09-87d2-a4ab3e77f468",
   "legacy": true,
   "hidden": false,
   "slots": [

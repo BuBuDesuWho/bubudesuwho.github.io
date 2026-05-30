@@ -3,6 +3,11 @@
   "ogg": "sound/yuujou_no_change.ogg",
   "id": "yuujou-no-change",
   "group": "muse",
+  "released": "2010-08-13",
+  "album": "僕らのLIVE 君とのLIFE",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "a1a82e4a-862e-4638-9c8a-84d9c0f21746",
   "added": "2026-04",
   "hidden": false,
   "slots": [

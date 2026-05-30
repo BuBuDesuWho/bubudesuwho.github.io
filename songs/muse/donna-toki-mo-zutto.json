@@ -3,6 +3,11 @@
   "ogg": "sound/donna_toki_mo_zutto.ogg",
   "id": "donna-toki-mo-zutto",
   "group": "muse",
+  "released": "2014-05-08",
+  "album": "どんなときもずっと",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "4a15163a-21c2-4a22-b714-4af19cf32437",
   "added": "2026-04",
   "hidden": false,
   "slots": [

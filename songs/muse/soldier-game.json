@@ -3,6 +3,7 @@
   "ogg": "sound/soldier_game.ogg",
   "id": "soldier-game",
   "group": "muse",
+  "album": "soldier game",
   "added": "2026-04",
   "hidden": false,
   "slots": [

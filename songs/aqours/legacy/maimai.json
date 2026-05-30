@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2017-11-29",
+  "album": "MY舞☆TONIGHT / MIRACLE WAVE",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "c6cf4346-0742-4376-8872-4cc48d5c19e6",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]}

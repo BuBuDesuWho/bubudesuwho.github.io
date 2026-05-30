@@ -3,6 +3,11 @@
   "ogg": "sound/mi_wa_sic_no_mi.ogg",
   "id": "mi-wa-sic-no-mi",
   "group": "muse",
+  "released": "2015-04-22",
+  "album": "ミはμ’sicのミ",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "1e4031e7-cf98-42ea-9b89-dca3bd3bdaf2",
   "added": "2026-04",
   "hidden": false,
   "slots": [

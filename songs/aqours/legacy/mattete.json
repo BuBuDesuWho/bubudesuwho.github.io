@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2016-04-27",
+  "album": "恋になりたいAQUARIUM",
+  "releaseType": "Single",
+  "trackPosition": 2,
+  "albumMbid": "a0a4c6ab-5821-4e15-875b-eedd2b730a79",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]},

@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2018-01-17",
+  "album": "WATER BLUE NEW WORLD / WONDERFUL STORIES",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "f5c88f55-daca-4ab1-a6cb-24c8d1db5c65",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [25, 26]},

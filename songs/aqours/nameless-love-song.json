@@ -3,6 +3,11 @@
   "ogg": "sound/nameless_love_song.ogg",
   "id": "nameless-love-song",
   "group": "aqours",
+  "released": "2021-07-28",
+  "album": "Shooting Star Warrior",
+  "releaseType": "Album",
+  "trackPosition": 9,
+  "albumMbid": "c301942b-83f2-49a1-ba69-aaebecf73055",
   "added": "2026-04",
   "hidden": false,
   "slots": [

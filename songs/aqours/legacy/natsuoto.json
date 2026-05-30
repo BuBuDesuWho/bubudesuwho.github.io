@@ -5,6 +5,10 @@
   "group": "aqours",
   "legacy": true,
   "released": "2017-08-02",
+  "album": "デュオトリオコレクションCD VOL.1 SUMMER VACATION",
+  "releaseType": "EP",
+  "trackPosition": 4,
+  "albumMbid": "483c44a7-d04e-44ea-a1dd-6266f52aea69",
   "hidden": false,
   "slots": [
     {"command": "group", "members": [0, 1]},

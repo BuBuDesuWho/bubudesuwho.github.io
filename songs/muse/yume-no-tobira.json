@@ -3,6 +3,11 @@
   "ogg": "sound/yume_no_tobira.ogg",
   "id": "yume-no-tobira",
   "group": "muse",
+  "released": "2014-05-28",
+  "album": "ユメノトビラ",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "4dce5090-7558-459a-b37d-80bf61669a3a",
   "added": "2026-04",
   "hidden": false,
   "slots": [

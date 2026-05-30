@@ -3,6 +3,11 @@
   "ogg": "sound/loneliest_baby.ogg",
   "id": "loneliest-baby",
   "group": "muse",
+  "released": "2013-09-25",
+  "album": "μ's オリジナルソングCD7",
+  "releaseType": "Single",
+  "trackPosition": 1,
+  "albumMbid": "80e5bddb-b435-450c-9871-02c3d1e862a3",
   "added": "2026-04",
   "hidden": false,
   "slots": [

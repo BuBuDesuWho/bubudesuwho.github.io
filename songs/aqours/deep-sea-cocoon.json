@@ -3,6 +3,11 @@
   "ogg": "sound/deep_sea_cocoon.ogg",
   "id": "deep-sea-cocoon",
   "group": "aqours",
+  "released": "2021-07-28",
+  "album": "Shooting Star Warrior",
+  "releaseType": "Album",
+  "trackPosition": 2,
+  "albumMbid": "c301942b-83f2-49a1-ba69-aaebecf73055",
   "added": "2026-04",
   "hidden": false,
   "slots": [
