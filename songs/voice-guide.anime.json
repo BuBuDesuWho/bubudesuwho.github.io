@@ -1,0 +1,375 @@
+{
+  "_comment": "Voice-ID guide content, distilled from docs/wiki/members/*.md (throwaway93257 Reddit archive). Keyed by group slug -> member id (matching songs/<slug>/group.json). Rendered by src/guide.ts on guide.html. 't' values use the player's deep-link format (Mm SS, e.g. 1m15); songId is resolved against songs/index.anime.json at render time, so unknown ids degrade to plain text.",
+  "muse": {
+    "1": {
+      "thesis": "The leader who sings like one — warm, endlessly consistent, defined by “comfiness”: a softness so gentle it stays soothing even on sad songs.",
+      "tells": [
+        "Signature warmth — a rich, soft, “comfy” tone, reassuring even on sad tracks.",
+        "Master of breath control: adds and reels in power “on a dime” with smooth breathiness.",
+        "A surprise chorus falsetto, plus near-whisper soft passages.",
+        "Tends to fade pleasantly into the background through sheer consistency."
+      ],
+      "signatureSongs": [
+        { "songId": "susumetomorrow", "label": "The Honoka microcosm — slow passionate intro flowing into bubbly pop; best for sensing her range." },
+        { "songId": "sds", "t": "3m15", "label": "Her “godlike” bridge solo." }
+      ],
+      "notes": [
+        { "songId": "snow-halation", "t": "0m40", "text": "Provides her own angelic backup vocals in the pre-chorus; says “Snow Halation” at 1:01." },
+        { "songId": "rabumaji", "t": "3m32", "text": "A more aggressive interpretation than Hanayo's — power persists through the chorus to the climactic moment." },
+        { "songId": "bokuima", "t": "2m08", "text": "Soft soothing pre-choruses that drop to a near-whisper on “sekai”." },
+        { "songId": "ssh", "t": "1m11", "text": "Flutters “mare”/“kero” for added complexity; her solo could pass for a solo single." },
+        { "songId": "orion", "t": "0m31", "text": "Handles the requisite rock intensity — she's far more capable than her jazz reputation suggests." }
+      ]
+    },
+    "2": {
+      "thesis": "The “vibrato queen” — an angelic, mature soprano whose defining trait is being soft and dramatic at once; her Natsu, Owaranai de solo is repeatedly called the best in the franchise.",
+      "tells": [
+        "Uses vibrato in literally everything — more frequent and prominent than Umi's.",
+        "A noticeably nasal pronunciation of “ah” sounds.",
+        "Soft intros that burst into powerful choruses, often starting deeper to carry sadness.",
+        "A mature, angelic tone — innocent without Hanayo's childlike quality."
+      ],
+      "confusable": [
+        "vs Umi: in shared songs the deeper sections are Umi; Eli is more nasal and adds more vibrato (e.g. on “de” at 0:03 of Aishiteru Banzai! where Umi doesn't)."
+      ],
+      "signatureSongs": [
+        { "songId": "natsuowa", "t": "2m39", "label": "“The Eli Show” — a ~40-second solo repeatedly named the best solo in the whole franchise." },
+        { "songId": "garasu-no-hanazono", "t": "1m47", "label": "Her duet with Nozomi — signature vibrato + warmth selling love and longing." }
+      ],
+      "notes": [
+        { "songId": "arifureta-kanashimi-no-hate", "text": "Soft intro into a powerful chorus burst, starting deeper for sadness (an Amy Lee / “My Immortal” comparison)." },
+        { "songId": "storm-in-lover", "text": "Powerhouse soprano against Umi's alto — all the higher sections are hers." },
+        { "songId": "soldier-game", "t": "1m28", "text": "Embodies elegance in verse 2 of the famed Umi/Eli/Maki trio." },
+        { "songId": "cp", "t": "0m45", "text": "Soft and delicate, but also sensual and mature." }
+      ]
+    },
+    "3": {
+      "thesis": "The fluffy, high-pitched cutie whose real strength isn't her lead voice — it's being the group's cleverest, most foundational background harmonizer.",
+      "tells": [
+        "A high, “fluffy,” cutesy voice with a distinctive sharpness.",
+        "The group's best background/harmony singer — sets the foundation, normally “hard to locate” in a mix.",
+        "Can drop into a deeper register without losing the cute factor (sounds Maki-esque at her deepest).",
+        "Surprising power bursts and clean control: stays breathy, ends notes low, then alternates high/low."
+      ],
+      "signatureSongs": [
+        { "songId": "spicaterrible", "t": "0m47", "label": "Her pre-anime solo — deeper, with conviction and an aggressive edge; this chorus is a favorite moment." },
+        { "songId": "wonder-zone", "t": "0m17", "label": "A Kotori-center single — her harmonies and falsettos lead into each verse." }
+      ],
+      "notes": [
+        { "songId": "orion", "t": "0m19", "text": "Best example of her pitch control — stays breathy, ends notes low, alternates high/low." },
+        { "songId": "wild-stars", "t": "0m56", "text": "Her deepest range, sounding Maki-esque." },
+        { "songId": "sentimental-steps", "t": "1m13", "text": "Bigger than usual here — choruses normally inaudible from her come through crystal clear." },
+        { "songId": "snow-halation", "t": "0m40", "text": "Crisp ascending scales without straining." }
+      ]
+    },
+    "4": {
+      "thesis": "The technical beast of μ's — a jack-of-all-trades alto whose defining trait is sheer range: she runs the full gamut of power/pitch combinations better than anyone.",
+      "tells": [
+        "An alto powerhouse with deep, long vowels who dominates group sections.",
+        "Emphatic, well-placed vibrato; sweeps notes instead of hard breaks.",
+        "Precise pitch micro-adjustments on nearly every note; soft-to-“opera-house” in 15 seconds.",
+        "So consistent she rarely deviates from her norm — which is itself a tell."
+      ],
+      "confusable": [
+        "vs Eli: the deeper sections are Umi; she's less nasal on “ah” and uses less, less-prominent vibrato."
+      ],
+      "signatureSongs": [
+        { "songId": "omoide", "t": "2m02", "label": "Her 2nd solo verse goes from soft and steady to “filling an entire opera house” in 15 seconds." },
+        { "songId": "anone", "t": "0m14", "label": "Explosive “booming Umi vocals” — power stays sky-high; “feels like it should be a solo.”" }
+      ],
+      "notes": [
+        { "songId": "susumetomorrow", "t": "0m07", "text": "High pitch + vibrato on “kanjitanda” — “listen until 0:07 and you'll be convinced.”" },
+        { "songId": "soldier-game", "t": "1m49", "text": "Goes all-in on power in verse 2; dominates group sections." },
+        { "songId": "aiban", "t": "0m21", "text": "Sweeps “go-oru” instead of a hard break — hallmark technique." },
+        { "songId": "storm-in-lover", "text": "Fantastic alto against Eli's soprano — their only studio duet." }
+      ]
+    },
+    "5": {
+      "thesis": "The most surprising talent in μ's — an energetic, infectiously happy voice whose defining trait is clarity: a purity that cuts through any nine-member mix.",
+      "tells": [
+        "Pure clarity — overpowers everyone on long vowels in group sections, audible even buried in nine voices.",
+        "Cleanest on vowels: soft O's, hard E's, hard O's, and unusually clean hard U's (where others “sink”).",
+        "Brightest on energetic, happy songs; “just does not do deep or breathy.”",
+        "More technical than her cute persona implies — vibrato arguably stronger than Umi's up high.",
+        "In character, drops cat-like “nya” interjections (Kaguya no Shiro de Odoritai 0:49; the explosive “Nyaaa!” in Dancing Stars on Me!)."
+      ],
+      "signatureSongs": [
+        { "songId": "shirarara", "t": "0m33", "label": "Her vibrato-and-clarity showcase — the full extent of her natural voice." },
+        { "songId": "snow-halation", "t": "0m42", "label": "Hard U “sawagu” audible over everyone in the 9-member version." }
+      ],
+      "notes": [
+        { "songId": "anone", "t": "0m48", "text": "“Lightning to Umi's thunder” — clarity and purity, clear English “can you hear.”" },
+        { "songId": "omoide", "t": "0m32", "text": "Gorgeous falsetto with Umi, building to the chorus." },
+        { "songId": "aiban", "t": "0m58", "text": "Reimagines the dramatic song with bouncy clarity and soft falsetto." }
+      ]
+    },
+    "6": {
+      "thesis": "The red-haired piano girl and perennial popularity champion — a diva-grade voice defined by the timely use of power: knowing exactly when to detonate and when to hold back.",
+      "tells": [
+        "A slightly raspy nasality paired with a stiff, equally-paced vibrato.",
+        "Queen of powerful, sustained high notes; never overpowered by busy instrumentals.",
+        "Sweet spot is a mid-high range with mild nasality, especially on soft O's.",
+        "Strong fit with electronic / hip-hop / K-pop-influenced pop."
+      ],
+      "signatureSongs": [
+        { "songId": "aiban", "t": "0m11", "label": "Her magnum opus — raspy/breathy with timely power; the intro is the single most-cited favorite." },
+        { "songId": "cp", "t": "2m03", "label": "Go-to for sexually-charged vocals; hangs on “zettai.”" }
+      ],
+      "notes": [
+        { "songId": "soldier-game", "t": "0m22", "text": "Occupies the soft, breathy space — her soft opening note makes Umi's entry explosive." },
+        { "songId": "saipara", "t": "1m29", "text": "Best in a mid-high range over dramatic instrumentation — “bouken wa kiken…” cited as perfection." },
+        { "songId": "no-brand-girls", "t": "1m01", "text": "Hits falsetto then drops pitch seamlessly into the chorus." },
+        { "songId": "snow-halation", "t": "3m20", "text": "Builds to the climactic “Snow Halation!”" }
+      ]
+    },
+    "7": {
+      "thesis": "The most distinguishable voice in μ's yet the one with the least spotlight — a warm, maternal mezzo who is the group's “emulsifier”, blending the high and deep voices together.",
+      "tells": [
+        "Warm, maternal, soothing — best in the lower registers.",
+        "The harmonizing glue: even when not distinctly audible she smooths others' voices (e.g. Eli's vibrato).",
+        "Sits between the high and low voices on pitch duties (between Rin and Umi in lily white).",
+        "A unique, slightly divisive timbre; sings more from the nose than the chest."
+      ],
+      "confusable": [
+        "vs Aqours' Kanan: very similar — close pitch, both sing more from the nose than the chest, both stronger at blended/soft work than power solos."
+      ],
+      "signatureSongs": [
+        { "songId": "shunjou", "t": "1m00", "label": "Stands out on her own in the chorus background — shines in fast, powerful choruses." },
+        { "songId": "garasu-no-hanazono", "t": "1m25", "label": "Her harmonizing role on full display — the post-chorus “la”s smooth out Eli's vibrato." }
+      ],
+      "notes": [
+        { "songId": "omoide", "t": "0m29", "text": "“The winner” — power manipulation and the clearest evidence of her improvement." },
+        { "songId": "love-wing-bell", "t": "0m55", "text": "“Nozomi just does not do vibrato, let alone this good” — bold and front-and-center." },
+        { "songId": "wild-stars", "t": "2m12", "text": "The deepest Nozomi ever recorded." }
+      ]
+    },
+    "8": {
+      "thesis": "The franchise's “shy girl” incarnate — a Jekyll-and-Hyde vocalist who switches on demand between a cute high voice and a deep soft one; her Love Marginal is repeatedly named the best solo in Love Live.",
+      "tells": [
+        "Two voices — a distinctly cute high one and a distinctly deep soft one; her versatility is the switching between them.",
+        "Cuteness lives in rounded, exaggerated vowels (open jaw, forward tongue).",
+        "Shyness shows in subdued projection and wavering, fluttery notes.",
+        "A pop/ballad type — the songs written for her are all “pure,” no rock."
+      ],
+      "signatureSongs": [
+        { "songId": "rabumaji", "t": "3m10", "label": "Overwhelmingly the corpus's favorite — the deep/soft voice nailing complex heartbreak; bridge + final chorus." },
+        { "songId": "kodoku-na-heaven", "label": "Gold-standard “Low Voice Hanayo” — a rock ballad written for pre-anime her." }
+      ],
+      "notes": [
+        { "songId": "orion", "t": "1m44", "text": "The closest the later era gets to another Love Marginal — soft, then erupts with strength and vibrato." },
+        { "songId": "wild-stars", "t": "0m32", "text": "Both voices, even simultaneously." },
+        { "songId": "kaguya-no-shiro-de-odoritai", "t": "1m26", "text": "“hoo-ah”s and beautiful vibrato on “nogasazu ni.”" }
+      ]
+    },
+    "9": {
+      "thesis": "The “#1 idol in the universe” — not the most polished of μ's, but the most ambitious, reaching for techniques no one else attempts; and the group's rapper.",
+      "tells": [
+        "Rounds off pitches and chops phrases into discrete staccato syllables, with a pouty, forward-jaw delivery.",
+        "Rotates rapidly through deliveries in one song — heady midrange, poutiness, breathiness, added/removed nasality.",
+        "Her signature is rapping — lightning-fast, bright, in-character bars.",
+        "Breath-control tell: she sometimes arrives at choruses nearly out of breath.",
+        "Slips her own name in as an in-character interjection (a “Nico” at 1:04 in Kaguya no Shiro de Odoritai)."
+      ],
+      "confusable": [
+        "Sounds like Nozomi in warm/soft registers, like Rin in rounded highs, and like Aqours' Ruby on rounded note-enders."
+      ],
+      "signatureSongs": [
+        { "songId": "cp", "t": "0m48", "label": "The emergence of “Nico the rapper” — lightning-fast, bright bars; a favorite Nico moment." },
+        { "songId": "torabasu", "t": "2m35", "label": "A Twista-speed, in-character rap bridge that “encapsulates her character.”" }
+      ],
+      "notes": [
+        { "songId": "pf", "t": "1m45", "text": "Lets loose vocally, handling power without faltering; signature jaw adjustments." },
+        { "songId": "diapuri", "t": "2m19", "text": "One of her strongest for clarity, power, and pitch control." },
+        { "songId": "dancing-stars-on-me", "text": "“Excellent” — an unusually wide, accurate array of techniques, one of her strongest closers." }
+      ]
+    }
+  },
+  "aqours": {
+    "1": {
+      "thesis": "Dismissed early as a Honoka copy, she became one of Aqours' most expressive singers — conveying emotion through intricate technical tricks rather than raw power.",
+      "tells": [
+        "A peculiar hard O that mixes a hard “oh” with a soft “ah” (e.g. “gomen ne” in Yozora).",
+        "An emphatic hard E via a high-tongue, forward-mouth approach (“kirari,” Daisuki 1:24).",
+        "“Singing-through-tears” rough texturing, head/chest shifting, multi-variation phrase repeats.",
+        "In big open solos she opens every vowel and can sound like a different character entirely."
+      ],
+      "confusable": [
+        "Can sound like Honoka in opening solos, like Ruby in soft passages, and shades of Riko/Mari in big solos."
+      ],
+      "signatureSongs": [
+        { "songId": "yumetera", "t": "4m16", "label": "Career-defining — three distinct emotional takes on “kienai” via dynamics, texture, and breathing." },
+        { "songId": "mirai", "t": "2m31", "label": "A tour de force — the 2:36 solo “changed the game”; she doesn't sound like the same character." }
+      ],
+      "notes": [
+        { "songId": "sorahare", "t": "0m18", "text": "Rough “nakisou” texturing (singing-through-tears); powerful sustained vibrato later." },
+        { "songId": "yozora", "t": "2m34", "text": "Climax — soft “osoi ne,” vibrato'd “gomen”; a “gives me chills” moment." },
+        { "songId": "daisuki", "t": "1m24", "text": "Aggressive chorus lines; emphatic hard E on “kirari.”" },
+        { "songId": "landing", "t": "0m35", "text": "Nimble dynamic control, dipping in and out of softer ranges." }
+      ]
+    },
+    "2": {
+      "thesis": "The deep-voiced tomboy “beast” — a powerful chest voice, wildly recognizable; inconsistent, but at her best among the group's finest.",
+      "tells": [
+        "Two distinct voices — a powerful, deep, tomboyish chest voice she drops into for climaxes, and a lighter everyday one.",
+        "Pitch stiffness — flat, each word its own distinct pitch, little dynamics.",
+        "The only member who does tremolo (fast vibration) on words like “daisuki”/“areba.”",
+        "A hard forward U almost like an L (Daisuki 3:59 “naru”); stands out on long “u” vowels."
+      ],
+      "signatureSongs": [
+        { "songId": "yozora", "t": "1m15", "label": "Her showcase — soft solos that explode into power; the easiest place to hear her vibrato." },
+        { "songId": "daisuki", "t": "3m59", "label": "Dominates the harmony via an emphasized long “u” in “naru”; “daisuki” maybe her best note ever." }
+      ],
+      "notes": [
+        { "songId": "humming", "t": "1m04", "text": "Quirk is vibrato (four instances); a deeper voice with solid dynamics; sounds tomboyish." },
+        { "songId": "yumeuta", "t": "0m28", "text": "Deep voice not just for climaxes; noticeably stiff but stands out; strong vibrato on “happy.”" },
+        { "songId": "mattete", "t": "4m24", "text": "Two distinct voices; the deep powerful one used for the climax." },
+        { "songId": "sorahare", "t": "2m40", "text": "Stands out on an extended long “u” in group sections via unique pronunciation." }
+      ]
+    },
+    "3": {
+      "thesis": "The crystal-clear vocal “glue” of Aqours — a no-frills, voice-quality-over-technicality style and consistent timbre make her one of the easiest members to ID.",
+      "tells": [
+        "Most reliable tell: an upward-sliding pitch at the end of a line — she does it constantly.",
+        "Possibly the clearest singer in the group; mezzo pitch, strong projection — the vocal foundation.",
+        "Goes high on the ends of long notes; occasional extra-high-pitched lines.",
+        "A narrow set of cadences and note progressions — consistent “to a fault.”"
+      ],
+      "signatureSongs": [
+        { "songId": "daisuki", "t": "2m33", "label": "Bursts back into the chorus after a dropout — chill-inducing; shows she's the glue that blends the trio." },
+        { "songId": "guilty", "t": "0m23", "label": "Deceptively expressive via cadence — drags “tsu,” asymmetric cadences, hard enunciation." }
+      ],
+      "notes": [
+        { "songId": "koiaqua", "t": "0m44", "text": "Syncs with Yoshiko and Ruby — clarity as a solid foundation." },
+        { "songId": "yumeuta", "t": "1m04", "text": "Unmatched clarity makes the falsetto potent." },
+        { "songId": "strawberry", "t": "0m45", "text": "No-frills, voice-quality-over-technicality; upward-slide note enders." },
+        { "songId": "sorahare", "t": "2m12", "text": "Soft deep vibrato on “ga” — buttery smoothness extending into her softer range." }
+      ]
+    },
+    "4": {
+      "thesis": "A husky power-and-warmth powerhouse with one of the biggest voices in Aqours — top-tier latent talent the author argues has been underexposed by song writing, not ability.",
+      "tells": [
+        "A naturally husky voice; depth audible even in soft sections.",
+        "Deep vowels and sudden bursts of power with no ramp (“saa saa” at Pikkapika 2:05).",
+        "Clear, open vowels in her high range.",
+        "A narrow vibrato — the key tell separating her from Yoshiko's wider one."
+      ],
+      "confusable": [
+        "vs Yoshiko: Hanamaru's vibrato is narrow; Yoshiko's is wider."
+      ],
+      "signatureSongs": [
+        { "songId": "ondo", "t": "1m54", "label": "The breakout — “the first time she truly left nothing on the table”; a huge outlier on the consistency graph." },
+        { "songId": "mijuku", "t": "0m51", "label": "High notes higher than they have any right to be given how deep her voice is — incredible power and range." }
+      ],
+      "notes": [
+        { "songId": "yumeuta", "t": "1m44", "text": "Sudden booming “kamo ne”; effortless power vocals with depth even in soft parts." },
+        { "songId": "humming", "t": "2m10", "text": "Crams power, technicality, and clarity into a limited frame — Play of the Game two primers running." },
+        { "songId": "yumetera", "t": "0m30", "text": "Strong vibrato; her huskier voice a natural fit; sets the group-section foundation." }
+      ]
+    },
+    "5": {
+      "thesis": "The “biggest surprise” of Aqours — a moe singer who treads the right side of cute-vs-childish, with a real, maturing technical voice hiding under the kid-character shtick.",
+      "tells": [
+        "Childlike characteristics; a very straightforward style with little texturing and slurred transitions.",
+        "Poor clarity on hard consonants/vowels (S in “isa” ≈ “sh” in “shiku”; an R/L/Y hybrid “ra”).",
+        "Keeps sustained notes flat where others would add vibrato.",
+        "A rounded, high-throat delivery of soft vowels that is unique to her."
+      ],
+      "confusable": [
+        "Soft, rounded passages can resemble Chika; rounded note-enders can resemble μ's Nico."
+      ],
+      "signatureSongs": [
+        { "songId": "ondo", "t": "1m40", "label": "The Ondo style suits her — “tabeyou” 1:52 is deep, powerful, and clear, unexpected for a moe singer." },
+        { "songId": "mijuku", "t": "0m48", "label": "Just two seconds, but argued her strongest solo — clearer and stronger than ever." }
+      ],
+      "notes": [
+        { "songId": "sky", "t": "0m30", "text": "A reeled-in version of her character voice that proves more technical handle than she's usually credited for." },
+        { "songId": "landing", "t": "3m17", "text": "Surprising vibrato — a powerful held “darou,” one of her most impressive feats ever." },
+        { "songId": "yozora", "t": "2m01", "text": "Holds drawn-out notes where childlike voices usually can't — and keeps them flat instead of using vibrato." }
+      ]
+    },
+    "6": {
+      "thesis": "The author's runaway favorite voice and arguable best singer in either group — a model of consistency gliding from theatrical depth to crystalline falsetto.",
+      "tells": [
+        "Nasally vowels — especially soft O's that turn nasal in her high range.",
+        "A very clear falsetto and a distinct, theatrical deep voice (most exposed in Strawberry Trapper).",
+        "Wide vibrato and dynamics for a theatrical quality; vibrato on notes no one else ornaments.",
+        "Huge range, recognizable across her whole register."
+      ],
+      "confusable": [
+        "vs Mari: hard to split where their nasal textures overlap (Aozora Jumping Heart). vs Hanamaru: Yoshiko's vibrato is wider."
+      ],
+      "signatureSongs": [
+        { "songId": "yumetera", "t": "0m32", "label": "His pick for her strongest performance — strong first notes, then intensity cut via vibrato and dynamics." },
+        { "songId": "strawberry", "t": "2m38", "label": "The deep, ominous “Yohane, shoukan” bridge — the one song that showcases her lows extensively." }
+      ],
+      "notes": [
+        { "songId": "guilty", "t": "0m29", "text": "Rapid chest → head voice → falsetto in seconds; huge range." },
+        { "songId": "mijuku", "t": "1m24", "text": "Flawless “angel mode” falsetto and vibrato on “mama.”" },
+        { "songId": "shadow", "t": "3m21", "text": "His favorite part of her range — deep enough for power yet keeping clarity and control." },
+        { "songId": "hapitore", "t": "0m45", "text": "Nasally soft O's on “aitai no wa” and a very clear falsetto." }
+      ]
+    },
+    "7": {
+      "thesis": "A clear, stiff-and-grand voice and Aqours' great late bloomer — early pitch flaws, but the most dramatically improved singer across the run.",
+      "tells": [
+        "Unmistakable tell: a lisp (audible on “suteki,” Mattete 1:18/1:35).",
+        "A stiffness and grandeur that stays even as her technique improves.",
+        "Strongly opens and rounds vowels (hard O's “desho no”); keeps hard E's tight and high.",
+        "Better at power vocals than mellow ones; owns regal, grand closing sections."
+      ],
+      "signatureSongs": [
+        { "songId": "omoi", "t": "0m32", "label": "“Finally got love” — a duet with Yoshiko; the single huge improvement that sits above everything on the trajectory." },
+        { "songId": "ondo", "t": "3m44", "label": "Owns the most regal closing role — “no one fills that role like she can.”" }
+      ],
+      "notes": [
+        { "songId": "jingle", "t": "2m11", "text": "Much cleaner in technicality, power, and pitch; hard E's kept tight and high." },
+        { "songId": "tokimeki", "t": "2m16", "text": "More comfortable and elegant on power lines than mellow ones; easy to pick out by the lisp." },
+        { "songId": "mijuku", "t": "0m36", "text": "Smooths the contrast between Mari's nasal and Kanan's smoother voice." }
+      ]
+    },
+    "8": {
+      "thesis": "The most distinctively-voiced member with the weakest start — a warm, jagged-toned timbre player whose arc is the steepest improvement curve in the group.",
+      "tells": [
+        "Timbre — not technicality or power — is her asset; unmistakable even grouped or autotuned.",
+        "Jagged transitions: accelerates rapidly into and out of pitches before settling; sustained notes waver rather than hold flat.",
+        "Pronounces soft O's (“ah”) like soft A's (“at”), dragging from a forward to an open mouth.",
+        "Ends choruses with a quick faint exhale rather than a spike; a consistently deeper tone."
+      ],
+      "confusable": [
+        "vs μ's Nozomi: sings eerily similar — close pitch and nasal placement; often described as a Nozomi/Nico combination."
+      ],
+      "signatureSongs": [
+        { "songId": "ondo", "t": "3m31", "label": "Her best performance by far — “3:35 ii hi da” is the model Kanan high note: deep, warm, consistent." },
+        { "songId": "mirai", "t": "1m13", "label": "Shockingly good (scored 9.5) — only she and Chika did something out-of-the-ordinary." }
+      ],
+      "notes": [
+        { "songId": "mijuku", "t": "0m16", "text": "Jagged “omoide” entry; her deeper 4:44 bridge is the best match for her voice." },
+        { "songId": "aozora", "t": "1m57", "text": "Most unique voice in the group — a Kanan solo easily creates a change of pace." },
+        { "songId": "landing", "t": "0m11", "text": "Hitches and unorthodox dynamics; warm, enthusiastic background interjections." }
+      ]
+    },
+    "9": {
+      "thesis": "The third years' star soloist and the group's theatrical showstopper — a high, nasal voice with a deep reserve of breathy sensuality.",
+      "tells": [
+        "Core tell: nasality at a near-100% hit rate, most noticeable on hard “E” sounds.",
+        "The highest voice of Guilty Kiss, but edged so it meshes with the deeper Riko/Yoshiko.",
+        "Playful, wacky interjections (the classic Mari “yes”); a theatrical delivery.",
+        "A breathy, sensual side; a layered, almost auto-tuned tone at the top of her range."
+      ],
+      "confusable": [
+        "vs Yoshiko: overlapping nasal range and texture make Aozora Jumping Heart hard to split."
+      ],
+      "signatureSongs": [
+        { "songId": "ondo", "t": "3m16", "label": "Perfection — seamlessly weaves folksy and poppy vocals (her seiyuu's min'yo background); the biggest single-song jump in the graphs." },
+        { "songId": "shadow", "t": "0m29", "label": "Her sexier, breathy side — sultry bookends with smooth transitions." }
+      ],
+      "notes": [
+        { "songId": "guilty", "t": "2m44", "text": "Nasal near-100%; well-rounded — falsetto, sweeping, power, and the classic Mari “yes.”" },
+        { "songId": "strawberry", "t": "2m15", "text": "The model for done-right nasality; playful interjections." },
+        { "songId": "kowareya", "t": "0m27", "text": "A layered, auto-tuned high-end texture; plays her voice off the guitar like an instrument." },
+        { "songId": "mattete", "t": "4m20", "text": "Nasal stylings amaze — the sweep and vibrato of “kaori wa.”" },
+        { "songId": "fever", "t": "0m21", "text": "Her breathy side on full display — great dynamics all the way down to a near-whisper." }
+      ]
+    }
+  }
+}

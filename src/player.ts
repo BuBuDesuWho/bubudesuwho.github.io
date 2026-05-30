@@ -24,16 +24,29 @@ export function initPlayer(cbs: PlayerCallbacks): void {
   startAnimLoop();
 }
 
+// Deep-link seek (?t=) requested before any user gesture. Browser autoplay
+// policy blocks the initial play() and Howler's html5 backend loses a seek
+// applied while paused/unloaded — so we hold the target and re-apply it every
+// time playback actually starts until it sticks.
+let _pendingSeek: number | null = null;
+
 export function loadSong(ogg: string, m4a: string): void {
   if (howl) {
     howl.unload();
   }
   _seekPending = true;
+  _pendingSeek = null;
   howl = new Howl({
     src: [ogg, m4a],
     format: ['ogg', 'm4a'],
     html5: true,
     volume: _volume,
+  });
+  howl.on('play', () => {
+    if (_pendingSeek === null) return;
+    _seekPending = true;
+    howl!.seek(_pendingSeek);
+    _pendingSeek = null;
   });
 }
 
@@ -41,8 +54,17 @@ export function play(seekTo?: number): void {
   if (!howl) return;
   if (seekTo !== undefined) {
     _seekPending = true;
-    howl.seek(seekTo);
-    if (!howl.playing()) howl.play();
+    const wasPlaying = howl.playing();
+    if (howl.state() === 'loaded') howl.seek(seekTo);
+    if (wasPlaying) {
+      // Already running — the seek sticks immediately, nothing to defer.
+      _pendingSeek = null;
+    } else {
+      // Paused/unloaded: the seek may be lost (autoplay block, lazy html5
+      // node), so re-apply it when playback actually starts.
+      _pendingSeek = seekTo;
+      howl.play();
+    }
   } else if (!howl.playing()) {
     howl.play();
   }
@@ -52,6 +74,8 @@ export function pause(seekTo?: number): void {
   if (!howl) return;
   if (seekTo !== undefined) {
     _seekPending = true;
+    // A fresh explicit seek supersedes any deferred deep-link target.
+    _pendingSeek = null;
     howl.seek(seekTo);
   }
   howl.pause();

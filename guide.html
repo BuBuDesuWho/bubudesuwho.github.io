@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fb96be">
+
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}</script>
+
+<title>BubuDesuWho - Voice Guide</title>
+
+<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+<link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
+<link type="text/css" href="css/styles.css?ver=20170312" rel="stylesheet" />
+<link rel="preconnect" href="https://github.com">
+<link rel="preconnect" href="https://objects.githubusercontent.com">
+
+</head>
+<body>
+
+<div id="sidebar" class="sidebar-collapsed">
+  <!-- @include partials/sidebar-nav.html -->
+</div>
+
+<div class="main">
+  <span id="menu-button" class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+
+  <nav class="navbar navbar-default">
+  <div class="container">
+  <div class="row"><div class="col-xs-10 col-xs-offset-2 col-sm-11 col-sm-offset-1 navbar-title-row">
+      <h1 class="dia-red">Voice Guide</h1>
+      <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
+  </div></div>
+  </div>
+  </nav>
+
+  <div class="container"><div class="row"><div class="col-xs-12 guide-page">
+
+    <p class="guide-intro">
+      Every singer has tells. This guide distills the community's ear for each idol — what their
+      voice sounds like, the giveaways that out them in a mix, and the moments where it shines.
+      Tap a <strong>Hear it</strong> chip to jump straight to that moment in the player.
+    </p>
+
+    <div id="guide-root" class="guide-root" aria-busy="true"></div>
+
+    <footer class="guide-credit">
+      <p>
+        Every voice profile here is adapted and condensed from <strong>throwaway93257</strong>'s
+        Love Live music primers, posted to
+        <a href="https://old.reddit.com/user/throwaway93257/submitted/" target="_blank" rel="noopener noreferrer">r/LoveLive&nbsp;&amp;&nbsp;r/SchoolIdolFestival</a>
+        (2015–2018). The ear for every tell is theirs; any errors in our adaptation are our own.
+      </p>
+    </footer>
+
+  </div></div></div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+<script>
+  if (!('ontouchstart' in window) && !(navigator.msMaxTouchPoints > 0)) {
+    document.documentElement.classList.add('hoverable');
+  }
+</script>
+</body>
+</html>

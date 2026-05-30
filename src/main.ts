@@ -30,6 +30,14 @@ if (cfToken) {
 // Favorite-member buddy portrait (every page, no-op when no favorite set).
 initBuddy();
 
+// The Voice Guide only has Love-Live dossiers, so hide its nav link on the
+// kpop build (the sidebar partial is shared by both modes).
+if (import.meta.env.VITE_APP_MODE === 'kpop') {
+  document.querySelectorAll('.guide-nav-link').forEach(el => {
+    (el.closest('li') ?? el).remove();
+  });
+}
+
 // detect which page we're on and initialize accordingly
 const path = location.pathname;
 
@@ -45,6 +53,8 @@ if (path.endsWith('play.html')) {
   initChangelogPage();
 } else if (path.endsWith('stats.html')) {
   import('./stats').then(m => m.initStatsPage());
+} else if (path.endsWith('guide.html')) {
+  import('./guide').then(m => m.initGuidePage());
 } else {
   // index.html or /
   initAboutPage();
