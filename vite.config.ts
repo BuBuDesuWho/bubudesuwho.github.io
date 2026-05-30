@@ -65,6 +65,7 @@ export default defineConfig(({ command }) => ({
         stats: resolve(__dirname, 'stats.html'),
         bubudle: resolve(__dirname, 'bubudle.html'),
         submission: resolve(__dirname, 'submission.html'),
+        guide: resolve(__dirname, 'guide.html'),
       },
       output: {
         manualChunks(id: string) {
