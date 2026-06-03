@@ -38,6 +38,7 @@ export const state: GameState = {
   sortMode: 'index',
   groupBy: { subunit: false, album: false },
   editMode: false,
+  recordProgress: true,
   jpLyrics: false,
   callSFXch: 0,
   controls: { lastSlotScroll: 0, lastLyricScroll: 0 },

@@ -808,7 +808,7 @@ export function restoreChoices(): void {
 }
 
 function storeChoices(): void {
-  if (!state.song || state.editMode) return;
+  if (!state.song || state.editMode || !state.recordProgress) return;
   const mapped: Record<string, number[]> = {};
   for (const slot of state.slots) {
     mapped[hashSlot(slot)] = slot.choices;
@@ -821,7 +821,7 @@ function hashSlot(slot: Slot): string {
 }
 
 function saveHist(): void {
-  if (!state.song) return;
+  if (!state.song || !state.recordProgress) return;
   const record: [number[], number[]][] = [];
   for (const slot of state.slots) {
     if (slot.diff > state.diff) continue;

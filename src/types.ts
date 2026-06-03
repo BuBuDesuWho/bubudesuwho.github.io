@@ -217,6 +217,10 @@ export interface GameState {
    *  each subunit. KPop never sets `subunit` (no subunit data). */
   groupBy: { subunit: boolean; album: boolean };
   editMode: boolean;
+  /** When false, plays don't write to history or per-song selections — used
+   *  by the bubudle "count toward song progress" toggle. Defaults to true so
+   *  the play page always records. */
+  recordProgress: boolean;
   jpLyrics: boolean;
   controls: {
     lastSlotScroll: number;

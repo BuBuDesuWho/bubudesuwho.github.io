@@ -324,6 +324,7 @@ export async function initBubudlePage(): Promise<void> {
   initGameState();
   initBubudleDifficulty();
   initSongDifficulty();
+  initProgressToggle();
   loadSubunitFilter();
   const songs = await loadConfig();
   if (songs.length === 0) return;
@@ -1074,16 +1075,7 @@ function checkAnswer(): void {
     revealHint('bubudle-hint-clip', 'Clip', '+1s each side');
     resetSlotForRetry(currentSlot);
   } else if (wrongCount === 2) {
-    // Hint 2: reveal song name
-    revealHint('bubudle-hint-song', 'Song', current.song.name);
-    switchTheme(current.song.id);
-    // Also reveal theme if available
-    if (current.song.theme) {
-      revealHint('bubudle-hint-theme', 'Theme', current.song.theme);
-    }
-    resetSlotForRetry(currentSlot);
-  } else if (wrongCount === 3) {
-    // Hint 3: narrow down to the song's actual singers (subgroup), then label
+    // Hint 2: narrow down to the song's actual singers (subgroup), then label
     if (songSingers.length < state.singers.length) {
       state.singers = songSingers;
       narrowToSingers(currentSlot, songSingers);
@@ -1102,6 +1094,15 @@ function checkAnswer(): void {
     else if (YEARS.includes(key)) narrowLabel += ' (Year)';
 
     revealHint('bubudle-hint-narrow', 'Singers', narrowLabel);
+    resetSlotForRetry(currentSlot);
+  } else if (wrongCount === 3) {
+    // Hint 3: reveal song name
+    revealHint('bubudle-hint-song', 'Song', current.song.name);
+    switchTheme(current.song.id);
+    // Also reveal theme if available
+    if (current.song.theme) {
+      revealHint('bubudle-hint-theme', 'Theme', current.song.theme);
+    }
     resetSlotForRetry(currentSlot);
   } else {
     // 4th wrong: give up, reveal answer
@@ -1384,6 +1385,44 @@ function initSongDifficulty(): void {
     });
   }
 
+  initSongDifficultyPoolHelp();
+}
+
+function initProgressToggle(): void {
+  state.recordProgress = getStorage('bubudle-count-progress') !== 'off';
+
+  document.querySelectorAll<HTMLElement>('.bubudle-progress-btn').forEach((btn) => {
+    const on = btn.dataset.progress === 'on';
+    btn.classList.toggle('active', on === state.recordProgress);
+    btn.addEventListener('click', () => {
+      state.recordProgress = on;
+      setStorage('bubudle-count-progress', on ? 'on' : 'off');
+      document.querySelectorAll<HTMLElement>('.bubudle-progress-btn').forEach((b) =>
+        b.classList.toggle('active', (b.dataset.progress === 'on') === state.recordProgress)
+      );
+    });
+  });
+
+  const helpEl = document.getElementById('bubudle-progress-help');
+  if (helpEl) {
+    let tip: HTMLElement | null = null;
+    helpEl.addEventListener('mouseenter', () => {
+      tip = document.createElement('div');
+      tip.className = 'slot-tooltip';
+      tip.innerHTML = '<b>On</b> — bubudle answers count toward your Mastery stats and saved progress<br><b>Off</b> — play without affecting your stats';
+      document.body.appendChild(tip);
+      const rect = helpEl.getBoundingClientRect();
+      tip.style.top = `${rect.bottom + window.scrollY + 4}px`;
+      tip.style.left = `${rect.left + window.scrollX + rect.width / 2 - tip.offsetWidth / 2}px`;
+    });
+    helpEl.addEventListener('mouseleave', () => {
+      tip?.remove();
+      tip = null;
+    });
+  }
+}
+
+function initSongDifficultyPoolHelp(): void {
   const poolHelpEl = document.getElementById('bubudle-pool-help');
   if (poolHelpEl) {
     let tip: HTMLElement | null = null;

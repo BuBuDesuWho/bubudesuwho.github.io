@@ -67,6 +67,7 @@ const PROFILE_STATIC_KEYS = new Set<string>([
   'group', 'sort', 'groupBy', 'groupBySubunit',
   // Bubudle settings
   'bubudle-mode', 'bubudle-diff', 'bubudle-sdiff', 'bubudle-daily-scope', 'bubudle-infinite-all',
+  'bubudle-count-progress',
 ]);
 
 function shouldExportKey(key: string): boolean {
