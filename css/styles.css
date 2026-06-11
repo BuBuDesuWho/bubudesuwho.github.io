@@ -1105,7 +1105,7 @@ html.group-muse:not(.dark-mode) {
   --lyrics-bg:    #FFE8F4;
   --lyrics-color: #6D0831;
 }
-html.group-muse:not(.dark-mode) .lyric.lyric-active:not([class*="theme-"]) {
+html.group-muse:not(.dark-mode) .lyric.lyric-active:not([class*="theme-"]):not([class*="ans"]) {
   text-shadow: 3px 0px 3px #FFBFD8,
                0px 3px 3px #FFBFD8;
 }
@@ -1155,7 +1155,7 @@ html.group-nijigasaki:not(.dark-mode) {
   --lyrics-bg:    #FFF2DE;
   --lyrics-color: #8A3E00;
 }
-html.group-nijigasaki:not(.dark-mode) .lyric.lyric-active:not([class*="theme-"]) {
+html.group-nijigasaki:not(.dark-mode) .lyric.lyric-active:not([class*="theme-"]):not([class*="ans"]) {
   text-shadow: 3px 0px 3px #FFD28A,
                0px 3px 3px #FFD28A;
 }

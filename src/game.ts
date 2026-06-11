@@ -2,13 +2,16 @@ import {
   Song, Slot, SlotBase, SlotState, LyricToken, MappingEntry,
   MEMBER_COLORS, MEMBER_COLORS_OFFICIAL, MEMBER_MAPPING,
 } from './types';
-import { arrayEqual } from './utils';
 import { mapToLabel } from './labels';
+import { slotState, applySlotClasses } from './answer';
+import { prefs } from './prefs';
 import {
   getStorage, saveHistory, loadChoicesForSong, saveChoicesForSong,
 } from './storage';
 import * as player from './player';
 import { state, getSongTitle } from './game-state';
+import { slotFor } from './slot-graph';
+import { revealClasses, applyClasses, Reveal } from './reveal';
 
 // Re-exported so existing imports (`import { state } from './game'`) keep
 // working while non-player consumers can switch to the leaner `./game-state`.
@@ -83,7 +86,6 @@ export function loadSong(song: Song): void {
   state.assObjectURL = '';
   state.slots = makeSlotsFromBase(song.slotsBase);
   state.lyrics = makeLyricsFromBase(song.lyricsBase);
-  state.reverseMap = makeReverseMapping(state.slots, state.lyrics);
 
   // default to lowest available diff
   for (let i = 1; i <= 3; i++) {
@@ -135,36 +137,6 @@ function makeLyricsFromBase(bases: LyricToken[]): LyricToken[] {
     active: base.mapping ? false : undefined,
     element: undefined,
   }));
-}
-
-export function makeReverseMapping(
-  slots: Slot[],
-  lyrics: LyricToken[],
-): Record<number, { slot?: Slot; lyric?: LyricToken }> {
-  const map: Record<number, { slot?: Slot; lyric?: LyricToken }> = {};
-  const ensure = (id: number) => { if (!map[id]) map[id] = {}; };
-
-  for (const slot of slots) {
-    const m = slot.mapping;
-    if ('members' in m && m.members) {
-      for (const memberId of m.members) {
-        ensure(memberId);
-        map[memberId].slot = slot;
-      }
-    } else {
-      ensure(m.id);
-      map[m.id].slot = slot;
-    }
-  }
-
-  for (const lyric of lyrics) {
-    if (lyric.mapping) {
-      ensure(lyric.mapping.id);
-      map[lyric.mapping.id].lyric = lyric;
-    }
-  }
-
-  return map;
 }
 
 // ─── Tick (called every animation frame) ────────────────────────────
@@ -334,18 +306,8 @@ function scrollLyric(lyric: LyricToken): void {
 export function checkSlot(slot: Slot): void {
   if (!slot.element) return;
 
-  if (slot.choices.length === 0) {
-    slot.element.classList.remove('slot-correct', 'slot-wrong');
-    slot.state = SlotState.Idle;
-  } else if (arrayEqual(slot.choices, slot.ans)) {
-    slot.element.classList.add('slot-correct');
-    slot.element.classList.remove('slot-wrong');
-    slot.state = SlotState.Correct;
-  } else {
-    slot.element.classList.add('slot-wrong');
-    slot.element.classList.remove('slot-correct');
-    slot.state = SlotState.Wrong;
-  }
+  slot.state = slotState(slot.choices, slot.ans);
+  applySlotClasses(slot);
 
   revealLyrics();
   updateMeter();
@@ -362,18 +324,8 @@ export function checkChoices(): void {
     if (slot.diff > state.diff) continue;
     if (!slot.element) continue;
 
-    if (slot.choices.length === 0) {
-      slot.element.classList.remove('slot-correct', 'slot-wrong');
-      slot.state = SlotState.Idle;
-    } else if (arrayEqual(slot.choices, slot.ans)) {
-      slot.element.classList.add('slot-correct');
-      slot.element.classList.remove('slot-wrong');
-      slot.state = SlotState.Correct;
-    } else {
-      slot.element.classList.add('slot-wrong');
-      slot.element.classList.remove('slot-correct');
-      slot.state = SlotState.Wrong;
-    }
+    slot.state = slotState(slot.choices, slot.ans);
+    applySlotClasses(slot);
   }
 
   revealLyrics();
@@ -642,61 +594,23 @@ export function toggleJpLyrics(val?: boolean): void {
 
 // ─── Lyrics Reveal ──────────────────────────────────────────────────
 
-/** Clear any reveal coloring (ansN / ans-all / solo / gradient) from a lyric element. */
-function clearRevealClasses(element: HTMLElement): void {
-  const existing = Array.from(element.classList)
-    .filter((c) => /^ans\d+$/.test(c) || c === 'ans-all');
-  if (existing.length) element.classList.remove(...existing);
-  element.classList.remove('lyric-gradient', 'lyric-solo');
-  element.style.removeProperty('--solo-color');
-  element.style.removeProperty('--gradient');
-  element.style.removeProperty('--glow1');
-  element.style.removeProperty('--glow2');
-  element.style.removeProperty('--glow3');
+/** Build the reveal decision for a mapping from the live game state. The
+ *  impure inputs (palette colours, the resolved slot) are gathered here; the
+ *  decision itself lives in the pure `revealClasses`. */
+function revealForMapping(mapping: MappingEntry): Reveal {
+  const slot = slotFor(mapping.id);
+  return revealClasses(mapping, {
+    songRoster: state.song?.singers ?? [],
+    activePool: state.singers,
+    slotRevealed: !!slot && (slot.revealed || slot.state === SlotState.Correct),
+    colors: getGroupColors(state.group),
+    title: mapping.ans ? mapToLabel(state.group, mapping.ans) : '',
+  });
 }
 
 /** Apply reveal coloring for the given mapping, or clear it if not yet revealed. */
 function applyRevealClasses(element: HTMLElement, mapping: MappingEntry): void {
-  clearRevealClasses(element);
-  if (!mapping.ans) { element.removeAttribute('title'); return; }
-  const ans = mapping.ans;
-
-  const songSingers = state.song?.singers ?? [];
-  const isSolo = ans.length === 1;
-  const isAllMembers = ans.length > 1 && arrayEqual(songSingers, ans);
-  const isSubGroup = ans.length > 1 && !isAllMembers;
-
-  const slot = state.reverseMap[mapping.id]?.slot;
-  const revealed =
-    isAllMembers ||
-    arrayEqual(state.singers, ans) ||
-    (slot && (slot.revealed || slot.state === SlotState.Correct));
-
-  if (!revealed) { element.removeAttribute('title'); return; }
-
-  if (isSolo) {
-    element.classList.add(...ans.map((a) => 'ans' + a));
-    // Generic data-driven solo glow — used when no hardcoded .group-X.ansN rule
-    // matches (e.g. SEVENTEEN). Existing hardcoded rules win on specificity.
-    const soloColor = getGroupColors(state.group)[ans[0]];
-    if (soloColor) {
-      element.classList.add('lyric-solo');
-      element.style.setProperty('--solo-color', soloColor);
-    }
-  } else if (isAllMembers) {
-    element.classList.add('ans-all');
-  } else if (isSubGroup) {
-    const groupColors = getGroupColors(state.group);
-    const colors = ans.map((a) => groupColors[a]).filter(Boolean);
-    if (colors.length >= 2) {
-      element.classList.add('lyric-gradient');
-      element.style.setProperty('--gradient', `linear-gradient(90deg, ${colors.join(', ')})`);
-      element.style.setProperty('--glow1', colors[0]);
-      element.style.setProperty('--glow2', colors[Math.floor(colors.length / 2)]);
-      element.style.setProperty('--glow3', colors[colors.length - 1]);
-    }
-  }
-  element.title = mapToLabel(state.group, ans);
+  applyClasses(element, revealForMapping(mapping));
 }
 
 export function revealLyrics(): void {
@@ -757,33 +671,18 @@ function getNumCorrectSlots(): number {
 
 // ─── Persistence ────────────────────────────────────────────────────
 function loadPlaySettings(): void {
-  const vol = getStorage('volume');
-  if (vol) player.setVolume(parseFloat(vol));
+  player.setVolume(prefs.volume.get());
+  state.autoscroll = prefs.autoscroll.get();
+  state.themed = prefs.themed.get();
+  state.lyricsMode = prefs.lyricsMode.get();
+  state.calls = prefs.calls.get();
+  state.callSFX = prefs.callSFX.get();
+  state.jpLyrics = prefs.jpLyrics.get();
 
-  const auto = getStorage('autoscroll');
-  state.autoscroll = auto ? auto === 'true' : true;
-
-  const themed = getStorage('themed');
-  state.themed = themed ? themed === 'true' : true;
-
-  const lyrics = getStorage('lyrics');
-  state.lyricsMode = lyrics ? parseInt(lyrics, 10) : 0;
-
-  const calls = getStorage('calls');
-  state.calls = calls === 'true';
-
-  const callSFX = getStorage('callSFX');
-  state.callSFX = callSFX === 'true';
-
-  const jpLyrics = getStorage('jpLyrics');
-  state.jpLyrics = jpLyrics === 'true';
-
-  const hints = getStorage('hints');
-  state.hints = hints === 'true';
+  state.hints = prefs.hints.get();
   document.body.classList.toggle('hints-on', state.hints);
 
-  const inline = getStorage('inline');
-  state.inline = inline === 'true';
+  state.inline = prefs.inline.get();
   document.body.classList.toggle('inline-on', state.inline);
 }
 
@@ -809,7 +708,11 @@ export function restoreChoices(): void {
 
 function storeChoices(): void {
   if (!state.song || state.editMode || !state.recordProgress) return;
-  const mapped: Record<string, number[]> = {};
+  // Merge into the song's existing selections rather than replacing them.
+  // The play page holds every slot in state.slots, so this rewrites the whole
+  // map; bubudle holds only the current line, so merging lets each answered
+  // line accumulate into the song instead of clobbering the rest.
+  const mapped = loadChoicesForSong(state.song.id);
   for (const slot of state.slots) {
     mapped[hashSlot(slot)] = slot.choices;
   }

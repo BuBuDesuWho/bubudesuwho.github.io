@@ -1,6 +1,6 @@
 import { loadIndex, loadChangelog } from './config';
 import { buildMenu } from './ui-menu';
-import { getStorage, setStorage } from './storage';
+import { prefs } from './prefs';
 import { getGroupColor } from './labels';
 import { escapeRegExp } from './utils';
 
@@ -8,14 +8,13 @@ import { escapeRegExp } from './utils';
 // (About / Changelog / Stats) can statically import it without dragging the
 // player/howler chain into their bundle.
 export function initThemeToggle(): void {
-  const savedTheme = getStorage('theme');
-  if (savedTheme === 'dark') {
+  if (prefs.theme.get() === 'dark') {
     document.documentElement.classList.add('dark-mode');
   }
   updateThemeToggleLabel();
   document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark-mode');
-    setStorage('theme', isDark ? 'dark' : 'light');
+    prefs.theme.set(isDark ? 'dark' : 'light');
     updateThemeToggleLabel();
   });
 }

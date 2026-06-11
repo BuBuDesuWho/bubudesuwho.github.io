@@ -194,7 +194,6 @@ export interface GameState {
   singers: number[];
   slots: Slot[];
   lyrics: LyricToken[];
-  reverseMap: Record<number, { slot?: Slot; lyric?: LyricToken }>;
   diff: number;
   autoscroll: boolean;
   themed: boolean;

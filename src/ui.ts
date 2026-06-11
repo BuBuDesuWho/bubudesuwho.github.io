@@ -13,9 +13,11 @@ import {
   setEditMode, setSlotSingers, setSlotDiff, setSlotLyric,
   insertMappingAfter, deleteSlot, exportEditedConfig, makeASSObjectURL,
 } from './game-edit';
+import { slotFor } from './slot-graph';
 import { loadIndex, loadSongById } from './config';
 import * as player from './player';
-import { setStorage, getStorage } from './storage';
+import { setStorage } from './storage';
+import { prefs } from './prefs';
 import { buildMenu, highlightSongInMenu, attachInstantTip } from './ui-menu';
 import { initThemeToggle } from './ui-about';
 import { initKofi } from './kofi';
@@ -60,7 +62,7 @@ export async function initPlayPage(): Promise<void> {
     if (params.lyrics) {
       setLyricsMode(2);
       applyLyricsMode(2);
-      setStorage('lyrics', '2');
+      prefs.lyricsMode.set(2);
     }
     if (params.t) {
       const seekTo = parseTimeParam(params.t);
@@ -104,14 +106,13 @@ async function selectMenuSong(menuSong: MenuSong, all: MenuSong[]): Promise<void
 }
 
 export function initPaletteToggle(): void {
-  const savedPalette = getStorage('palette');
-  if (savedPalette === 'official') {
+  if (prefs.palette.get() === 'official') {
     document.documentElement.classList.add('palette-official');
   }
   updatePaletteToggleLabel();
   document.getElementById('palette-toggle')?.addEventListener('click', () => {
     const isOfficial = document.documentElement.classList.toggle('palette-official');
-    setStorage('palette', isOfficial ? 'official' : 'default');
+    prefs.palette.set(isOfficial ? 'official' : 'default');
     updatePaletteToggleLabel();
     refreshPaletteColors();
   });
@@ -382,7 +383,7 @@ export function createSlotElement(slot: Slot, group: GroupName): HTMLElement {
     }
 
     const currentLyric = state.lyrics
-      .filter((l) => l.mapping && l.src === 'mapping' && state.reverseMap[l.mapping.id]?.slot === slot)
+      .filter((l) => l.mapping && l.src === 'mapping' && slotFor(l.mapping.id) === slot)
       .map((l) => l.text ?? '')
       .join(' ');
     const lyricInput = document.createElement('input');
@@ -416,7 +417,7 @@ export function createSlotElement(slot: Slot, group: GroupName): HTMLElement {
   // show-lyrics tooltip (?) — gather lyrics for this slot
   const showLyrics = clone.querySelector<HTMLElement>('.show-lyrics');
   const slotLyrics = state.lyrics.filter(
-    (l) => l.mapping && l.src === 'mapping' && state.reverseMap[l.mapping.id]?.slot === slot,
+    (l) => l.mapping && l.src === 'mapping' && slotFor(l.mapping.id) === slot,
   );
   const slotLyricLines = slotLyrics.map((l) => l.text ?? '').filter(Boolean);
 
@@ -602,8 +603,7 @@ function generateLyrics(lyrics: LyricToken[]): void {
           if (playBtn) playBtn.style.display = 'none';
           if (pauseBtn) pauseBtn.style.display = 'inline-block';
 
-          const entry = state.reverseMap[lyric.mapping.id];
-          const slotEl = entry?.slot?.element;
+          const slotEl = slotFor(lyric.mapping.id)?.element;
           const slotsContainer = document.getElementById('slots-container');
           const slotsEl = document.getElementById('slots');
           if (slotEl && slotsContainer && slotsEl) {
@@ -628,13 +628,13 @@ function bindPlayControls(): void {
   document.getElementById('autoscroll')?.addEventListener('click', () => {
     toggleAutoscroll();
     document.getElementById('autoscroll')?.classList.toggle('active', state.autoscroll);
-    setStorage('autoscroll', String(state.autoscroll));
+    prefs.autoscroll.set(state.autoscroll);
   });
 
   document.getElementById('themed')?.addEventListener('click', () => {
     toggleThemed();
     document.getElementById('themed')?.classList.toggle('active', state.themed);
-    setStorage('themed', String(state.themed));
+    prefs.themed.set(state.themed);
     if (state.themed && state.song) switchTheme(state.song.id);
     else switchTheme(null);
   });
@@ -644,7 +644,7 @@ function bindPlayControls(): void {
   hintsBtn?.addEventListener('click', () => {
     toggleHints();
     hintsBtn.classList.toggle('active', state.hints);
-    setStorage('hints', String(state.hints));
+    prefs.hints.set(state.hints);
   });
 
   const inlineBtn = document.getElementById('global-inline');
@@ -652,7 +652,7 @@ function bindPlayControls(): void {
   inlineBtn?.addEventListener('click', () => {
     toggleInline();
     inlineBtn.classList.toggle('active', state.inline);
-    setStorage('inline', String(state.inline));
+    prefs.inline.set(state.inline);
   });
 
   // Reveal button — inline popover confirmation (matches original bootstrap-confirmation)
@@ -714,7 +714,7 @@ function bindPlayControls(): void {
   document.getElementById('lyrics-button')?.addEventListener('click', () => {
     const mode = cycleLyricsMode();
     applyLyricsMode(mode);
-    setStorage('lyrics', String(mode));
+    prefs.lyricsMode.set(mode);
   });
 
   document.getElementById('lyrics-dl-ass')?.addEventListener('click', (e) => {
@@ -729,20 +729,20 @@ function bindPlayControls(): void {
   document.getElementById('lyrics-enable-calls')?.addEventListener('click', () => {
     toggleCalls();
     document.getElementById('lyrics-enable-calls')?.classList.toggle('active', state.calls);
-    setStorage('calls', String(state.calls));
+    prefs.calls.set(state.calls);
     applyCallMode();
   });
 
   document.getElementById('lyrics-enable-calls-sfx')?.addEventListener('click', () => {
     toggleCallSFX();
     document.getElementById('lyrics-enable-calls-sfx')?.classList.toggle('active', state.callSFX);
-    setStorage('callSFX', String(state.callSFX));
+    prefs.callSFX.set(state.callSFX);
   });
 
   document.getElementById('lyrics-jp-toggle')?.addEventListener('click', () => {
     toggleJpLyrics();
     document.getElementById('lyrics-jp-toggle')?.classList.toggle('active', state.jpLyrics);
-    setStorage('jpLyrics', String(state.jpLyrics));
+    prefs.jpLyrics.set(state.jpLyrics);
   });
 
   // player controls — play/pause toggle
@@ -799,7 +799,7 @@ function bindPlayControls(): void {
     const vol = parseInt(volumeSlider.value, 10) / 100;
     preMuteVolume = null;
     player.setVolume(vol);
-    setStorage('volume', String(vol));
+    prefs.volume.set(vol);
     updateVolumeDisplay(vol);
   });
 
@@ -807,13 +807,13 @@ function bindPlayControls(): void {
   document.querySelector('.jp-mute')?.addEventListener('click', () => {
     if (preMuteVolume !== null) {
       player.setVolume(preMuteVolume);
-      setStorage('volume', String(preMuteVolume));
+      prefs.volume.set(preMuteVolume);
       updateVolumeDisplay(preMuteVolume);
       preMuteVolume = null;
     } else {
       preMuteVolume = player.getVolume();
       player.setVolume(0);
-      setStorage('volume', '0');
+      prefs.volume.set(0);
       updateVolumeDisplay(0);
     }
   });

@@ -48,6 +48,33 @@ export function saveChoicesForSong(songId: string, choices: Record<string, numbe
   setStorage(songId + '-selections', JSON.stringify(choices));
 }
 
+// ─── Mastery cache ──────────────────────────────────────────────────
+// Derived snapshot written by the stats page and read by the buddy on other
+// pages. One shape, shared by both ends — so a field rename breaks the build
+// instead of silently yielding NaN%/0 in the buddy. (Not in PROFILE_STATIC_KEYS:
+// it's derived from `hist` and rebuilt on each stats-page render.)
+export interface MasteryCacheEntry {
+  group: string;
+  id: number;
+  correct: number;
+  attempted: number;
+  totalLines: number;
+}
+
+export function saveMasteryCache(entries: MasteryCacheEntry[]): void {
+  setStorage('mastery-cache', JSON.stringify(entries));
+}
+
+export function loadMasteryCache(): MasteryCacheEntry[] {
+  const raw = getStorage('mastery-cache');
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as MasteryCacheEntry[];
+  } catch {
+    return [];
+  }
+}
+
 type HistTuple = [string, string, [number[], number[]][]];
 
 // Profile backup — every key here is something we want to round-trip across

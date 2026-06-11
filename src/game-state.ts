@@ -19,7 +19,6 @@ export const state: GameState = {
   singers: [],
   slots: [],
   lyrics: [],
-  reverseMap: {},
   diff: 1,
   autoscroll: true,
   themed: true,

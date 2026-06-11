@@ -1,7 +1,7 @@
 import { loadIndex } from './config';
 import { buildMenu } from './ui-menu';
 import { initThemeToggle } from './ui-about';
-import { loadHistory, HistRecord, setStorage, exportProfileDoc, importProfileDoc } from './storage';
+import { loadHistory, HistRecord, saveMasteryCache, exportProfileDoc, importProfileDoc } from './storage';
 import { getGroup } from './groups';
 import { getGroupColor } from './labels';
 import { MenuSong, GroupName } from './types';
@@ -342,10 +342,10 @@ function renderRibbon(plays: PlayAggregate[], catalogTotals: CatalogTotals): voi
 function renderMastery(plays: PlayAggregate[], catalogTotals: CatalogTotals): void {
   const all = aggregateMembers(plays, catalogTotals);
   // Snapshot for the buddy on other pages — gates idolization at 20%.
-  setStorage('mastery-cache', JSON.stringify(all.map(s => ({
+  saveMasteryCache(all.map(s => ({
     group: s.group, id: s.id,
     correct: s.correctAttempted, attempted: s.attempted, totalLines: s.totalLines,
-  }))));
+  })));
   renderMasteryInto('total-mastery', 'total-mastery-section', sortedForMode(all, 'total'), 'total');
 }
 

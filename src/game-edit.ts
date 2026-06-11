@@ -1,6 +1,6 @@
 import { Slot, SlotState, MappingEntry, LinePart } from './types';
 import { arrayEqual, toTimeStr } from './utils';
-import { state, makeSlotsFromBase, makeReverseMapping } from './game';
+import { state, makeSlotsFromBase } from './game';
 
 export function setEditMode(val: boolean): void {
   state.editMode = val;
@@ -23,7 +23,6 @@ export function setEditMode(val: boolean): void {
     // restore grouped play-mode slots
     state.slots = makeSlotsFromBase(state.song.slotsBase);
   }
-  state.reverseMap = makeReverseMapping(state.slots, state.lyrics);
 }
 
 export function setSlotStart(slot: Slot, time: number): void {
@@ -60,10 +59,12 @@ export function insertMappingAfter(slot: Slot): MappingEntry {
     state: SlotState.Idle,
     element: null,
   };
+  // Reassign (not in-place splice) so the slot graph picks up the new list.
   const slotIdx = state.slots.indexOf(slot);
-  state.slots.splice(slotIdx + 1, 0, newSlot);
-  state.slots.forEach((s, i) => { s.id = i; });
-  state.reverseMap = makeReverseMapping(state.slots, state.lyrics);
+  const slots = state.slots.slice();
+  slots.splice(slotIdx + 1, 0, newSlot);
+  slots.forEach((s, i) => { s.id = i; });
+  state.slots = slots;
 
   return newEntry;
 }
@@ -73,10 +74,12 @@ export function deleteSlot(slot: Slot): void {
   if (mapIdx !== -1) state.mapping.splice(mapIdx, 1);
   state.mapping.forEach((m, i) => { m.id = i; });
 
+  // Reassign (not in-place splice) so the slot graph picks up the new list.
   const slotIdx = state.slots.indexOf(slot);
-  if (slotIdx !== -1) state.slots.splice(slotIdx, 1);
-  state.slots.forEach((s, i) => { s.id = i; });
-  state.reverseMap = makeReverseMapping(state.slots, state.lyrics);
+  const slots = state.slots.slice();
+  if (slotIdx !== -1) slots.splice(slotIdx, 1);
+  slots.forEach((s, i) => { s.id = i; });
+  state.slots = slots;
 }
 
 export function setSlotSingers(slot: Slot, singers: number[]): void {

@@ -771,7 +771,6 @@ function renderCandidate(c: LyricCandidate, answered: boolean, initial = false):
   state.group = c.song.group;
   state.editMode = false;
   state.lyrics = [];
-  state.reverseMap = {};
 
   const diff = c.diff;
   const mapping: MappingEntry = { range: c.range, ans: c.ans, diff, id: 0 };
@@ -1110,6 +1109,9 @@ function checkAnswer(): void {
     streak = 0;
     setStorage('bubudle-streak', String(streak));
     updateStreak();
+    // Drop the wrong guess so it isn't persisted back to the song as a
+    // filled-in selection — only correct answers write to song progress.
+    currentSlot.choices = [];
     toggleReveal(currentSlot, true);
 
     revealSongName(current.song);
@@ -1132,6 +1134,8 @@ function skipAnswer(): void {
   streak = 0;
   setStorage('bubudle-streak', String(streak));
   updateStreak();
+  // Skipped — don't persist a partial guess back to the song.
+  currentSlot.choices = [];
   toggleReveal(currentSlot, true);
 
   revealSongName(current.song);
