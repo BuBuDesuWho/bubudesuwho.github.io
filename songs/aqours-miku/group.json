@@ -24,5 +24,6 @@
     { "name": "1st years",    "memberIds": [4, 5, 6] },
     { "name": "3rd years",    "memberIds": [7, 8, 9] }
   ],
-  "colorClass": "aqours-blue"
+  "colorClass": "aqours-blue",
+  "parent": "aqours"
 }

@@ -21,6 +21,11 @@ import { prefs } from './prefs';
 import { buildMenu, highlightSongInMenu, attachInstantTip } from './ui-menu';
 import { initThemeToggle } from './ui-about';
 import { initKofi } from './kofi';
+import { buildLines, lowestDiff } from './whosings';
+import { openWhosings } from './whosings-view';
+import * as extras from './play-extras';
+import { setCoverSrc } from './thumbs';
+import { applyThemePalette } from './song-theme';
 
 // Re-export so bubudle.ts / submission.ts (which already import from './ui')
 // keep working. Non-play entries should import from './ui-about' directly.
@@ -34,7 +39,9 @@ export async function initPlayPage(): Promise<void> {
     onTick(currentTime, duration, didSeek) {
       tick(currentTime, didSeek);
       updateProgressDisplay(currentTime, duration);
+      extras.onTick(currentTime, didSeek);
     },
+    onEnd: () => extras.onSongEnd(),
   });
 
   initGameState();
@@ -44,7 +51,17 @@ export async function initPlayPage(): Promise<void> {
   buildMenu(menuSongs);
   bindPlayControls();
   bindKeyboard();
+  // The shared sidebar autofocuses search, which is right for the song list
+  // but swallows every play-page shortcut until the player clicks. `/` refocuses it.
+  const search = document.getElementById('menu-search');
+  if (document.activeElement === search) search?.blur();
+  search?.removeAttribute('autofocus');
   bindEditToggle();
+  extras.initPlayExtras({
+    syncPlayPause: syncPlayPauseButtons,
+    resetChoices,
+    songIds: () => menuSongs.map((s) => s.id),
+  });
 
   // sync volume bar with saved volume setting
   updateVolumeDisplay(player.getVolume());
@@ -128,12 +145,10 @@ function updatePaletteToggleLabel(): void {
 
 function selectSong(song: Song): void {
   loadSong(song);
+  extras.onSongSelected(song);
 
   // reset progress bar, time display, and play/pause button for the new song
-  const bar = document.getElementById('progress-bar');
-  if (bar) bar.style.width = '0%';
-  const timeEl = document.querySelector('.jp-current-time');
-  if (timeEl) timeEl.textContent = '0:00';
+  updateProgressDisplay(0, 1);
   const playBtn = document.querySelector<HTMLElement>('.jp-play');
   const pauseBtn = document.querySelector<HTMLElement>('.jp-pause');
   if (playBtn) playBtn.style.display = '';
@@ -162,12 +177,10 @@ function selectSong(song: Song): void {
   const coverEl = document.getElementById('song-cover') as HTMLImageElement | null;
   if (coverEl) {
     if (song.cover) {
-      const coverBase = import.meta.env.VITE_COVER_BASE;
-      coverEl.src = coverBase
-        ? coverBase + song.cover.replace(/^css\/images\/covers\/(?:kpop\/)?/, '')
-        : import.meta.env.BASE_URL + song.cover;
+      setCoverSrc(coverEl, song.cover);
       coverEl.style.display = '';
     } else {
+      coverEl.onerror = null;
       coverEl.src = '';
       coverEl.style.display = 'none';
     }
@@ -188,6 +201,13 @@ function selectSong(song: Song): void {
   // lyrics button visibility
   const lyricsBtn = document.getElementById('lyrics-button');
   if (lyricsBtn) lyricsBtn.style.display = state.lyrics.length > 0 ? '' : 'none';
+
+  // rhythm mode is anime-only for now, and needs quiz slots to ask about
+  const wsBtn = document.getElementById('whosings-button');
+  if (wsBtn) {
+    const show = import.meta.env.VITE_APP_MODE !== 'kpop' && song.slotsBase.length > 0;
+    wsBtn.style.display = show ? '' : 'none';
+  }
 
   // calls buttons
   const callsBtn = document.getElementById('lyrics-enable-calls');
@@ -717,6 +737,13 @@ function bindPlayControls(): void {
     prefs.lyricsMode.set(mode);
   });
 
+  document.getElementById('whosings-button')?.addEventListener('click', () => {
+    const song = state.song;
+    if (!song) return;
+    const diff = buildLines(song, state.diff).length ? state.diff : lowestDiff(song);
+    openWhosings(song, diff, syncPlayPauseButtons);
+  });
+
   document.getElementById('lyrics-dl-ass')?.addEventListener('click', (e) => {
     const a = e.currentTarget as HTMLAnchorElement;
     if (!state.assObjectURL) state.assObjectURL = makeASSObjectURL();
@@ -830,14 +857,23 @@ function bindPlayControls(): void {
 
 function bindKeyboard(): void {
   document.addEventListener('keydown', (e) => {
-    const tag = (e.target as HTMLElement)?.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+    const target = e.target as HTMLElement;
+    const tag = target?.tagName;
+    // A focused volume slider isn't a text field, so it shouldn't swallow
+    // shortcuts after someone drags it.
+    const typing = (tag === 'INPUT' && (target as HTMLInputElement).type !== 'range')
+      || tag === 'TEXTAREA' || target?.isContentEditable;
+    if (typing) return;
 
     if (e.key === 'a' && e.ctrlKey) {
       toggleGlobalReveal();
       return;
     }
     if (e.ctrlKey || e.altKey || e.metaKey) return;
+    if (extras.handleKey(e)) {
+      e.preventDefault();
+      return;
+    }
 
     if (e.code === 'Space') {
       if (player.isPlaying()) player.pause();
@@ -903,14 +939,32 @@ function updateDiffButton(): void {
   }
 }
 
-function updateProgressDisplay(currentTime: number, duration: number): void {
-  const timeEl = document.querySelector('.jp-current-time');
-  if (timeEl) timeEl.textContent = toTimeStr(currentTime);
+// Runs every animation frame while the song plays, so the elements are looked
+// up once and the DOM is only written when what's shown changes. The bar is a
+// full-width strip slid in from the left inside a rounded clip: a transform
+// skips layout, and unlike scaleX it keeps the pill ends round.
+let progressEls: { time: Element | null; bar: HTMLElement | null } | null = null;
+let shownSecond = NaN;
+let shownFrac = NaN;
 
-  // update progress bar
-  const bar = document.getElementById('progress-bar');
+function updateProgressDisplay(currentTime: number, duration: number): void {
+  progressEls ??= {
+    time: document.querySelector('.jp-current-time'),
+    bar: document.getElementById('progress-bar'),
+  };
+  const { time, bar } = progressEls;
+  // toTimeStr shows whole seconds, so the text only changes when this does
+  const second = Math.floor(currentTime);
+  if (time && second !== shownSecond) {
+    shownSecond = second;
+    time.textContent = toTimeStr(currentTime);
+  }
   if (bar && duration > 0) {
-    bar.style.width = `${(currentTime / duration) * 100}%`;
+    const frac = Math.min(1, Math.max(0, currentTime / duration));
+    if (frac !== shownFrac) {
+      shownFrac = frac;
+      bar.style.transform = `translateX(${(frac - 1) * 100}%)`;
+    }
   }
 }
 
@@ -1010,10 +1064,12 @@ export function switchTheme(theme: string | null): void {
   // up in the header. Mirror the resolved value onto <html> so any element
   // can read it via var(--play-btn-bg). Clear the inline style first so the
   // probed value reflects the new theme rule (not last call's inherited value).
-  htmlEl.style.removeProperty('--play-btn-bg');
-  const bar = document.getElementById('player-bar');
-  const barBg = bar ? getComputedStyle(bar).getPropertyValue('--play-btn-bg').trim() : '';
-  if (barBg) htmlEl.style.setProperty('--play-btn-bg', barBg);
+  applyThemePalette(theme, () => {
+    htmlEl.style.removeProperty('--play-btn-bg');
+    const bar = document.getElementById('player-bar');
+    const barBg = bar ? getComputedStyle(bar).getPropertyValue('--play-btn-bg').trim() : '';
+    if (barBg) htmlEl.style.setProperty('--play-btn-bg', barBg);
+  });
 
   // wrap each word in song title with <span class="word"> for per-word theming
   const titleEl = document.getElementById('song-title');
@@ -1127,8 +1183,9 @@ function activateEditMode(): void {
     exportBtn.className = 'btn btn-info';
     exportBtn.textContent = 'Save Mapping';
     exportBtn.addEventListener('click', () => {
-      if (!state.song) return;
-      const mapping = exportEditedConfig();
+      const song = state.song;
+      const edited = exportEditedConfig();
+      if (!song || !edited) return;
       exportBtn.disabled = true;
       exportBtn.textContent = 'Saving...';
 
@@ -1142,29 +1199,34 @@ function activateEditMode(): void {
         }, 2000);
       };
 
-      const downloadFallback = () => {
-        const json = JSON.stringify(mapping, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
+      // No dev server (static build) or a refused save: hand over the edited
+      // lines/mapping array so the work isn't lost. It's only that field, not
+      // a whole song config, hence the format in the filename.
+      const downloadFallback = (reason: unknown) => {
+        console.error('save-mapping failed, downloading instead:', reason);
+        const data = edited.format === 'lines' ? edited.lines : edited.mapping;
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${state.song!.id}.json`;
+        a.download = `${song.id}.${edited.format}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        resetBtn('Downloaded!', 'btn-success');
+        resetBtn('Save failed: downloaded', 'btn-warning');
       };
 
+      // A SaveMappingRequest (save-mapping.ts); group disambiguates shared ids.
       fetch('/api/save-mapping', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ songId: state.song.id, lines: mapping }),
+        body: JSON.stringify({ songId: song.id, group: song.group, ...edited }),
       })
         .then((r) => r.json())
         .then((data) => {
           if (data.ok) resetBtn(`Saved (${data.entries} entries)`, 'btn-success');
-          else downloadFallback();
+          else downloadFallback(data.error);
         })
-        .catch(() => downloadFallback());
+        .catch(downloadFallback);
     });
     miscControls.appendChild(exportBtn);
   }

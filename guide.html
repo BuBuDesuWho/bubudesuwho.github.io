@@ -9,14 +9,22 @@
 
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}</script>
 
-<title>BubuDesuWho - Voice Guide</title>
+<title>Voice Guide – Tell μ's and Aqours Singers Apart | BubuDesuWho</title>
+<meta name="description" content="How to tell the μ's and Aqours members apart by voice: a guide to each singer's tells, adapted from long-running Love Live fan music primers.">
+<link rel="canonical" href="https://bubudesuwho.vercel.app/guide.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BubuDesuWho">
+<meta property="og:title" content="Voice Guide – Tell μ's and Aqours Singers Apart | BubuDesuWho">
+<meta property="og:description" content="How to tell the μ's and Aqours members apart by voice: a guide to each singer's tells, adapted from long-running Love Live fan music primers.">
+<meta property="og:url" content="https://bubudesuwho.vercel.app/guide.html">
+<meta name="twitter:card" content="summary">
 
 <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 <link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
 <link type="text/css" href="css/styles.css?ver=20170312" rel="stylesheet" />
 <link rel="preconnect" href="https://github.com">
-<link rel="preconnect" href="https://objects.githubusercontent.com">
+<link rel="preconnect" href="https://release-assets.githubusercontent.com">
 
 </head>
 <body>
@@ -44,6 +52,53 @@
       voice sounds like, the giveaways that out them in a mix, and the moments where it shines.
       Tap a <strong>Hear it</strong> chip to jump straight to that moment in the player.
     </p>
+
+    <section class="guide-help">
+      <h2 class="guide-help-heading">Shortcuts &amp; Features</h2>
+      <div class="guide-help-grid">
+
+        <div class="guide-help-block">
+          <h3 class="guide-help-title">Keyboard shortcuts</h3>
+          <p class="guide-help-sub">Play page</p>
+          <dl class="guide-keys">
+            <dt><kbd>S</kbd></dt><dd>Cycle playback speed (0.5x / 0.75x / 1x)</dd>
+            <dt><kbd>L</kbd></dt><dd>Loop the current line</dd>
+            <dt><kbd>R</kbd></dt><dd>Show the results card</dd>
+            <dt><kbd>?</kbd></dt><dd>Shortcut help</dd>
+            <dt><kbd>/</kbd></dt><dd>Jump to song search</dd>
+          </dl>
+          <p class="guide-help-sub">Rhythm mode (♪ Live)</p>
+          <dl class="guide-keys">
+            <dt><kbd>Esc</kbd> <kbd>P</kbd></dt><dd>Pause / resume</dd>
+            <dt><kbd>R</kbd></dt><dd>Retry, from the results screen</dd>
+            <dt><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><kbd>F</kbd><kbd>G</kbd><kbd>H</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></dt><dd>Lanes, left to right on the home row (the middle lane also answers to Space)</dd>
+          </dl>
+        </div>
+
+        <div class="guide-help-block">
+          <h3 class="guide-help-title">Installing the app</h3>
+          <p>The site is installable as a PWA. Look for an <strong>Install</strong> icon in your
+          browser's address bar, or <strong>Add to Home Screen</strong> on mobile, to pin it like a
+          native app with an icon, offline access to pages you've already visited, and faster loads
+          from cached audio and covers.</p>
+        </div>
+
+        <div class="guide-help-block">
+          <h3 class="guide-help-title">Achievements</h3>
+          <p>The <a href="stats.html">Stats</a> page tracks 36 achievements across quiz plays,
+          member mastery, group completion, and streaks, plus a play streak counter and a
+          26-week activity heatmap.</p>
+        </div>
+
+        <div class="guide-help-block">
+          <h3 class="guide-help-title">Bubudle stats</h3>
+          <p>Open the stats button on <a href="bubudle.html">Bubudle</a> to see your win
+          percentage, current and max streak, a guess distribution histogram, and a countdown
+          to the next daily.</p>
+        </div>
+
+      </div>
+    </section>
 
     <div id="guide-root" class="guide-root" aria-busy="true"></div>
 

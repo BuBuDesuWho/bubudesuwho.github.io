@@ -1,12 +1,14 @@
-import { loadIndex } from './config';
+import { loadIndex, contentUrl } from './config';
 import { buildMenu } from './ui-menu';
 import { initThemeToggle } from './ui-about';
-import { loadHistory, HistRecord, saveMasteryCache, masteryPct, exportProfileDoc, importProfileDoc } from './storage';
-import { getGroup } from './groups';
+import { loadHistory, HistRecord, saveMasteryCache, masteryPct, exportProfileDoc, importProfileDoc, loadWhosingsResults, WhosingsResults, WhosingsRun } from './storage';
+import { getGroup, isExcludedFrom, parentGroupOf } from './groups';
 import { getGroupColor } from './labels';
 import { MenuSong, GroupName } from './types';
 import { getFavorite, setFavorite, clearFavorite } from './favorite';
 import { resetBuddy } from './buddy';
+import { renderProgress } from './stats-progress';
+import { playResolver, PlayResolver, gradePlay, isLineRight, formatHistDate } from './hist';
 
 // Catalog-wide stats baked at deploy time by scripts/build-index.js.
 //   byMember: per-(group, member) slot-ans appearances → Total Mastery dials.
@@ -17,11 +19,10 @@ type CatalogByMember = Record<GroupName, Record<string, number>>;
 type CatalogSlotsByGroup = Partial<Record<GroupName, number>>;
 interface CatalogTotals { slotCountByGroup: CatalogSlotsByGroup; byMember: CatalogByMember }
 async function loadCatalogTotals(): Promise<CatalogTotals> {
-  const base = (import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL) as string;
   const mode = import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
   const empty: CatalogTotals = { slotCountByGroup: {}, byMember: {} };
   try {
-    const resp = await fetch(`${base}songs/totals.${mode}.json`);
+    const resp = await fetch(contentUrl(`songs/totals.${mode}.json`));
     if (!resp.ok) return empty;
     const json = await resp.json() as CatalogTotals;
     return { slotCountByGroup: json.slotCountByGroup ?? {}, byMember: json.byMember ?? {} };
@@ -31,12 +32,6 @@ async function loadCatalogTotals(): Promise<CatalogTotals> {
 const MEMBER_DIAL_MIN_TOTAL = 3;
 const UNTRIED_SAMPLE = 6;
 const PORTRAIT_BASE = 'css/images/members/';
-// WUG is an easter-egg group with sparse coverage — excluded from catalog-
-// wide totals (Total Mastery dials and the ribbon's "Lines completed") so it
-// neither pads the dial strip with low-data members nor inflates the ribbon
-// denominator with lines most users will never reach.
-const TOTALS_EXCLUDED_GROUPS = new Set<string>(['wug']);
-
 interface MemberStat {
   group: GroupName;
   groupName: string;
@@ -68,25 +63,44 @@ export async function initStatsPage(): Promise<void> {
   buildMenu(songs);
   initThemeToggle();
 
-  const hist = loadHistory();
-  const songsByName = new Map(songs.map(s => [s.name, s]));
-  const plays = hist.map(buildPlay(songsByName));
+  const plays = loadHistory().map(buildPlay(playResolver(songs)));
 
   wireProfileIO();
 
+  const members = aggregateMembers(plays, catalogTotals);
   if (plays.length === 0) {
     renderEmpty(songs);
-    return;
+  } else {
+    document.getElementById('stats-empty')?.classList.add('hidden');
+    document.getElementById('stats-body')?.classList.remove('hidden');
+
+    renderRibbon(plays, catalogTotals);
+    renderMastery(members);
+    renderSetlist(plays);
+    renderUntried(songs, plays);
+    wireResetBuddy();
   }
 
-  document.getElementById('stats-empty')?.classList.add('hidden');
-  document.getElementById('stats-body')?.classList.remove('hidden');
+  // Rhythm mode (Live) keeps its own storage key and doesn't feed `hist`, so
+  // it renders independent of the quiz empty-state gate above — someone who
+  // has only played Live still gets to see their results.
+  const songsById = new Map(songs.map(s => [s.id, s]));
+  renderWhosings(songsById);
 
-  renderRibbon(plays, catalogTotals);
-  renderMastery(plays, catalogTotals);
-  renderSetlist(plays);
-  renderUntried(songs, plays);
-  wireResetBuddy();
+  // Achievements and streaks span quiz, Live and Bubudle, so like Live they
+  // render outside the quiz empty-state gate.
+  renderProgress({
+    songs,
+    quizPlays: plays.map(p => ({
+      songId: p.song?.id, songName: p.entry.songName, group: p.group,
+      date: p.entry.date, allCorrect: p.allCorrect,
+    })),
+    linesCorrect: correctSlotKeys(plays).size,
+    memberPcts: members
+      .filter(m => m.totalLines >= MEMBER_DIAL_MIN_TOTAL)
+      .map(m => masteryPct(m.correctAttempted, m.totalLines)),
+    whosings: loadWhosingsResults(),
+  });
 }
 
 function wireProfileIO(): void {
@@ -159,13 +173,8 @@ function wireResetBuddy(): void {
 // saint-aqours-snow adds Saint Snow's two members to Aqours). Members shared
 // between an extension and its base ARE the same person — collapse them under
 // the base group so Member Mastery shows one Riko, not three.
-const PARENT_GROUP: Record<GroupName, GroupName> = {
-  'aqours-miku': 'aqours',
-  'saint-aqours-snow': 'aqours',
-};
-
 function canonicalMember(group: GroupName, id: number): { group: GroupName; id: number } {
-  const parent = PARENT_GROUP[group];
+  const parent = parentGroupOf(group);
   if (!parent) return { group, id };
   const p = getGroup(parent);
   if (p && p.members.some(m => m.id === id)) {
@@ -174,17 +183,10 @@ function canonicalMember(group: GroupName, id: number): { group: GroupName; id: 
   return { group, id };
 }
 
-function buildPlay(songsByName: Map<string, MenuSong>) {
+function buildPlay(resolve: PlayResolver<MenuSong>) {
   return (entry: HistRecord): PlayAggregate => {
-    const song = songsByName.get(entry.songName);
-    let correctAttempted = 0;
-    let attempted = 0;
-    const totalSlots = entry.slots.length;
-    for (const [chosen, ans] of entry.slots) {
-      if (chosen.length === 0) continue;
-      attempted++;
-      if (chosen.length === ans.length && chosen.every((v, j) => v === ans[j])) correctAttempted++;
-    }
+    const song = resolve(entry);
+    const { total: totalSlots, attempted, correct: correctAttempted } = gradePlay(entry.slots);
     return {
       entry,
       song,
@@ -252,7 +254,7 @@ function aggregateMembers(plays: PlayAggregate[], catalogTotals: CatalogTotals):
   // member entry. Members the user has never tried (no history) still get
   // populated here so Total Mastery can show full-roster coverage gates.
   for (const [groupSlug, members] of Object.entries(catalogTotals.byMember)) {
-    if (TOTALS_EXCLUDED_GROUPS.has(groupSlug)) continue;
+    if (isExcludedFrom(groupSlug, 'stats')) continue;
     const group = getGroup(groupSlug);
     if (!group) continue;
     for (const [idStr, count] of Object.entries(members)) {
@@ -304,26 +306,31 @@ function denomFor(s: MemberStat, mode: MasteryMode): number {
   return mode === 'attempted' ? s.attempted : s.totalLines;
 }
 
+// Distinct (songId, slotIdx) pairs ever answered exactly right, over
+// non-hidden, non-excluded songs. Shared by the ribbon and achievements so
+// "lines right" means the same thing in both places.
+function correctSlotKeys(plays: PlayAggregate[]): Set<string> {
+  const correctSlots = new Set<string>();
+  for (const p of plays) {
+    if (!p.song || p.song.hidden) continue;
+    if (p.song.group && isExcludedFrom(p.song.group, 'stats')) continue;
+    const songId = p.song.id;
+    p.entry.slots.forEach(([chosen, ans], slotIdx) => {
+      if (isLineRight(chosen, ans)) correctSlots.add(`${songId}:${slotIdx}`);
+    });
+  }
+  return correctSlots;
+}
+
 function aggregateCompletion(plays: PlayAggregate[], catalogTotals: CatalogTotals): number {
   // Ribbon "Lines completed" — coverage across the whole catalog.
   // Numerator: distinct (songId, slotIdx) pairs you got correct in any play
   // (replays don't help; hidden songs excluded so we stay bounded ≤ 100%).
   // Denominator: catalog slotCount baked at build time over non-hidden songs.
-  const correctSlots = new Set<string>();
-  for (const p of plays) {
-    if (!p.song || p.song.hidden) continue;
-    if (p.song.group && TOTALS_EXCLUDED_GROUPS.has(p.song.group)) continue;
-    const songId = p.song.id;
-    p.entry.slots.forEach(([chosen, ans], slotIdx) => {
-      if (chosen.length === 0) return;
-      if (chosen.length !== ans.length) return;
-      for (let j = 0; j < chosen.length; j++) if (chosen[j] !== ans[j]) return;
-      correctSlots.add(`${songId}:${slotIdx}`);
-    });
-  }
+  const correctSlots = correctSlotKeys(plays);
   let total = 0;
   for (const [g, n] of Object.entries(catalogTotals.slotCountByGroup)) {
-    if (TOTALS_EXCLUDED_GROUPS.has(g)) continue;
+    if (isExcludedFrom(g, 'stats')) continue;
     total += n ?? 0;
   }
   if (total === 0) return 0;
@@ -339,8 +346,7 @@ function renderRibbon(plays: PlayAggregate[], catalogTotals: CatalogTotals): voi
   if (accCell) accCell.textContent = `${aggregateCompletion(plays, catalogTotals)}%`;
 }
 
-function renderMastery(plays: PlayAggregate[], catalogTotals: CatalogTotals): void {
-  const all = aggregateMembers(plays, catalogTotals);
+function renderMastery(all: MemberStat[]): void {
   // Snapshot for the buddy on other pages — gates idolization at 20%.
   saveMasteryCache(all.map(s => ({
     group: s.group, id: s.id,
@@ -540,11 +546,12 @@ function buildSetlistRow(p: PlayAggregate): HTMLElement {
 
   const date = document.createElement('span');
   date.className = 'setlist-date';
-  date.textContent = p.entry.date;
+  date.textContent = formatHistDate(p.entry.date);
 
   const songEl = document.createElement(p.song ? 'a' : 'span');
   songEl.className = 'setlist-song';
-  songEl.textContent = p.entry.songName;
+  // Current title, so a renamed song doesn't show its old one.
+  songEl.textContent = p.song?.name ?? p.entry.songName;
   if (p.song) {
     (songEl as HTMLAnchorElement).href = `play.html#${p.song.id}`;
     if (groupColor) songEl.classList.add(groupColor);
@@ -644,4 +651,119 @@ function renderEmpty(songs: MenuSong[]): void {
   if (visible.length === 0) return;
   const pick = visible[Math.floor(Math.random() * visible.length)];
   link.href = `play.html#${pick.id}`;
+}
+
+// ─── Rhythm mode ("Live") ───────────────────────────────────────────
+
+// Pure aggregation, split out from the DOM code so it's testable on its own.
+// Totals are drawn from each song's *last* run — "how am I doing right now",
+// same spirit as the Setlist's "most recent attempt wins."
+export function aggregateWhosingsTotals(results: WhosingsResults): { songsPlayed: number; linesCorrect: number; linesAttempted: number } {
+  let songsPlayed = 0;
+  let linesCorrect = 0;
+  let linesAttempted = 0;
+  for (const r of Object.values(results)) {
+    songsPlayed++;
+    linesCorrect += r.last.correct;
+    linesAttempted += r.last.attempted;
+  }
+  return { songsPlayed, linesCorrect, linesAttempted };
+}
+
+function renderWhosings(songsById: Map<string, MenuSong>): void {
+  const section = document.getElementById('whosings-section');
+  const list = document.getElementById('whosings-list');
+  if (!section || !list) return;
+
+  const results = loadWhosingsResults();
+  const entries = Object.entries(results);
+  if (entries.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+  section.classList.remove('hidden');
+
+  const { songsPlayed, linesCorrect, linesAttempted } = aggregateWhosingsTotals(results);
+  const songsCell = document.getElementById('whosings-stat-songs');
+  const linesCell = document.getElementById('whosings-stat-lines');
+  const accCell = document.getElementById('whosings-stat-accuracy');
+  if (songsCell) songsCell.textContent = String(songsPlayed);
+  if (linesCell) linesCell.textContent = `${linesCorrect}/${linesAttempted}`;
+  if (accCell) accCell.textContent = `${masteryPct(linesCorrect, linesAttempted)}%`;
+
+  entries.sort(([, a], [, b]) => b.last.date.localeCompare(a.last.date));
+  for (const [songId, r] of entries) {
+    list.appendChild(buildWhosingsRow(songId, r, songsById.get(songId)));
+  }
+}
+
+function buildWhosingsRow(songId: string, r: WhosingsResults[string], song: MenuSong | undefined): HTMLElement {
+  const li = document.createElement('li');
+  li.className = 'whosings-row';
+  const group = song?.group;
+  if (group) li.dataset.group = group;
+  const groupColor = group ? getGroupColor(group) : null;
+
+  const songCell = document.createElement('div');
+  songCell.className = 'whosings-song-cell';
+  const songEl = document.createElement(song ? 'a' : 'span');
+  songEl.className = 'setlist-song';
+  songEl.textContent = song?.name ?? songId;
+  if (song) {
+    (songEl as HTMLAnchorElement).href = `play.html#${song.id}`;
+    if (groupColor) songEl.classList.add(groupColor);
+  }
+  songCell.appendChild(songEl);
+  if (group) {
+    const tag = document.createElement('span');
+    tag.className = 'setlist-tag';
+    if (groupColor) tag.classList.add(groupColor);
+    tag.textContent = getGroup(group)?.name ?? '';
+    songCell.appendChild(tag);
+  }
+
+  const runs = document.createElement('div');
+  runs.className = 'whosings-runs';
+  // best is only worth a separate line when it's not just the last run again
+  // (saveWhosingsRun points best at the same run whenever it's the new best).
+  const sameRun = r.best && r.best.date === r.last.date;
+  if (r.best && !sameRun) runs.appendChild(buildWhosingsRunRow('Best', r.best));
+  runs.appendChild(buildWhosingsRunRow('Last', r.last));
+
+  li.append(songCell, runs);
+  return li;
+}
+
+function buildWhosingsRunRow(label: string, run: WhosingsRun): HTMLElement {
+  const row = document.createElement('div');
+  row.className = 'whosings-run';
+
+  const labelEl = document.createElement('span');
+  labelEl.className = 'whosings-run-label';
+  labelEl.textContent = label;
+
+  const meter = buildDotMeter(run.correct, run.total);
+
+  const score = document.createElement('span');
+  score.className = 'setlist-score';
+  score.textContent = `${run.correct}/${run.total}`;
+  const perfect = !run.partial && run.total > 0 && run.correct === run.total;
+  if (perfect) {
+    score.classList.add('all-correct');
+    const star = document.createElement('span');
+    star.className = 'setlist-star';
+    star.textContent = '★';
+    star.setAttribute('aria-label', 'all correct');
+    score.appendChild(star);
+  }
+
+  row.append(labelEl, meter, score);
+  if (run.partial) {
+    const badge = document.createElement('span');
+    badge.className = 'whosings-partial';
+    badge.textContent = 'partial';
+    badge.title = 'Part of the song was skipped or started partway through';
+    row.appendChild(badge);
+  }
+  return row;
 }

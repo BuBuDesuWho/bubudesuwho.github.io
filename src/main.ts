@@ -2,6 +2,7 @@ import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import { initAboutPage, initChangelogPage } from './ui-about';
 import { initBuddy } from './buddy';
+import './sw-register';
 
 // Vercel Analytics + Speed Insights — only on the Vercel production host.
 // Skips localhost, GH Pages, and preview deploys (which would inflate counts).

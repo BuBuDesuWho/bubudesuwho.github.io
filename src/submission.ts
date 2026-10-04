@@ -1,7 +1,8 @@
 import { GroupName, MEMBER_MAPPING, MEMBER_COLORS } from './types';
-import { initThemeToggle } from './ui';
+import { initThemeToggle } from './ui-about';
 import { toggleMenu, setupMobileMenuButton } from './ui-menu';
 import { ensureGroups } from './config';
+import { groupLabel } from './groups';
 import { MEMBER_COLUMNS, SHORTCUT_GROUPS, ShortcutGroup } from './bubudle-config';
 import EXAMPLE_LYRICS_V3 from './submission-example.json';
 
@@ -42,15 +43,6 @@ const state: SubmissionState = {
   group: 'aqours',
   songName: '',
   entries: [],
-};
-
-const GROUP_LABELS: Record<GroupName, string> = {
-  muse: "μ's",
-  aqours: 'Aqours',
-  'saint-aqours-snow': 'Saint Aqours Snow',
-  'aqours-miku': 'Aqours × Miku',
-  wug: 'Wake Up, Girls!',
-  nijigasaki: 'Nijigasaki',
 };
 
 function slugify(name: string): string {
@@ -149,7 +141,7 @@ function populateGroupSelect(select: HTMLSelectElement) {
   for (const g of Object.keys(MEMBER_MAPPING) as GroupName[]) {
     const opt = document.createElement('option');
     opt.value = g;
-    opt.textContent = GROUP_LABELS[g] ?? g;
+    opt.textContent = groupLabel(g);
     if (g === state.group) opt.selected = true;
     select.appendChild(opt);
   }
@@ -160,7 +152,7 @@ function onGroupChange(newGroup: GroupName) {
   const hasAssignments = lyricEntries.some(e => e.ans.length > 0);
   if (hasAssignments && newGroup !== state.group) {
     const ok = confirm(
-      `Changing group from ${GROUP_LABELS[state.group]} to ${GROUP_LABELS[newGroup]}. ` +
+      `Changing group from ${groupLabel(state.group)} to ${groupLabel(newGroup)}. ` +
       `Singer IDs that don't exist in the new group will be dropped. Continue?`
     );
     if (!ok) return false;

@@ -1,8 +1,9 @@
-import { loadIndex } from './config';
+import { loadIndex, contentUrl } from './config';
 import { buildMenu } from './ui-menu';
 import { initThemeToggle } from './ui-about';
 import { getGroup } from './groups';
 import { MenuSong, GroupName, GroupMember } from './types';
+import { coverThumbUrl, coverFullUrl } from './thumbs';
 
 // ─── Content shape (songs/voice-guide.anime.json) ───────────────────
 interface SignatureSong { songId: string; t?: string; label: string }
@@ -23,9 +24,8 @@ const IMAGE_BASE = 'css/images/members/';
 const VA_EXTS = ['jpeg', 'jpg', 'webp', 'png'];
 
 async function loadGuide(): Promise<GuideData> {
-  const base = (import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL) as string;
   const mode = import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
-  const resp = await fetch(`${base}songs/voice-guide.${mode}.json`);
+  const resp = await fetch(contentUrl(`songs/voice-guide.${mode}.json`));
   if (!resp.ok) throw new Error(`voice-guide.${mode}.json missing (${resp.status})`);
   return resp.json() as Promise<GuideData>;
 }
@@ -159,7 +159,7 @@ function songChip(s: SignatureSong, songById: Map<string, MenuSong>): HTMLElemen
   if (song) {
     (node as HTMLAnchorElement).href = playHref(s.songId, s.t);
     if (song.cover) {
-      const cover = makeImg([song.cover], 'guide-chip-cover', '');
+      const cover = makeImg([coverThumbUrl(song.cover), coverFullUrl(song.cover)], 'guide-chip-cover', '');
       node.appendChild(cover);
     }
   }

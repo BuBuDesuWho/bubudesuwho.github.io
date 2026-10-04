@@ -106,6 +106,18 @@ export interface Group {
   songs?: string[];
   /** CSS text-color class for the group nav title (optional). */
   colorClass?: string;
+  /** Base group whose roster this one extends (aqours-miku, saint-aqours-snow).
+   *  Stats collapse shared member ids under the parent. */
+  parent?: string;
+  /** Menu section headers for songs whose index `subunit` key belongs to this
+   *  menu group, in display order. Songs with no subunit key sort first under
+   *  the group's own name. */
+  menuSections?: { id: string; label: string }[];
+  /** Features this group is left out of (it stays playable from the menu). */
+  excludeFrom?: ('stats' | 'bubudle')[];
+  /** Extra candidate-pool subunit keys (comma-joined member ids) that this
+   *  group's songs also match, for rosters that span a subunit's key. */
+  subunitFilterAliases?: string[];
 }
 
 /** Processed slot ready for gameplay */

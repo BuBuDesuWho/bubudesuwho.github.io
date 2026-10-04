@@ -1,0 +1,149 @@
+/* Practice controls + results card for play.html (see play-extras.ts). */
+
+#player-bar .px-tool {
+  min-width: 38px;
+  padding: 4px 8px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+#player-bar .px-tool.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Looped line: a pulsing outline so it's obvious which line repeats. */
+.px-looping {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+  animation: px-loop-pulse 1.6s ease-in-out infinite;
+}
+@keyframes px-loop-pulse {
+  50% { outline-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .px-looping { animation: none; }
+}
+
+.px-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000; /* above #player-bar (3000) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.45);
+  animation: px-fade 0.18s ease-out;
+}
+.px-overlay[hidden] { display: none; }
+@keyframes px-fade { from { opacity: 0; } }
+
+.px-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 20px 22px 18px;
+  border-radius: 12px;
+  background: var(--bg-interactive);
+  color: var(--text-base);
+  box-shadow: var(--shadow-heavy);
+  animation: px-pop 0.22s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes px-pop { from { transform: scale(0.92); opacity: 0; } }
+
+.px-card h3 {
+  margin: 0 28px 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.px-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+.px-close:hover { color: var(--text-base); }
+
+.px-keys {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+  margin: 12px 0 0;
+  align-items: center;
+}
+.px-keys dt { font-weight: normal; white-space: nowrap; text-align: right; }
+.px-keys dd { margin: 0; color: var(--text-muted); }
+.px-keys kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--bg-surface);
+  color: var(--text-base);
+  font-family: inherit;
+  font-size: 12px;
+  text-align: center;
+  box-shadow: none;
+}
+
+.px-sub { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.px-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+.px-big { font-family: 'Paytone One', sans-serif; font-size: 52px; line-height: 1; }
+.px-of { font-size: 22px; color: var(--text-muted); }
+.px-pct { margin-left: auto; font-size: 26px; font-weight: 700; color: var(--accent); }
+
+.px-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.px-badge {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+}
+.px-badge-plain { background: var(--bg-surface); color: var(--text-muted); }
+.px-badge-best { background: #ffd54a; color: #4a3b00; }
+.px-badge-fc {
+  background: linear-gradient(90deg, #ff7eb3, #ffd54a, #7ee8fa);
+  color: #222;
+}
+
+.px-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.px-cell { aspect-ratio: 1; border-radius: 3px; }
+.px-correct { background: #43b581; }
+.px-wrong { background: #e05555; }
+.px-blank { background: var(--border); opacity: 0.6; }
+
+.px-members { display: grid; gap: 6px; margin-bottom: 16px; }
+.px-member {
+  display: grid;
+  grid-template-columns: minmax(70px, 34%) 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.px-member-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.px-bar { height: 8px; border-radius: 4px; background: var(--bg-surface); overflow: hidden; }
+.px-bar-fill { display: block; height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.5s ease; }
+.px-member-num { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+.px-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.px-actions .btn { flex: 1 1 auto; }

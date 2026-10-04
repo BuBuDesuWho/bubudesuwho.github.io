@@ -13,6 +13,7 @@ import { state, getSongTitle, getActivePool, setActivePool } from './game-state'
 import { slotFor } from './slot-graph';
 import { revealClasses, applyClasses, Reveal } from './reveal';
 import { lyricPresentation, applyLyricPresentation } from './lyric-view';
+import { histDate } from './hist';
 
 // Re-exported so existing imports (`import { state } from './game'`) keep
 // working while non-player consumers can switch to the leaner `./game-state`.
@@ -20,7 +21,7 @@ export { state, getSongTitle, getActivePool, setActivePool } from './game-state'
 
 const AUTOSAVE_INTERVAL = 2000;
 
-function getGroupColors(group: string): Record<number, string> {
+export function getGroupColors(group: string): Record<number, string> {
   const useOfficial = document.documentElement.classList.contains('palette-official');
   if (useOfficial && MEMBER_COLORS_OFFICIAL[group]) {
     return MEMBER_COLORS_OFFICIAL[group];
@@ -519,9 +520,9 @@ function getMaxDiff(): number {
   return max;
 }
 
-export function getDiffLabel(): string {
-  if (state.diff === 1) return 'Normal';
-  if (state.diff === 2) return 'Hard';
+export function getDiffLabel(diff = state.diff): string {
+  if (diff === 1) return 'Normal';
+  if (diff === 2) return 'Hard';
   return 'Insane';
 }
 
@@ -713,8 +714,14 @@ export function restoreChoices(): void {
   }
 }
 
+// What storeChoices last wrote, so the autosave tick can skip the storage
+// round trip when no pick has changed since.
+let lastStoredPicks: string | null = null;
+
 function storeChoices(): void {
   if (!state.song || state.editMode || !state.recordProgress) return;
+  const picks = JSON.stringify([state.song.id, state.slots.map((s) => [hashSlot(s), s.choices])]);
+  if (picks === lastStoredPicks) return;
   // Merge into the song's existing selections rather than replacing them.
   // The play page holds every slot in state.slots, so this rewrites the whole
   // map; bubudle holds only the current line, so merging lets each answered
@@ -723,7 +730,8 @@ function storeChoices(): void {
   for (const slot of state.slots) {
     mapped[hashSlot(slot)] = slot.choices;
   }
-  saveChoicesForSong(state.song.id, mapped);
+  // A failed write (quota) leaves the marker alone so the next tick retries.
+  if (saveChoicesForSong(state.song.id, mapped)) lastStoredPicks = picks;
 }
 
 function hashSlot(slot: Slot): string {
@@ -737,11 +745,12 @@ function saveHist(): void {
     if (slot.diff > state.diff) continue;
     record.push([slot.choices, slot.ans]);
   }
-  saveHistory({
-    date: new Date().toLocaleDateString(),
+  if (!saveHistory({
+    date: histDate(),
     songName: state.song.name,
+    songId: state.song.id,
     slots: record,
-  });
+  })) console.warn('Play history not saved: browser storage is full or unavailable.');
 }
 
 // ─── Slide Animations (Web Animations API) ─────────────────────────

@@ -2,6 +2,7 @@ import { defineConfig, Plugin } from 'vite';
 import { resolve } from 'path';
 import { cpSync, existsSync, readFileSync } from 'fs';
 import { execFileSync } from 'child_process';
+import { pwaPlugin } from './pwa/vite-plugin';
 
 function htmlPartialsPlugin(): Plugin {
   return {
@@ -27,11 +28,15 @@ function copyAssetsPlugin(): Plugin {
         cpSync(resolve(root, dir), resolve(dist, dir), { recursive: true });
       }
       // Each PAGE_REPO ships only its own mode's changelog; copy whichever is present.
-      for (const file of ['changelog.anime.json', 'changelog.kpop.json']) {
+      for (const file of ['changelog.anime.json', 'changelog.kpop.json', 'robots.txt', 'sitemap.xml']) {
         const src = resolve(root, file);
         if (existsSync(src)) cpSync(src, resolve(dist, file));
       }
-      cpSync(resolve(root, 'css', 'images'), resolve(dist, 'assets', 'images'), { recursive: true });
+      // Thumbnails are only loaded from css/images/thumbs; skip the duplicate.
+      cpSync(resolve(root, 'css', 'images'), resolve(dist, 'assets', 'images'), {
+        recursive: true,
+        filter: (src) => !/[\\/]thumbs([\\/]|$)/.test(src),
+      });
       cpSync(resolve(root, 'sound'), resolve(dist, 'sound'), { recursive: true });
     },
   };
@@ -51,7 +56,7 @@ export default defineConfig(({ command }) => ({
   root: '.',
   base: '/',
   publicDir: false,
-  plugins: [htmlPartialsPlugin(), copyAssetsPlugin()],
+  plugins: [htmlPartialsPlugin(), copyAssetsPlugin(), pwaPlugin(resolveBuildVersion())],
   define: {
     __BUILD_VERSION__: JSON.stringify(resolveBuildVersion()),
   },

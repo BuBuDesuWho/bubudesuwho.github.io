@@ -2,12 +2,15 @@ import { Howl } from 'howler';
 
 export interface PlayerCallbacks {
   onTick: (currentTime: number, duration: number, didSeek: boolean) => void;
+  /** Playback reached the end of the track on its own (not stop/pause). */
+  onEnd?: () => void;
 }
 
 let howl: Howl | null = null;
 let animFrameId: number | null = null;
 let callbacks: PlayerCallbacks | null = null;
 let _volume = 0.3;
+let _rate = 1;
 let _seekPending = false;
 
 const callSFXPool: HTMLAudioElement[] = [];
@@ -35,13 +38,29 @@ let _pendingSeek: number | null = null;
 let _fallback: { ogg: string; m4a: string } | null = null;
 let _triedFallback = false;
 
+// Bubudle only ever plays a few seconds of each track, so it asks for
+// metadata-only preload instead of buffering the whole file up front.
+let _preload: boolean | 'metadata' = true;
+
+export function setPreload(preload: boolean | 'metadata'): void {
+  _preload = preload;
+}
+
+// Sources of the current track, kept so release() can drop the audio element
+// and the next play() rebuild it.
+let _src: { ogg: string; m4a: string } | null = null;
+
 function makeHowl(ogg: string, m4a: string): Howl {
+  _src = { ogg, m4a };
   const h = new Howl({
     src: [ogg, m4a],
     format: ['ogg', 'm4a'],
     html5: true,
+    preload: _preload,
     volume: _volume,
+    rate: _rate,
   });
+  h.on('end', () => callbacks?.onEnd?.());
   h.on('play', () => {
     if (_pendingSeek === null) return;
     _seekPending = true;
@@ -73,7 +92,17 @@ export function loadSong(ogg: string, m4a: string, fallback?: { ogg: string; m4a
   howl = makeHowl(ogg, m4a);
 }
 
+/** Unload the audio element so the browser stops buffering the rest of the
+ *  track (Bubudle plays a few seconds, then idles on a paused element that keeps
+ *  downloading). The next play() reloads it from the same source. */
+export function release(): void {
+  if (!howl) return;
+  howl.unload();
+  howl = null;
+}
+
 export function play(seekTo?: number): void {
+  if (!howl && _src) howl = makeHowl(_src.ogg, _src.m4a);
   if (!howl) return;
   if (seekTo !== undefined) {
     _seekPending = true;
@@ -134,6 +163,17 @@ export function getVolume(): number {
   return _volume;
 }
 
+/** Practice speed. Held here too so a song loaded later starts at the same
+ *  rate; html5 audio keeps pitch while slowing down. */
+export function setRate(rate: number): void {
+  _rate = rate;
+  if (howl) howl.rate(_rate);
+}
+
+export function getRate(): number {
+  return _rate;
+}
+
 export function playCallSFX(): void {
   const sfx = callSFXPool[callSFXChannel];
   if (sfx) {
@@ -161,4 +201,5 @@ export function destroyPlayer(): void {
   if (animFrameId !== null) cancelAnimationFrame(animFrameId);
   if (howl) howl.unload();
   howl = null;
+  _src = null;
 }

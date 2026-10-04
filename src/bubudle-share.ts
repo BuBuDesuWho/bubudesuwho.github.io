@@ -43,7 +43,8 @@ export interface ShareInfo {
   ans: number[];
   songSingers: number[];
   correct: boolean;
-  streak: number;
+  /** Omitted for archive plays, which don't move the streak. */
+  streak?: number;
   /** Protocol-less daily link, e.g. "bubudesuwho.github.io/bubudle.html?daily=aqours". */
   url: string;
 }
@@ -57,7 +58,7 @@ export function buildShareText(info: ShareInfo): string {
     '',
     ...rows,
     '',
-    `Streak: ${info.streak}`,
+    ...(info.streak === undefined ? [] : [`Streak: ${info.streak}`]),
     info.url,
   ].join('\n');
 }

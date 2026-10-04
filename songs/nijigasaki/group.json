@@ -26,5 +26,14 @@
     { "name": "1st years", "memberIds": [2, 3, 9, 10] },
     { "name": "2nd years", "memberIds": [1, 5, 7, 12] },
     { "name": "3rd years", "memberIds": [4, 6, 8, 11] }
+  ],
+  "menuSections": [
+    { "id": "diverdiva", "label": "DiverDiva" },
+    { "id": "a-zu-na", "label": "A·ZU·NA" },
+    { "id": "qu4rtz", "label": "QU4RTZ" },
+    { "id": "r3birth", "label": "R3BIRTH" },
+    { "id": "1st-years", "label": "1st Years" },
+    { "id": "2nd-years", "label": "2nd Years" },
+    { "id": "3rd-years", "label": "3rd Years" }
   ]
 }

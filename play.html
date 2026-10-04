@@ -8,19 +8,27 @@
 
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}</script>
 
-<title>BubuDesuWho</title>
+<title>Play – Guess Who's Singing | BubuDesuWho</title>
+<meta name="description" content="Pick a song and guess which member sings each line, then check your score. Free singer quiz from BubuDesuWho.">
+<link rel="canonical" href="https://bubudesuwho.vercel.app/play.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BubuDesuWho">
+<meta property="og:title" content="Play – Guess Who's Singing | BubuDesuWho">
+<meta property="og:description" content="Pick a song and guess which member sings each line, then check your score. Free singer quiz from BubuDesuWho.">
+<meta property="og:url" content="https://bubudesuwho.vercel.app/play.html">
+<meta name="twitter:card" content="summary">
 
 <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 <link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
 <link type="text/css" href="css/themes.css?ver=20170402" rel="stylesheet" />
-<link type="text/css" href="css/themes-generated.css" rel="stylesheet" />
 <link type="text/css" href="css/styles.css?ver=20260429" rel="stylesheet" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet">
+<link rel="preconnect" href="%VITE_SOUND_BASE%" crossorigin>
 <link rel="preconnect" href="https://github.com">
-<link rel="preconnect" href="https://objects.githubusercontent.com">
+<link rel="preconnect" href="https://release-assets.githubusercontent.com">
 
 </head>
 <body class="no-overflow">
@@ -45,6 +53,7 @@
               <button id="theme-toggle" type="button" class="btn btn-default" title="Switch to light mode">&#9790;</button>
               <button id="palette-toggle" type="button" class="btn btn-default" title="Switch to official color palette">🎨</button>
               <button id="lyrics-button" type="button" class="btn btn-default">Lyrics</button>
+              <button id="whosings-button" type="button" class="btn btn-default" title="Rhythm mode: tap who's singing" style="display: none">♪ Live</button>
               <a id="lyrics-jp-toggle" type="button" class="btn btn-default" title="Japanese lyrics" style="display: none">JP</a>
               <span class="kofi-button-wrap">
                 <button id="kofi-button" type="button" title="Support on Ko-fi"><img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi"></button>
@@ -108,10 +117,14 @@
         <button type="button" class="jp-pause btn btn-custom"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
         <button type="button" class="jp-stop btn btn-custom" style="display:none"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button>
         <div id="progress-slider" style="display:inline-block;height:8px;border-radius:2px;margin-left:14px;position:relative;vertical-align:middle;cursor:pointer">
-          <div id="progress-bar" style="height:100%;border-radius:4px;width:0%;pointer-events:none"></div>
+          <div style="position:absolute;inset:0;border-radius:4px;overflow:hidden;pointer-events:none"><div id="progress-bar" style="height:100%;border-radius:4px;transform:translateX(-100%);will-change:transform"></div></div>
           <div id="seek-tooltip" style="display:none;position:absolute;bottom:100%;left:0;transform:translateX(-50%);margin-bottom:6px;padding:2px 6px;background:rgba(0,0,0,0.85);color:#fff;font-size:1em;border-radius:3px;white-space:nowrap;pointer-events:none"></div>
         </div>
         <div class="jp-current-time" style="display:inline-block;font-size:1.2em;margin:0 12px">0:00</div>
+        <button id="rate-button" type="button" class="btn btn-custom px-tool" title="Playback speed (S)">1x</button>
+        <button id="loop-button" type="button" class="btn btn-custom px-tool" title="Loop the current line (L)"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button>
+        <button id="results-button" type="button" class="btn btn-custom px-tool" title="Results (R)"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button>
+        <button id="help-button" type="button" class="btn btn-custom px-tool" title="Keyboard shortcuts (?)">?</button>
       </div>
       <div class="player-vol">
         <button type="button" class="jp-mute btn btn-custom"><span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span></button>

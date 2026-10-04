@@ -22,5 +22,15 @@
     { "name": "1st years",    "memberIds": [4, 5, 6] },
     { "name": "3rd years",    "memberIds": [7, 8, 9] }
   ],
-  "colorClass": "aqours-blue"
+  "colorClass": "aqours-blue",
+  "menuSections": [
+    { "id": "cyaron", "label": "CYaRon!" },
+    { "id": "azalea", "label": "AZALEA" },
+    { "id": "guilty-kiss", "label": "Guilty Kiss" },
+    { "id": "1st-years", "label": "1st Years" },
+    { "id": "2nd-years", "label": "2nd Years" },
+    { "id": "3rd-years", "label": "3rd Years" },
+    { "id": "saint-aqours-snow", "label": "Saint Aqours Snow" },
+    { "id": "aqours-miku", "label": "Aqours & Miku" }
+  ]
 }

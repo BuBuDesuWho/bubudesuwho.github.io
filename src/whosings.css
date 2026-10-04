@@ -1,0 +1,102 @@
+/* Rhythm mode: pause menu, count-in, settings and the results breakdown.
+   The base overlay styles live in css/styles.css. */
+
+.whosings-pause { position: relative; }
+/* two bars drawn in CSS: the text glyphs render as emoji or boxes on some systems */
+.whosings-pause::before,
+.whosings-pause::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  width: 4px;
+  height: 14px;
+  border-radius: 1px;
+  background: #fff;
+}
+.whosings-pause::before { left: 12px; }
+.whosings-pause::after { right: 12px; }
+.whosings[data-mode="results"] .whosings-pause,
+.whosings[data-mode="start"] .whosings-pause { display: none; }
+
+/* paused: the frozen stage dims behind the menu */
+.whosings[data-paused] .whosings-canvas { filter: brightness(0.45); }
+.whosings[data-paused] .whosings-panel {
+  display: flex;
+  padding: 24px 20px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.whosings[data-paused] .whosings-panel:empty { display: none; }
+
+.whosings-countdown {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Paytone One', 'Patua One', sans-serif;
+  font-size: 7em;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 3px #e0509c;
+  paint-order: stroke fill;
+  text-shadow: 0 0 24px rgba(255, 170, 220, 0.9);
+  pointer-events: none;
+}
+.whosings-countdown.tick { animation: whosings-count 0.9s ease-out both; }
+@keyframes whosings-count {
+  0%   { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+  25%  { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+}
+
+.whosings-settings {
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: left;
+}
+.whosings-settings summary {
+  cursor: pointer;
+  font-family: 'Paytone One', 'Patua One', sans-serif;
+  text-align: center;
+}
+.whosings-setting { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.whosings-setting-label { font-weight: bold; }
+.whosings-offset { display: flex; align-items: center; gap: 8px; }
+.whosings-step { width: auto; padding: 4px 14px; font-size: 1.1em; }
+.whosings-reset { margin-left: auto; font-size: 0.9em; }
+.whosings-offset-val { color: #fff; font-weight: bold; min-width: 5.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.whosings-hint { font-size: 0.85em; opacity: 0.85; margin-top: 8px; }
+
+.whosings-newbest {
+  font-family: 'Paytone One', 'Patua One', sans-serif;
+  font-size: 1.3em;
+  color: #ffe36e;
+  text-shadow: 0 0 12px rgba(255, 220, 90, 0.8);
+}
+
+.whosings[data-mode="results"] .whosings-panel {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  gap: 10px;
+}
+.whosings-members { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+.whosings-members:empty { display: none; }
+.whosings-members-head { font-weight: bold; opacity: 0.85; margin-bottom: 2px; }
+.whosings-member {
+  display: grid;
+  grid-template-columns: minmax(0, 7em) 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  text-align: left;
+}
+.whosings-member-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--c); font-weight: bold; }
+.whosings-meter { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.15); overflow: hidden; }
+.whosings-meter-fill { height: 100%; background: var(--c); border-radius: 4px; }
+.whosings-member-num { font-variant-numeric: tabular-nums; opacity: 0.85; white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .whosings-countdown.tick { animation: none; }
+}

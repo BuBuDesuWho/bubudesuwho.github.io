@@ -13,6 +13,8 @@ export interface DailyResult {
   songId: string;
   range: [number, number];
   wrongCount: number;
+  /** Played from the archive after the day had passed; kept out of streaks and win %. */
+  archive?: boolean;
 }
 
 export function scopeKey(scope: DailyScope): string {
@@ -40,6 +42,57 @@ const EST_PARTS_FMT = new Intl.DateTimeFormat('en-US', {
 /** Today's date in America/New_York as YYYY-MM-DD. */
 export function currentDateEst(now: Date = new Date()): string {
   return EST_DATE_FMT.format(now);
+}
+
+/** Earliest daily the archive can serve — the day Daily mode shipped. */
+export const ARCHIVE_START = '2026-04-25';
+
+/**
+ * First day picked by the no-repeat rotation. Everything before this was served
+ * by the old independent draw and is pinned in the manifest, so history is
+ * untouched by the change; 2026-08-25's daily was already generated and posted.
+ */
+export const ROTATION_START = '2026-08-26';
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Parse a YYYY-MM-DD as UTC midnight, so day arithmetic never crosses a zone. */
+function asUtc(date: string): Date {
+  return new Date(`${date}T00:00:00Z`);
+}
+
+/** Shift a YYYY-MM-DD by whole days, staying in calendar space. */
+export function shiftDate(date: string, days: number): string {
+  const d = asUtc(date);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Clamp an untrusted ?date= to a daily that actually exists. ISO dates are
+ * zero-padded, so lexical compare is chronological. Malformed, future, or
+ * pre-archive values fall back to `today`.
+ */
+export function clampDailyDate(raw: string | null, today: string, start = ARCHIVE_START): string {
+  if (!raw || !ISO_DATE.test(raw)) return today;
+  if (raw > today || raw < start) return today;
+  // Shape-valid but impossible calendar dates (2026-02-31) round-trip differently.
+  const d = asUtc(raw);
+  if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== raw) return today;
+  return raw;
+}
+
+const ARCHIVE_LABEL_FMT = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+/** "2026-08-24" → "Mon, Aug 24, 2026" for the archive banner. */
+export function formatDailyDate(date: string): string {
+  return ARCHIVE_LABEL_FMT.format(asUtc(date));
 }
 
 /** Milliseconds until the next 00:00:00 in America/New_York. */

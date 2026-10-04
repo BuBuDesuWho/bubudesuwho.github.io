@@ -22,6 +22,37 @@ export function clearGroups(): void {
   registry.clear();
 }
 
+/** Display name for a group slug; falls back to the slug if unregistered. */
+export function groupLabel(slug: string): string {
+  return registry.get(slug)?.name ?? slug;
+}
+
+export function parentGroupOf(slug: string): string | undefined {
+  return registry.get(slug)?.parent;
+}
+
+export function isExcludedFrom(slug: string | undefined, feature: 'stats' | 'bubudle'): boolean {
+  return !!slug && !!registry.get(slug)?.excludeFrom?.includes(feature);
+}
+
+/** Header text for a menu section. An empty key is the group's own bucket. */
+export function menuSectionLabel(slug: string, sectionId: string): string {
+  if (!sectionId) return groupLabel(slug);
+  return registry.get(slug)?.menuSections?.find(s => s.id === sectionId)?.label ?? sectionId;
+}
+
+/** Sort rank for a menu section: group bucket first, declared sections in
+ *  order, anything unknown last. */
+export function menuSectionRank(slug: string, sectionId: string): number {
+  if (!sectionId) return 0;
+  const i = registry.get(slug)?.menuSections?.findIndex(s => s.id === sectionId) ?? -1;
+  return i < 0 ? 99 : i + 1;
+}
+
+export function subunitFilterAliases(slug: string): string[] {
+  return registry.get(slug)?.subunitFilterAliases ?? [];
+}
+
 /** IDs of members in a group, sorted ascending. */
 export function memberIdsOf(slug: string): number[] {
   const g = registry.get(slug);

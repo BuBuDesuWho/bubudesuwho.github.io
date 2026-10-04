@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bubudesuwho.vercel.app/sitemap.xml

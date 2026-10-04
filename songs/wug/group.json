@@ -12,5 +12,6 @@
     { "id": 6, "name": "Kaya",    "nameNative": "香夜",   "color": "#935BAF", "colorOfficial": "#935BAF" },
     { "id": 7, "name": "Miyu",    "nameNative": "実夢",   "color": "#00B2DC", "colorOfficial": "#00B2DC" }
   ],
-  "subunits": []
+  "subunits": [],
+  "excludeFrom": ["stats", "bubudle"]
 }

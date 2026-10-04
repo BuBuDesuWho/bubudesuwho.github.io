@@ -1,4 +1,5 @@
-import { Slot, SlotState, MappingEntry, LinePart } from './types';
+import { Slot, SlotState, MappingEntry, LineEntry, LineObject, LinePart } from './types';
+import { EditedConfig } from './save-mapping';
 import { arrayEqual, toTimeStr } from './utils';
 import { state, makeSlotsFromBase } from './game';
 import { withInsertedAfter, withRemovedAt } from './mapping-edit';
@@ -24,16 +25,6 @@ export function setEditMode(val: boolean): void {
     // restore grouped play-mode slots
     state.slots = makeSlotsFromBase(state.song.slotsBase);
   }
-}
-
-export function setSlotStart(slot: Slot, time: number): void {
-  const rounded = Math.round(time * 100) / 100;
-  slot.range[0] = rounded;
-}
-
-export function setSlotEnd(slot: Slot, time: number): void {
-  const rounded = Math.round(time * 100) / 100;
-  slot.range[1] = rounded;
 }
 
 export function insertMappingAfter(slot: Slot): MappingEntry {
@@ -96,59 +87,133 @@ export function setSlotLyric(slot: Slot, text: string): void {
   slot.mapping.lyric = text;
 }
 
-export function exportEditedConfig(): (object | string)[] {
-  if (!state.song) return [];
+type LineOrigin = { line: number; part?: number };
 
-  // If the song uses the lines format, reconstruct it by merging updated mapping back in
-  if (state.song.lines) {
-    let mappingIdx = 0;
-    return state.song.lines.map((l) => {
-      if (typeof l === 'string') return l;
+/** Which original line (and part) each loaded mapping entry came from.
+ *  normalizeLines emits one entry per part, or one per plain line, in order,
+ *  so walking the original lines alongside `song.mapping` recovers it. Keyed by
+ *  object identity: insert/delete build a new `state.mapping` but keep the
+ *  surviving entry objects, and `song.mapping` keeps the load-time order. */
+function lineOrigins(lines: LineEntry[], loaded: MappingEntry[]): Map<MappingEntry, LineOrigin> {
+  const origins = new Map<MappingEntry, LineOrigin>();
+  let k = 0;
+  lines.forEach((l, line) => {
+    if (typeof l === 'string') return;
+    if (l.parts && l.parts.length > 0) l.parts.forEach((_, part) => origins.set(loaded[k++], { line, part }));
+    else origins.set(loaded[k++], { line });
+  });
+  return origins;
+}
 
-      if (l.parts && l.parts.length > 0) {
-        // Consume one mapping entry per part, reconstruct parts array — preserve
-        // any non-edited sibling fields on each part (e.g. lyric_hangul on kpop).
-        const updatedParts: LinePart[] = l.parts.map((part) => {
-          const updated = state.mapping[mappingIdx++];
-          if (!updated) return part;
-          const { lyric: _lyric, range: _range, ans: _ans, ...partExtras } = part as LinePart & Record<string, unknown>;
-          const updatedAns = updated.ans ?? [];
-          const ans = arrayEqual(updatedAns, state.song!.singers) ? [] : updatedAns;
-          return { lyric: updated.lyric ?? part.lyric, range: [updated.range[0], updated.range[1]], ans, ...partExtras } as LinePart;
-        });
-        const { parts: _parts, diff: _diff, ...lineExtras } = l as typeof l & Record<string, unknown>;
-        return {
-          ...lineExtras,
-          parts: updatedParts,
-          ...(l.diff && l.diff > 1 ? { diff: l.diff } : {}),
-        };
-      }
+/** A raw `ans` as preprocessSong leaves it: `[]`/`[0]` expand to the roster,
+ *  anything else is sorted and de-duplicated. */
+function ansAsLoaded(raw: number[], singers: number[]): number[] {
+  if (raw.length === 0 || raw.includes(0)) return singers;
+  return Array.from(new Set(raw)).sort((a, b) => a - b);
+}
 
-      const updated = state.mapping[mappingIdx++];
-      if (!updated) return l;
+/** `ans` as it should be written. Missing stays missing (a plain, unquizzed
+ *  line), and so does an inserted entry nobody set singers on, rather than
+ *  turning into an all-members `[]`. An unchanged answer is written back as
+ *  the file had it (explicit roster lists stay explicit); a changed one that
+ *  is the full roster collapses to `[]`, which the preprocessor expands. */
+function exportAns(ans: number[] | undefined, original: number[] | undefined, singers: number[]): number[] | undefined {
+  if (ans && original && arrayEqual(ans, ansAsLoaded(original, singers))) return original;
+  if (!ans || ans.length === 0) return undefined;
+  return arrayEqual(ans, singers) ? [] : ans;
+}
 
-      // Collapse all-singers back to [] — the preprocessor expands it at load time.
-      const updatedAns = updated.ans ?? [];
-      const ans = arrayEqual(updatedAns, state.song!.singers) ? [] : updatedAns;
+/** `base` (an original line or part, or `{}` for an inserted entry) with the
+ *  edited timing, answer, difficulty and lyric applied. Spreading `base` first
+ *  keeps sibling fields (lyric_jp, lyric_hangul, kdur, tail...) and key order. */
+function applyEntry<T extends LineObject | LinePart>(base: Partial<T>, m: MappingEntry, singers: number[]): T {
+  const out: Record<string, unknown> = {
+    ...base,
+    lyric: m.lyric ?? base.lyric ?? '',
+    range: [m.range[0], m.range[1]],
+  };
+  const ans = exportAns(m.ans, base.ans, singers);
+  if (ans) out.ans = ans;
+  else delete out.ans;
+  if (m.diff && m.diff > 1) out.diff = m.diff;
+  else delete out.diff;
+  return out as T;
+}
 
-      // Preserve sibling fields like lyric_hangul, lyric_translation, lyric_jp.
-      const { lyric: _lyric, range: _range, ans: _ans, diff: _diff, ...extras } = l as typeof l & Record<string, unknown>;
-      return {
-        lyric: updated.lyric ?? l.lyric,
-        range: [updated.range[0], updated.range[1]],
-        ans,
-        ...extras,
-        ...(updated.diff && updated.diff > 1 ? { diff: updated.diff } : {}),
-      };
-    });
+/** Rebuild `lines` from the edited mapping, walking it in order: string
+ *  separators stay where they were, a line whose entries were all deleted is
+ *  dropped, and an inserted entry becomes a new line right after the line it
+ *  was inserted below (or a new part, if it sits between two parts of one line). */
+function exportLines(lines: LineEntry[], loaded: MappingEntry[], mapping: MappingEntry[], singers: number[]): LineEntry[] {
+  const origins = lineOrigins(lines, loaded);
+  const out: LineEntry[] = [];
+  let next = 0; // first original line not yet emitted or dropped
+  const separatorsUpTo = (end: number) => {
+    for (; next < end; next++) {
+      const l = lines[next];
+      if (typeof l === 'string') out.push(l);
+    }
+  };
+
+  let i = 0;
+  while (i < mapping.length) {
+    const origin = origins.get(mapping[i]);
+    if (!origin) {
+      out.push(applyEntry<LineObject>({}, mapping[i], singers));
+      i++;
+      continue;
+    }
+    separatorsUpTo(origin.line);
+    const line = lines[origin.line] as LineObject;
+
+    // This line's surviving entries, plus anything inserted between them.
+    let last = i;
+    for (let j = i + 1; j < mapping.length; j++) {
+      const o = origins.get(mapping[j]);
+      if (!o) continue;
+      if (o.line !== origin.line) break;
+      last = j;
+    }
+    const run = mapping.slice(i, last + 1);
+
+    if (line.parts && line.parts.length > 0) {
+      const parts = run.map((m) => {
+        const part = origins.get(m)?.part;
+        return applyEntry<LinePart>(part != null ? line.parts![part] : {}, m, singers);
+      });
+      out.push({ ...line, parts });
+    } else {
+      out.push(applyEntry<LineObject>(line, run[0], singers));
+    }
+    next = origin.line + 1;
+    i = last + 1;
+  }
+  separatorsUpTo(lines.length);
+  return out;
+}
+
+export function exportEditedConfig(): EditedConfig | null {
+  const song = state.song;
+  if (!song) return null;
+
+  if (song.lines) {
+    return { format: 'lines', lines: exportLines(song.lines, song.mapping ?? [], state.mapping, song.singers) };
   }
 
-  // Legacy mapping-only format
-  return state.mapping.map((m) => ({
-    range: [m.range[0], m.range[1]],
-    ans: m.ans ?? [],
-    ...(m.diff && m.diff > 1 ? { diff: m.diff } : {}),
-  }));
+  // Mapping-only (legacy) songs list answers explicitly, and preprocessSong
+  // rewrote these entries in place, so there's no raw value to fall back on:
+  // write answers as loaded, minus unset ones on inserted entries.
+  return {
+    format: 'mapping',
+    mapping: state.mapping.map((m) => {
+      const ans = m.ans && m.ans.length > 0 ? m.ans : undefined;
+      return {
+        ...(ans ? { ans } : {}),
+        range: [m.range[0], m.range[1]],
+        ...(m.diff && m.diff > 1 ? { diff: m.diff } : {}),
+      };
+    }),
+  };
 }
 
 // ─── ASS Export ─────────────────────────────────────────────────────

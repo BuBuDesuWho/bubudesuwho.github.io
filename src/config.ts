@@ -3,6 +3,7 @@ import {
 } from './types';
 import { arrayEqual } from './utils';
 import { registerGroup } from './groups';
+import { poolSong, PoolSong } from './bubudle-lines';
 
 declare const __BUILD_VERSION__: string;
 const V = `?v=${__BUILD_VERSION__}`;
@@ -10,12 +11,24 @@ const V = `?v=${__BUILD_VERSION__}`;
 // Songs JSON + changelog default to BASE_URL (web), but the Capacitor APK
 // builds set VITE_CONTENT_BASE to its deployed site so adding songs flows
 // to installed apps without an APK reinstall. See scripts/build-android.sh.
-function getContentBase(): string {
+export function getContentBase(): string {
   return import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL;
 }
 
+// Every content fetch goes through here: vercel.json serves /songs/*.json as
+// immutable, so an unversioned URL would be stuck in browser caches for a year.
+export function contentUrl(path: string): string {
+  return getContentBase() + path + V;
+}
+
+// Deployed indexes carry a hash of each song's shipped bytes (scripts/ship-songs.js),
+// so a deploy only re-downloads songs that changed. The dev index has none.
+export function songUrl(file: string, hash: string | undefined): string {
+  return hash ? `${getContentBase()}songs/${file}?v=${hash}` : contentUrl('songs/' + file);
+}
+
 const songCache = new Map<string, Song>();
-const indexCache = new Map<string, { file: string; cover?: string; menu: MenuSong }>();
+const indexCache = new Map<string, { file: string; hash?: string; cover?: string; menu: MenuSong }>();
 let indexPromise: Promise<MenuSong[]> | null = null;
 let groupsPromise: Promise<void> | null = null;
 const inFlight = new Map<string, Promise<Song | undefined>>();
@@ -27,15 +40,14 @@ export function ensureGroups(): Promise<void> {
 }
 
 async function loadGroups(mode: 'anime' | 'kpop'): Promise<void> {
-  const base = getContentBase();
-  const resp = await fetch(base + `songs/groups.${mode}.json` + V);
+  const resp = await fetch(contentUrl(`songs/groups.${mode}.json`));
   if (!resp.ok) {
     console.warn(`songs/groups.${mode}.json missing (${resp.status}); registry will be empty`);
     return;
   }
   const { groups: slugs } = await resp.json() as { groups: string[] };
   await Promise.all(slugs.map(async (slug) => {
-    const gr = await fetch(base + 'songs/' + slug + '/group.json' + V);
+    const gr = await fetch(contentUrl('songs/' + slug + '/group.json'));
     if (!gr.ok) {
       console.warn(`songs/${slug}/group.json missing (${gr.status})`);
       return;
@@ -45,7 +57,7 @@ async function loadGroups(mode: 'anime' | 'kpop'): Promise<void> {
   }));
 }
 
-type IndexEntry = string | (MenuSong & { file: string });
+type IndexEntry = string | (MenuSong & { file: string; hash?: string });
 
 function getMode(): 'anime' | 'kpop' {
   return import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
@@ -53,18 +65,21 @@ function getMode(): 'anime' | 'kpop' {
 
 async function ensureIndex(): Promise<MenuSong[]> {
   if (indexPromise) return indexPromise;
-  const base = getContentBase();
   const mode = getMode();
   indexPromise = (async () => {
-    await ensureGroups();
-    const indexResp = await fetch(base + `songs/index.${mode}.json` + V);
+    // The index download doesn't depend on the group registry; only parsing
+    // below does, so start both fetches together.
+    const [, indexResp] = await Promise.all([
+      ensureGroups(),
+      fetch(contentUrl(`songs/index.${mode}.json`)),
+    ]);
     const entries = await indexResp.json() as IndexEntry[];
     const out: MenuSong[] = [];
     const stale: string[] = [];
     for (const e of entries) {
       if (typeof e === 'object' && e.id) {
-        const { file, ...menu } = e;
-        indexCache.set(e.id, { file, cover: menu.cover, menu });
+        const { file, hash, ...menu } = e;
+        indexCache.set(e.id, { file, hash, cover: menu.cover, menu });
         out.push(menu);
       } else {
         stale.push(typeof e === 'string' ? e : (e as { file?: string }).file ?? '?');
@@ -103,8 +118,7 @@ export function loadSongById(id: string): Promise<Song | undefined> {
       console.warn(`loadSongById: no index entry for "${id}"`);
       return undefined;
     }
-    const base = getContentBase();
-    const r = await fetch(base + 'songs/' + entry.file + V);
+    const r = await fetch(songUrl(entry.file, entry.hash));
     if (!r.ok) {
       console.warn(`loadSongById: failed to fetch ${entry.file} (${r.status})`);
       return undefined;
@@ -133,6 +147,24 @@ export async function loadConfig(): Promise<Song[]> {
     else if (r.status === 'rejected') console.warn('Failed to load song:', r.reason);
   }
   return out;
+}
+
+/** Bubudle's candidate pool: per song, just the line ranges/diffs it filters
+ *  and picks from (scripts/ship-songs.js writes it at deploy). Dev serves raw
+ *  songs/ with no pool file, so it derives the same thing from every song,
+ *  as does a deployed site whose pool fetch fails. */
+export async function loadBubudlePool(): Promise<PoolSong[]> {
+  if (!import.meta.env.DEV) {
+    try {
+      const r = await fetch(contentUrl(`songs/bubudle-pool.${getMode()}.json`));
+      if (r.ok) return await r.json() as PoolSong[];
+      console.warn(`bubudle pool missing (${r.status}); loading every song instead`);
+    } catch (e) {
+      console.warn('bubudle pool unreadable; loading every song instead', e);
+    }
+  }
+  const songs = await loadConfig();
+  return songs.map(poolSong).filter((s): s is PoolSong => s !== null);
 }
 
 interface NormalizedJp {
@@ -432,6 +464,6 @@ function preprocessLyrics(
 
 export async function loadChangelog(): Promise<{ date: string; change: string }[]> {
   const mode = getMode();
-  const resp = await fetch(getContentBase() + `changelog.${mode}.json`);
+  const resp = await fetch(contentUrl(`changelog.${mode}.json`));
   return resp.json();
 }

@@ -10,13 +10,14 @@
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}</script>
 
 <title>BubuDesuWho - Stats</title>
+<meta name="robots" content="noindex">
 
 <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 <link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
 <link type="text/css" href="css/styles.css?ver=20170312" rel="stylesheet" />
 <link rel="preconnect" href="https://github.com">
-<link rel="preconnect" href="https://objects.githubusercontent.com">
+<link rel="preconnect" href="https://release-assets.githubusercontent.com">
 
 </head>
 <body>
@@ -80,6 +81,58 @@
       </section>
 
     </div>
+
+    <section id="streak-section" class="stats-section hidden">
+      <h2 class="stats-section-title">Streaks <span class="stats-section-hint">days you played the quiz, Live, or the daily Bubudle</span></h2>
+      <div class="stats-ribbon streak-ribbon">
+        <div class="stat-cell">
+          <span class="stat-num" id="streak-current">0</span>
+          <span class="stat-label">Current streak</span>
+        </div>
+        <span class="stat-rule" aria-hidden="true"></span>
+        <div class="stat-cell">
+          <span class="stat-num" id="streak-best">0</span>
+          <span class="stat-label">Best streak</span>
+        </div>
+        <span class="stat-rule" aria-hidden="true"></span>
+        <div class="stat-cell">
+          <span class="stat-num" id="streak-days">0</span>
+          <span class="stat-label">Days played</span>
+        </div>
+      </div>
+      <div id="activity-heatmap" class="activity-heatmap" role="img" aria-label="Plays per day over the last six months"></div>
+    </section>
+
+    <section id="achievements-section" class="stats-section">
+      <h2 class="stats-section-title">Achievements <span class="stats-section-hint" id="achievements-count"></span></h2>
+      <div id="achievements"></div>
+    </section>
+
+    <section id="group-completion-section" class="stats-section">
+      <h2 class="stats-section-title">Group completion <span class="stats-section-hint">songs played in the quiz or Live</span></h2>
+      <ul id="group-completion" class="group-completion"></ul>
+    </section>
+
+    <section id="whosings-section" class="stats-section hidden">
+      <h2 class="stats-section-title">Live <span class="stats-section-hint">rhythm mode results</span></h2>
+      <div class="stats-ribbon whosings-ribbon">
+        <div class="stat-cell">
+          <span class="stat-num" id="whosings-stat-songs">0</span>
+          <span class="stat-label">Songs played</span>
+        </div>
+        <span class="stat-rule" aria-hidden="true"></span>
+        <div class="stat-cell">
+          <span class="stat-num" id="whosings-stat-lines">0/0</span>
+          <span class="stat-label">Lines right / guessed</span>
+        </div>
+        <span class="stat-rule" aria-hidden="true"></span>
+        <div class="stat-cell">
+          <span class="stat-num" id="whosings-stat-accuracy">0%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+      </div>
+      <ul id="whosings-list" class="whosings-list"></ul>
+    </section>
 
     <section class="stats-iohist">
       <button id="stats-export" type="button" class="btn btn-default btn-sm" title="Download a backup of your plays, buddy, streak, and settings">Export profile</button>

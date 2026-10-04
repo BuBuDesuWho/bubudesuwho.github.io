@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import { eligibleCandidates, FilterableCandidate, CandidateFilters } from './candidate-pool';
+import { describe, expect, it, beforeEach } from 'vitest';
+import { registerGroup, clearGroups } from './groups';
+import { eligibleCandidates, FilterableCandidate, CandidateFilters, poolCandidates, resolvePoolLine } from './candidate-pool';
+import type { PoolSong } from './bubudle-lines';
 
 type C = FilterableCandidate & { label: string };
 
@@ -50,6 +52,10 @@ describe('eligibleCandidates — subunit include/exclude', () => {
   it('exclude drops the matching singer-key', () => {
     expect(labels(pool, { subunitExclude: ['1,2'] })).toEqual(['trio']);
   });
+  beforeEach(() => {
+    clearGroups();
+    registerGroup({ slug: 'saint-aqours-snow', name: 'Saint Aqours Snow', members: [], subunitFilterAliases: ['10,11'] });
+  });
   it('saint-aqours-snow matches the "10,11" Saint Snow key by group', () => {
     const ss = [cand('ss', 3, 1, [1, 2, 3, 10, 11], 'saint-aqours-snow')];
     expect(labels(ss, { subunitInclude: ['10,11'] })).toEqual(['ss']);
@@ -66,5 +72,50 @@ describe('eligibleCandidates — combined filters', () => {
       cand('wrongUnit', 3, 2, [7, 8]),
     ];
     expect(labels(pool, { clipDiff: 'normal', songDiff: '2', subunitInclude: ['1,2'] })).toEqual(['keep']);
+  });
+});
+
+describe('poolCandidates', () => {
+  const songs: PoolSong[] = [
+    { id: 'a', group: 'aqours', singers: [1, 2], lines: [[0, 1], [1, 2, 3]] },
+    { id: 'b', group: 'saint-aqours-snow', menu: 'aqours', singers: [10, 11], lines: [[5, 6]] },
+    { id: 'c', group: 'muse', singers: [1, 2], lines: [[2, 3]] },
+  ];
+
+  it('flattens included songs in order, with position, range, diff and roster', () => {
+    const out = poolCandidates(songs, (s) => (s.menu ?? s.group) === 'aqours');
+    expect(out.map((c) => [c.song.id, c.ordinal, c.range, c.diff, c.allSingers])).toEqual([
+      ['a', 0, [0, 1], 1, [1, 2]],
+      ['a', 1, [1, 2], 3, [1, 2]],
+      ['b', 0, [5, 6], 1, [10, 11]],
+    ]);
+  });
+});
+
+describe('resolvePoolLine', () => {
+  const song = {
+    id: 'a', group: 'aqours' as const,
+    lines: [
+      { lyric: 'one', range: [0, 1] as [number, number], ans: [1] },
+      { lyric: 'echo', range: [0, 1] as [number, number], ans: [2] },
+      { lyric: 'three', lyric_jp: 'さん', range: [2, 3] as [number, number], ans: [2, 1], diff: 2 },
+      { lyric: 'four', range: [3, 4] as [number, number], ans: [3] },
+    ],
+  };
+  const pc = (ordinal: number, range: [number, number]) =>
+    ({ song: { id: 'a', group: 'aqours' as const, singers: [1, 2], lines: [] }, ordinal, range, diff: 1, allSingers: [1, 2] });
+
+  it('takes the line at its position, even when another line shares the range', () => {
+    expect(resolvePoolLine(song, pc(1, [0, 1]))).toMatchObject({ lyric: 'echo', ans: [2], allSingers: [1, 2, 3] });
+  });
+
+  it('carries everything the puzzle renders', () => {
+    expect(resolvePoolLine(song, pc(2, [2, 3]))).toMatchObject({ lyric: 'three', lyricJp: 'さん', ans: [1, 2], diff: 2, range: [2, 3] });
+  });
+
+  it('falls back to the range when the position moved, and null when the line is gone', () => {
+    expect(resolvePoolLine(song, pc(0, [2, 3]))?.lyric).toBe('three');
+    expect(resolvePoolLine(song, pc(0, [7, 8]))).toBeNull();
+    expect(resolvePoolLine({ ...song, hidden: true }, pc(0, [0, 1]))).toBeNull();
   });
 });

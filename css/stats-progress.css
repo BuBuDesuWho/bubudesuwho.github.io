@@ -1,0 +1,146 @@
+/* Stats page: streaks + heatmap, achievements, group completion.
+   Imported from src/stats-progress.ts so it only ships with the stats chunk. */
+
+/* ── Activity heatmap ──────────────────────────────────────── */
+.activity-heatmap {
+  display: flex;
+  gap: 3px;
+  /* fit-content + auto margins centers it without clipping the oldest weeks
+     when it overflows (justify-content: center would). */
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+}
+.heat-col {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.heat-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--bg-interactive, rgba(0, 0, 0, 0.06));
+}
+.heat-cell.heat-future { background: transparent; }
+.heat-cell.heat-1 { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.heat-cell.heat-2 { background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.heat-cell.heat-3 { background: color-mix(in srgb, var(--accent) 78%, transparent); }
+.heat-cell.heat-4 { background: var(--accent); }
+
+/* ── Achievements ──────────────────────────────────────────── */
+.ach-category {
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 22px 0 10px;
+}
+.ach-category:first-child { margin-top: 0; }
+.ach-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+.ach-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card, 10px);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+}
+.ach-badge.is-unlocked {
+  color: var(--text-base);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent) inset;
+}
+.ach-icon {
+  font-size: 1.5em;
+  line-height: 1;
+  flex: none;
+  opacity: 0.45;
+}
+.ach-badge.is-unlocked .ach-icon {
+  color: var(--accent);
+  opacity: 1;
+}
+.ach-body { flex: 1; min-width: 0; }
+.ach-title { font-weight: 600; }
+.ach-badge.is-unlocked .ach-title { color: var(--text-base); }
+.ach-desc { font-size: 0.85em; line-height: 1.3; }
+.ach-bar {
+  margin-top: 7px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--progress-track, rgba(0, 0, 0, 0.08));
+  overflow: hidden;
+}
+.ach-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+.ach-count {
+  font-size: 0.75em;
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Group completion ──────────────────────────────────────── */
+.group-completion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.group-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 200px) 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.group-row.is-untouched { opacity: 0.55; }
+.group-row-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.group-row-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--progress-track, rgba(0, 0, 0, 0.08));
+  overflow: hidden;
+}
+/* Fill picks up the group's colorClass via currentColor. */
+.group-row-bar > span {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  border-radius: inherit;
+}
+.group-row-count {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 56px;
+  text-align: right;
+}
+.group-row-count.is-complete { color: var(--accent); font-weight: 600; }
+
+@media (max-width: 480px) {
+  .heat-cell { width: 10px; height: 10px; }
+  .group-row { grid-template-columns: 90px 1fr auto; gap: 8px; }
+}

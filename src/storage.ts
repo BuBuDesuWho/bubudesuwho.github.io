@@ -10,42 +10,132 @@ export function hasLocalStorage(): boolean {
 
 export function getStorage(key: string): string | null {
   if (!hasLocalStorage()) return null;
-  return localStorage.getItem(key);
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
+/** False when the write didn't stick, most often QuotaExceededError once
+ *  `hist` grows toward the ~5 MB origin limit. */
 export function setStorage(key: string, value: string): boolean {
   if (!hasLocalStorage()) return false;
-  localStorage.setItem(key, value);
-  return true;
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export interface HistRecord {
+  /** Local YYYY-MM-DD; records saved before that carry the browser's
+   *  toLocaleDateString(). */
   date: string;
   songName: string;
+  /** Missing on records saved before plays were keyed by id. hist.ts falls
+   *  back to the name for those. */
+  songId?: string;
   slots: [number[], number[]][];
 }
 
+// On-disk shape. The song id rides at the end so older builds, which only
+// read the first three fields, still understand newer records.
+type HistSlots = [number[], number[]][];
+type HistTuple = [string, string, HistSlots] | [string, string, HistSlots, string];
+
+function readHistTuples(): HistTuple[] {
+  const raw = getStorage('hist');
+  if (!raw) return [];
+  try {
+    const arr: unknown = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter(isHistTuple) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeHistTuples(arr: HistTuple[]): boolean {
+  if (arr.length > MAXHIST) arr.splice(0, arr.length - MAXHIST);
+  if (setStorage('hist', JSON.stringify(arr))) return true;
+  // Out of quota: shed the oldest tenth and retry once rather than lose the
+  // play that just finished.
+  arr.splice(0, Math.max(1, Math.ceil(arr.length / 10)));
+  return setStorage('hist', JSON.stringify(arr));
+}
+
+/** Never throws: corrupt storage reads as empty and malformed records are dropped. */
 export function loadHistory(): HistRecord[] {
-  const raw = getStorage('hist') || '[]';
-  const arr = JSON.parse(raw) as [string, string, [number[], number[]][]][];
-  return arr.map(([date, songName, slots]) => ({ date, songName, slots }));
+  return readHistTuples().map(([date, songName, slots, songId]) =>
+    songId ? { date, songName, songId, slots } : { date, songName, slots });
 }
 
-export function saveHistory(record: HistRecord): void {
-  const raw = getStorage('hist') || '[]';
-  const arr = JSON.parse(raw) as unknown[];
-  while (arr.length >= MAXHIST) arr.shift();
-  arr.push([record.date, record.songName, record.slots]);
-  setStorage('hist', JSON.stringify(arr));
+export function saveHistory(record: HistRecord): boolean {
+  const arr = readHistTuples();
+  arr.push(record.songId
+    ? [record.date, record.songName, record.slots, record.songId]
+    : [record.date, record.songName, record.slots]);
+  return writeHistTuples(arr);
 }
 
+/** Never throws; entries that aren't number arrays are dropped. */
 export function loadChoicesForSong(songId: string): Record<string, number[]> {
-  const raw = getStorage(songId + '-selections') || '{}';
-  return JSON.parse(raw);
+  const raw = getStorage(songId + '-selections');
+  if (!raw) return {};
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { return {}; }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+  const out: Record<string, number[]> = {};
+  for (const [key, v] of Object.entries(parsed)) {
+    if (isNumberArray(v)) out[key] = v;
+  }
+  return out;
 }
 
-export function saveChoicesForSong(songId: string, choices: Record<string, number[]>): void {
-  setStorage(songId + '-selections', JSON.stringify(choices));
+export function saveChoicesForSong(songId: string, choices: Record<string, number[]>): boolean {
+  return setStorage(songId + '-selections', JSON.stringify(choices));
+}
+
+// ─── Who's singing (rhythm mode) results ───────────────────────────
+// Kept apart from `hist` on purpose: rhythm-mode guesses don't count toward
+// the quiz's guesses or mastery. One entry per song: the latest run, and the
+// best uninterrupted full run.
+export interface WhosingsRun {
+  correct: number;
+  attempted: number;
+  total: number;
+  /** Part of the song was skipped (scrubbed or started partway). */
+  partial: boolean;
+  diff: number;
+  date: string;
+  /** Rhythm score and longest combo; missing on runs saved before scoring. */
+  score?: number;
+  maxCombo?: number;
+}
+export type WhosingsResults = Record<string, { last: WhosingsRun; best?: WhosingsRun }>;
+
+export function loadWhosingsResults(): WhosingsResults {
+  try {
+    return JSON.parse(getStorage('whosings-results') || '{}') as WhosingsResults;
+  } catch {
+    return {};
+  }
+}
+
+/** Full runs only; more right lines wins, and the score breaks a tie. */
+export function isBetterWhosingsRun(run: WhosingsRun, prev: WhosingsRun | undefined): boolean {
+  if (run.partial) return false;
+  if (!prev) return true;
+  if (run.correct !== prev.correct) return run.correct > prev.correct;
+  return (run.score ?? 0) > (prev.score ?? 0);
+}
+
+export function saveWhosingsRun(songId: string, run: WhosingsRun): void {
+  const all = loadWhosingsResults();
+  const prev = all[songId]?.best;
+  all[songId] = { last: run, best: isBetterWhosingsRun(run, prev) ? run : prev };
+  setStorage('whosings-results', JSON.stringify(all));
 }
 
 // ─── Mastery cache ──────────────────────────────────────────────────
@@ -83,8 +173,6 @@ export function loadMasteryCache(): MasteryCacheEntry[] {
   }
 }
 
-type HistTuple = [string, string, [number[], number[]][]];
-
 // Profile backup — every key here is something we want to round-trip across
 // devices/reinstalls. Keys NOT listed (mastery-cache, buddy-pos/side/size/anim,
 // bubudle-current-*, bubudle-flags, sessionStorage) are intentionally excluded
@@ -92,14 +180,16 @@ type HistTuple = [string, string, [number[], number[]][]];
 const PROFILE_STATIC_KEYS = new Set<string>([
   // Player progress
   'hist',
+  'whosings-results',
   'favorite-member',
   'bubudle-streak',
   // Game preferences (play.html)
   'autoscroll', 'themed', 'hints', 'inline', 'diff', 'calls', 'callSFX', 'jpLyrics', 'lyrics',
+  'playbackRate',
   // App-wide preferences
   'theme', 'palette', 'volume',
   // Menu state
-  'group', 'sort', 'groupBy', 'groupBySubunit',
+  'group', 'sort', 'groupBy', 'groupBySubunit', 'menu-filter', 'fav-songs',
   // Bubudle settings
   'bubudle-mode', 'bubudle-diff', 'bubudle-sdiff', 'bubudle-daily-scope', 'bubudle-infinite-all',
   'bubudle-count-progress',
@@ -185,8 +275,7 @@ function mergeHistRaw(incomingRaw: string): { added: number; skipped: number } {
   catch { throw new Error('Bad hist payload (invalid JSON).'); }
   if (!Array.isArray(incoming)) throw new Error('Bad hist payload (not an array).');
 
-  const raw = getStorage('hist') || '[]';
-  const existing = JSON.parse(raw) as HistTuple[];
+  const existing = readHistTuples();
   const seen = new Set(existing.map(e => JSON.stringify(e)));
   let added = 0;
   let skipped = 0;
@@ -198,21 +287,22 @@ function mergeHistRaw(incomingRaw: string): { added: number; skipped: number } {
     existing.push(entry);
     added++;
   }
-  while (existing.length > MAXHIST) existing.shift();
-  setStorage('hist', JSON.stringify(existing));
+  if (!writeHistTuples(existing)) throw new Error('Not enough storage space to save the imported plays.');
   return { added, skipped };
 }
 
+function isNumberArray(v: unknown): v is number[] {
+  return Array.isArray(v) && v.every((n) => typeof n === 'number');
+}
+
 function isHistTuple(entry: unknown): entry is HistTuple {
-  if (!Array.isArray(entry) || entry.length !== 3) return false;
-  const [date, songName, slots] = entry;
+  if (!Array.isArray(entry) || (entry.length !== 3 && entry.length !== 4)) return false;
+  const [date, songName, slots, songId] = entry;
   if (typeof date !== 'string' || typeof songName !== 'string' || !Array.isArray(slots)) return false;
+  if (entry.length === 4 && typeof songId !== 'string') return false;
   for (const slot of slots) {
     if (!Array.isArray(slot) || slot.length !== 2) return false;
-    const [chosen, ans] = slot;
-    if (!Array.isArray(chosen) || !Array.isArray(ans)) return false;
-    if (!chosen.every((n: unknown) => typeof n === 'number')) return false;
-    if (!ans.every((n: unknown) => typeof n === 'number')) return false;
+    if (!isNumberArray(slot[0]) || !isNumberArray(slot[1])) return false;
   }
   return true;
 }

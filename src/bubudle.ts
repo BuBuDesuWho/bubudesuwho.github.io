@@ -1,10 +1,11 @@
-import { Song, Slot, SlotState, LineObject, MappingEntry, GroupName, MEMBER_MAPPING } from './types';
-import { loadConfig } from './config';
+import { Song, Slot, SlotState, MappingEntry, GroupName, MEMBER_MAPPING } from './types';
+import { loadIndex, loadSongById, loadBubudlePool } from './config';
 import { state, initGameState, loadSong, checkSlot, toggleChoice, toggleReveal, getSongTitle, getActivePool, setActivePool } from './game';
-import { initThemeToggle, switchTheme, buildSlotSkeleton } from './ui';
+import { initThemeToggle } from './ui-about';
+import { switchTheme, buildSlotSkeleton } from './ui';
 import { initKofi } from './kofi';
 import { buildMenu, toggleMenu } from './ui-menu';
-import { hasGroup, getGroup } from './groups';
+import { hasGroup, getGroup, isExcludedFrom } from './groups';
 import * as player from './player';
 import { getStorage, setStorage } from './storage';
 import {
@@ -18,27 +19,28 @@ import {
   parseBubudleDiff,
   parseSongDiff,
 } from './bubudle-config';
-import { eligibleCandidates as filterEligible } from './candidate-pool';
+import { eligibleCandidates as filterEligible, PoolCandidate, poolCandidates, resolvePoolLine } from './candidate-pool';
+import type { PoolSong, SongLine } from './bubudle-lines';
 import { bubudleGridLayout } from './bubudle-grid';
 import { appendToLog, renderLog, hasLogEntries } from './bubudle-log';
 import {
   AppMode, DailyScope,
-  currentDateEst, msUntilNextEstMidnight, formatHms, pickDailyIndex,
+  currentDateEst, msUntilNextEstMidnight, formatHms,
   loadDailyResult, saveDailyResult,
+  ARCHIVE_START, clampDailyDate, shiftDate, formatDailyDate, scopeKey,
 } from './bubudle-daily';
+import { loadDailyManifest, pickDailyLine } from './bubudle-archive';
+import { computeDailyStats, loadScopeResults } from './bubudle-stats';
+import { openStatsModal } from './bubudle-stats-modal';
+import { lineKey } from './bubudle-rotation';
 import { classifyGuess, parseGuessKey, buildShareText } from './bubudle-share';
 
 const APP_MODE: AppMode = import.meta.env.VITE_APP_MODE === 'kpop' ? 'kpop' : 'anime';
 type BubudleMode = 'infinite' | 'daily';
 
-interface LyricCandidate {
-  lyric: string;
-  lyricJp?: string;
-  ans: number[];
-  range: [number, number];
+/** A pool line with its song fetched: what a puzzle renders from. */
+interface LyricCandidate extends SongLine {
   song: Song;
-  diff: number;
-  sourceLine: LineObject;
   allSingers: number[];
 }
 
@@ -199,7 +201,7 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
 }
 
 let bubudleGroup: GroupName = 'aqours';
-let candidates: LyricCandidate[] = [];
+let candidates: PoolCandidate[] = [];
 let current: LyricCandidate | null = null;
 let recentHistory: Set<string> = new Set();
 let checked = false;
@@ -221,16 +223,18 @@ let subunitExclude: string[] = [];
 
 let bubudleMode: BubudleMode = 'infinite';
 let dailyScope: DailyScope = { kind: 'group', group: 'aqours' };
+/** The daily being shown. Equal to today except while browsing the archive. */
+let dailyDate: string = currentDateEst();
+/** That day's line is pinned to a song/timestamp the library no longer has. */
+let dailyUnavailable = false;
 let infiniteAll = false;
-let allSongs: Song[] = [];
+let poolSongs: PoolSong[] = [];
 let countdownTimer: number | null = null;
 let lastInfiniteGroup: GroupName = 'aqours';
 
 /** Groups intentionally excluded from Bubudle (still playable via play.html). */
-const BUBUDLE_EXCLUDED_GROUPS: ReadonlySet<string> = new Set(['wug']);
-
 function isExcluded(group: string | undefined): boolean {
-  return !!group && BUBUDLE_EXCLUDED_GROUPS.has(group);
+  return isExcludedFrom(group, 'bubudle');
 }
 
 function isAllScope(): boolean {
@@ -292,12 +296,38 @@ function saveDailyScope(): void {
   setStorage('bubudle-daily-scope', key);
 }
 
+// ?date=YYYY-MM-DD pins the archive to a past daily. Deliberately not persisted
+// to storage — the archive is somewhere you visit, not a mode you get stuck in.
+function readDailyDateFromUrl(): string {
+  const param = new URLSearchParams(location.search).get('date');
+  return clampDailyDate(param, currentDateEst());
+}
+
+// Pinned is tracked explicitly rather than derived from `dailyDate !== today`,
+// because at EST midnight today's date moves out from under us — and "the clock
+// rolled over" must roll the daily forward, while "the visitor chose Aug 24"
+// must not.
+let archivePinned = false;
+
+function pinDailyDate(date: string): void {
+  dailyDate = date;
+  archivePinned = date !== currentDateEst();
+}
+
+/** True while showing a past daily rather than today's. */
+function isArchive(): boolean {
+  return bubudleMode === 'daily' && archivePinned;
+}
+
 export async function initBubudlePage(): Promise<void> {
   player.initPlayer({
     onTick(currentTime, _duration, _didSeek) {
       if (clipEnd !== null && currentTime >= clipEnd) {
         clipEnd = null;
+        // A paused element keeps downloading the track (1-3 MB a clip). Drop
+        // it; a replay reloads from the clip's start, which it seeks to anyway.
         player.pause();
+        player.release();
       }
       updateSeekSlider(currentTime);
     },
@@ -308,12 +338,13 @@ export async function initBubudlePage(): Promise<void> {
   initSongDifficulty();
   initProgressToggle();
   loadSubunitFilter();
-  const songs = await loadConfig();
-  if (songs.length === 0) return;
-  allSongs = songs;
+  // The pool says which lines exist; a puzzle fetches just its own song.
+  const [menuSongs, pool] = await Promise.all([loadIndex(), loadBubudlePool()]);
+  if (menuSongs.length === 0) return;
+  poolSongs = pool;
 
   // Build sidebar menu (links go to play.html#song)
-  buildMenu(songs);
+  buildMenu(menuSongs);
   bubudleGroup = state.group;
 
   // Hide excluded groups from the bubudle sidebar.
@@ -343,11 +374,12 @@ export async function initBubudlePage(): Promise<void> {
   if (dailyScope.kind === 'group' && isExcluded(dailyScope.group)) {
     dailyScope = { kind: 'group', group: bubudleGroup };
   }
+  pinDailyDate(readDailyDateFromUrl());
 
   if (bubudleMode === 'infinite' && infiniteAll) {
-    buildCandidatePoolAll(songs);
+    buildCandidatePoolAll(poolSongs);
   } else {
-    buildCandidatePool(songs);
+    buildCandidatePool(poolSongs);
   }
   rebuildSingerPicker();
   rebuildSubunitFilter();
@@ -360,7 +392,7 @@ export async function initBubudlePage(): Promise<void> {
       if (bubudleMode === 'daily') {
         dailyScope = { kind: 'group', group: value as GroupName };
         saveDailyScope();
-        loadDailyForScope();
+        void loadDailyWithManifest();
       } else {
         infiniteAll = false;
         setStorage('bubudle-infinite-all', '');
@@ -368,7 +400,7 @@ export async function initBubudlePage(): Promise<void> {
         lastInfiniteGroup = bubudleGroup;
         applyGroupClass(bubudleGroup);
         loadSubunitFilter();
-        buildCandidatePool(songs);
+        buildCandidatePool(poolSongs);
         rebuildSingerPicker();
         rebuildSubunitFilter();
         recentHistory.clear();
@@ -386,11 +418,11 @@ export async function initBubudlePage(): Promise<void> {
     if (bubudleMode === 'daily') {
       dailyScope = { kind: 'mode', mode: APP_MODE };
       saveDailyScope();
-      loadDailyForScope();
+      void loadDailyWithManifest();
     } else {
       infiniteAll = true;
       setStorage('bubudle-infinite-all', '1');
-      buildCandidatePoolAll(songs);
+      buildCandidatePoolAll(poolSongs);
       rebuildSubunitFilter();
       recentHistory.clear();
       applyModeUI();
@@ -405,7 +437,11 @@ export async function initBubudlePage(): Promise<void> {
   document.getElementById('bubudle-check-bottom')!.addEventListener('click', checkAnswer);
   document.getElementById('bubudle-skip-bottom')!.addEventListener('click', skipAnswer);
   document.getElementById('bubudle-next-bottom')!.addEventListener('click', () => pickRandom());
-  document.getElementById('bubudle-share')?.addEventListener('click', shareDailyResult);
+  document.getElementById('bubudle-share')?.addEventListener('click', () => shareDailyResult());
+  document.getElementById('bubudle-daily-stats')?.addEventListener('click', showDailyStats);
+  document.getElementById('bubudle-daily-prev')?.addEventListener('click', () => stepDailyDate(-1));
+  document.getElementById('bubudle-daily-next')?.addEventListener('click', () => stepDailyDate(1));
+  document.getElementById('bubudle-daily-today')?.addEventListener('click', goToTodaysDaily);
   document.getElementById('bubudle-play')!.addEventListener('click', () => playClip());
   document.getElementById('bubudle-bad-timestamp')!.addEventListener('click', reportBadTimestamp);
   document.getElementById('bubudle-flag-diff')!.addEventListener('click', () => {
@@ -438,7 +474,7 @@ export async function initBubudlePage(): Promise<void> {
   });
 
   applyModeUI();
-  if (bubudleMode === 'daily') loadDailyForScope();
+  if (bubudleMode === 'daily') void loadDailyWithManifest();
   else pickRandom(true);
 
   if (hasLogEntries()) renderLog();
@@ -450,67 +486,17 @@ function applyGroupClass(group: GroupName): void {
   html.classList.add(`group-${group}`);
 }
 
-function arrEq(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
-
-function buildCandidatePool(songs: Song[]): void {
-  collectCandidates(songs, (s) => {
+function buildCandidatePool(songs: PoolSong[]): void {
+  candidates = poolCandidates(songs, (s) => {
     const menu = (s.menu ?? s.group) as string;
     return menu === bubudleGroup && !isExcluded(menu);
   });
   updatePoolCount();
 }
 
-function buildCandidatePoolAll(songs: Song[]): void {
-  collectCandidates(songs, (s) => !isExcluded((s.menu ?? s.group) as string));
+function buildCandidatePoolAll(songs: PoolSong[]): void {
+  candidates = poolCandidates(songs, (s) => !isExcluded((s.menu ?? s.group) as string));
   updatePoolCount();
-}
-
-function collectCandidates(songs: Song[], include: (s: Song) => boolean): void {
-  candidates = [];
-  for (const song of songs) {
-    if (!song.lines || song.hidden) continue;
-    if (!include(song)) continue;
-
-    const allSingers = new Set<number>();
-    for (const line of song.lines) {
-      if (typeof line === 'string') continue;
-      const obj = line as LineObject;
-      if (obj.parts) {
-        for (const p of obj.parts) {
-          if (p.ans) for (const a of p.ans) if (a > 0) allSingers.add(a);
-        }
-      } else if (obj.ans) {
-        for (const a of obj.ans) if (a > 0) allSingers.add(a);
-      }
-    }
-    const singerArr = Array.from(allSingers).sort((a, b) => a - b);
-
-    for (const line of song.lines) {
-      if (typeof line === 'string') continue;
-      const obj = line as LineObject;
-      const lineDiff = obj.diff ?? 1;
-
-      if (obj.parts) {
-        for (const part of obj.parts) {
-          if (part.ans && part.ans.length > 0 && part.lyric.trim() && part.range) {
-            const sorted = [...part.ans].filter(a => a > 0).sort((a, b) => a - b);
-            if (sorted.length === 0) continue;
-            if (arrEq(sorted, singerArr)) continue;
-            candidates.push({ lyric: part.lyric, lyricJp: obj.lyric_jp, ans: sorted, range: part.range, song, diff: lineDiff, sourceLine: obj, allSingers: singerArr });
-          }
-        }
-      } else if (obj.ans && obj.ans.length > 0 && obj.lyric?.trim() && obj.range) {
-        const sorted = [...obj.ans].filter(a => a > 0).sort((a, b) => a - b);
-        if (sorted.length === 0) continue;
-        if (arrEq(sorted, singerArr)) continue;
-        candidates.push({ lyric: obj.lyric, lyricJp: obj.lyric_jp, ans: sorted, range: obj.range, song, diff: lineDiff, sourceLine: obj, allSingers: singerArr });
-      }
-    }
-  }
 }
 
 const PICKER_EXTRA_MEMBERS: Partial<Record<GroupName, Record<number, string>>> = {
@@ -643,25 +629,55 @@ function saveCurrent(c: LyricCandidate, answered = false): void {
   }));
 }
 
-function restoreCurrent(): { candidate: LyricCandidate; answered: boolean } | null {
+// Matched on song + range (the line's identity everywhere else too): the pool
+// doesn't carry lyric text, which was the third key before the pool existed.
+function restoreCurrent(): { candidate: PoolCandidate; answered: boolean } | null {
   const raw = getStorage(currentStorageKey());
   if (!raw) return null;
   try {
-    const { songId, lyric, range, answered } = JSON.parse(raw);
+    const { songId, range, answered } = JSON.parse(raw);
     const candidate = candidates.find(c =>
-      c.song.id === songId && c.lyric === lyric &&
-      c.range[0] === range[0] && c.range[1] === range[1]
+      c.song.id === songId && c.range[0] === range[0] && c.range[1] === range[1]
     );
     if (!candidate) return null;
     return { candidate, answered: !!answered };
   } catch { return null; }
 }
 
-function candidateKey(c: LyricCandidate): string {
-  return `${c.song.id}|${c.range[0]}|${c.range[1]}`;
+function candidateKey(c: { song: { id: string }; range: readonly number[] }): string {
+  return lineKey(c.song.id, c.range);
 }
 
-function eligibleCandidates(): LyricCandidate[] {
+// Bumped by every puzzle load (and by anything that replaces the board), so a
+// song fetch that resolves after the visitor has moved on is dropped.
+let loadSeq = 0;
+
+function beginLoad(): () => boolean {
+  const seq = ++loadSeq;
+  return () => seq === loadSeq;
+}
+
+/** Fetch the song behind a pool line. Null if it can't be loaded or no longer has the line. */
+async function fetchLine(pc: PoolCandidate): Promise<LyricCandidate | null> {
+  const song = await loadSongById(pc.song.id);
+  if (!song) return null;
+  const line = resolvePoolLine(song, pc);
+  return line ? { ...line, song } : null;
+}
+
+function showLoadFailed(): void {
+  loadSeq++;
+  const container = document.getElementById('slots')!;
+  container.innerHTML = '<div class="text-center" style="padding:2em;opacity:0.6">'
+    + "Couldn't load this line. Check your connection and try again.</div>";
+  document.getElementById('bubudle-lyric')!.textContent = '';
+  document.getElementById('bubudle-lyric-jp')!.textContent = '';
+  document.getElementById('bubudle-check-bottom')!.style.display = 'none';
+  document.getElementById('bubudle-next-bottom')!.style.display = bubudleMode === 'daily' ? 'none' : '';
+  resetHints();
+}
+
+function eligibleCandidates(): PoolCandidate[] {
   return filterEligible(candidates, {
     clipDiff: bubudleDiff,
     songDiff,
@@ -670,15 +686,31 @@ function eligibleCandidates(): LyricCandidate[] {
   });
 }
 
-function pickFromPool(pool: LyricCandidate[]): LyricCandidate {
-  let available = pool.filter(c => !recentHistory.has(candidateKey(c)));
-  if (available.length === 0) {
-    recentHistory.clear();
-    available = pool;
+// Infinite picks the following puzzle as soon as one renders and fetches its
+// song, so Next doesn't wait on the network. Used only if it's still eligible
+// and unplayed when Next comes; otherwise a fresh pick is drawn.
+let upNext: PoolCandidate | null = null;
+
+function drawFrom(pool: PoolCandidate[]): PoolCandidate {
+  const available = pool.filter(c => !recentHistory.has(candidateKey(c)));
+  const from = available.length > 0 ? available : pool;
+  return from[Math.floor(Math.random() * from.length)];
+}
+
+function pickFromPool(pool: PoolCandidate[]): PoolCandidate {
+  let pick = upNext && !recentHistory.has(candidateKey(upNext)) && pool.includes(upNext) ? upNext : null;
+  upNext = null;
+  if (!pick) {
+    if (pool.every(c => recentHistory.has(candidateKey(c)))) recentHistory.clear();
+    pick = drawFrom(pool);
   }
-  const pick = available[Math.floor(Math.random() * available.length)];
   recentHistory.add(candidateKey(pick));
   return pick;
+}
+
+function prefetchNext(pool: PoolCandidate[]): void {
+  upNext = drawFrom(pool);
+  void loadSongById(upNext.song.id);
 }
 
 function updatePoolCount(): void {
@@ -687,6 +719,7 @@ function updatePoolCount(): void {
 }
 
 function showEmptyPool(): void {
+  loadSeq++;
   const container = document.getElementById('slots')!;
   container.innerHTML = '<div class="text-center" style="padding:2em;opacity:0.6">No lyrics available for this group yet</div>';
   document.getElementById('bubudle-lyric')!.textContent = '';
@@ -700,7 +733,7 @@ function pickRandom(initial = false, tryRestore = false): void {
   if (pool.length === 0) { showEmptyPool(); return; }
 
   let restoredAnswered = false;
-  let chosen: LyricCandidate;
+  let chosen: PoolCandidate;
   if (initial || tryRestore) {
     const restored = restoreCurrent();
     if (restored) { chosen = restored.candidate; restoredAnswered = restored.answered; }
@@ -708,8 +741,17 @@ function pickRandom(initial = false, tryRestore = false): void {
   } else {
     chosen = pickFromPool(pool);
   }
-  saveCurrent(chosen, restoredAnswered);
-  renderCandidate(chosen, restoredAnswered, initial);
+  void showPick(chosen, restoredAnswered, initial);
+  if (bubudleMode === 'infinite') prefetchNext(pool);
+}
+
+async function showPick(pick: PoolCandidate, answered: boolean, initial: boolean): Promise<void> {
+  const live = beginLoad();
+  const c = await fetchLine(pick);
+  if (!live()) return;
+  if (!c) { showLoadFailed(); return; }
+  saveCurrent(c, answered);
+  renderCandidate(c, answered, initial);
 }
 
 function renderCandidate(c: LyricCandidate, answered: boolean, initial = false): void {
@@ -734,6 +776,7 @@ function renderCandidate(c: LyricCandidate, answered: boolean, initial = false):
 
   // Load audio first — loadSong sets state.group/singers from the song config,
   // so we override those after with values derived from the actual lyrics.
+  player.setPreload('metadata');
   loadSong(c.song);
 
   songSingers = c.allSingers;
@@ -827,18 +870,25 @@ function readModeFromUrlOrStorage(): BubudleMode {
 function updateUrlMode(mode: BubudleMode): void {
   const url = new URL(location.href);
   if (mode === 'daily') url.searchParams.set('mode', 'daily');
-  else { url.searchParams.delete('mode'); url.searchParams.delete('daily'); }
+  else {
+    url.searchParams.delete('mode');
+    url.searchParams.delete('daily');
+    url.searchParams.delete('date');
+  }
   history.replaceState(null, '', url.toString());
 }
 
-// Keep the ?daily=<scope> param in sync with the active daily scope so the URL
+// Keep ?daily=<scope> and ?date=<day> in sync with what's on screen, so the URL
 // in the address bar is always a shareable link to the daily being shown.
 function updateUrlScope(): void {
   const url = new URL(location.href);
   if (bubudleMode === 'daily') {
     url.searchParams.set('daily', dailyScope.kind === 'group' ? dailyScope.group : 'all');
+    if (isArchive()) url.searchParams.set('date', dailyDate);
+    else url.searchParams.delete('date');
   } else {
     url.searchParams.delete('daily');
+    url.searchParams.delete('date');
   }
   history.replaceState(null, '', url.toString());
 }
@@ -888,7 +938,8 @@ function switchMode(mode: BubudleMode): void {
   if (mode === 'daily') {
     if (dailyScope.kind === 'group') dailyScope = { kind: 'group', group: bubudleGroup };
     saveDailyScope();
-    loadDailyForScope();
+    pinDailyDate(currentDateEst());   // re-entering Daily always lands on today
+    void loadDailyWithManifest();
   } else {
     // Restore infinite filters from storage (they were locked during daily)
     const savedDiff = parseBubudleDiff(getStorage('bubudle-diff'));
@@ -898,12 +949,12 @@ function switchMode(mode: BubudleMode): void {
     syncDifficultyButtons();
 
     if (infiniteAll) {
-      buildCandidatePoolAll(allSongs);
+      buildCandidatePoolAll(poolSongs);
     } else {
       bubudleGroup = lastInfiniteGroup;
       applyGroupClass(bubudleGroup);
       loadSubunitFilter();
-      buildCandidatePool(allSongs);
+      buildCandidatePool(poolSongs);
       rebuildSubunitFilter();
     }
     rebuildSingerPicker();
@@ -921,7 +972,7 @@ function syncDifficultyButtons(): void {
   );
 }
 
-function loadDailyForScope(): void {
+async function loadDailyForScope(): Promise<void> {
   // Lock filters
   bubudleDiff = 'all';
   songDiff = 'all';
@@ -933,12 +984,14 @@ function loadDailyForScope(): void {
     bubudleGroup = dailyScope.group;
     applyGroupClass(bubudleGroup);
     rebuildSingerPicker();
-    buildCandidatePool(allSongs);
+    buildCandidatePool(poolSongs);
   } else {
-    buildCandidatePoolAll(allSongs);
+    buildCandidatePoolAll(poolSongs);
   }
   saveDailyScope();
   updateUrlScope();
+
+  dailyUnavailable = false;
 
   const pool = eligibleCandidates();
   if (pool.length === 0) {
@@ -948,11 +1001,25 @@ function loadDailyForScope(): void {
     return;
   }
 
-  const date = currentDateEst();
-  const idx = pickDailyIndex(dailyScope, date, pool.length);
-  const candidate = pool[idx];
+  const pick = pickDailyLine(pool, candidateKey, dailyScope, dailyDate, isArchive());
+  if (!pick) {
+    showArchiveUnavailable();
+    updateDailyBanner();
+    startCountdown();
+    return;
+  }
 
-  const stored = loadDailyResult(dailyScope, date);
+  const live = beginLoad();
+  const candidate = await fetchLine(pick);
+  if (!live()) return;
+  if (!candidate) {
+    showLoadFailed();
+    updateDailyBanner();
+    startCountdown();
+    return;
+  }
+
+  const stored = loadDailyResult(dailyScope, dailyDate);
   renderCandidate(candidate, !!stored, true);
 
   if (stored) {
@@ -967,14 +1034,75 @@ function loadDailyForScope(): void {
   startCountdown();
 }
 
+// Rather than silently serving a different line than the day actually had.
+function showArchiveUnavailable(): void {
+  loadSeq++;
+  dailyUnavailable = true;
+  const container = document.getElementById('slots')!;
+  container.innerHTML = '<div class="text-center" style="padding:2em;opacity:0.6">'
+    + "This day's line isn't in the song library any more.<br>Step to another day with the arrows above.</div>";
+  document.getElementById('bubudle-lyric')!.textContent = '';
+  document.getElementById('bubudle-lyric-jp')!.textContent = '';
+  // Nothing to answer — renderCandidate puts these back on a playable day.
+  document.getElementById('bubudle-check-bottom')!.style.display = 'none';
+  document.getElementById('bubudle-next-bottom')!.style.display = 'none';
+  resetHints();
+}
+
+// The day being shown now lives in the stepper next to the label, so the label
+// itself is just the scope ("Love Live daily", "Aqours daily").
 function dailyLabelFor(scope: DailyScope): string {
-  if (scope.kind === 'group') return `Today's ${getGroup(scope.group)?.name ?? scope.group} daily`;
-  return `Today's ${scope.mode === 'kpop' ? 'K-pop' : 'Love Live'} daily`;
+  return `${shareLabelFor(scope)} daily`;
 }
 
 function updateDailyBanner(): void {
   const labelEl = document.getElementById('bubudle-daily-label');
   if (labelEl) labelEl.textContent = dailyLabelFor(dailyScope);
+
+  const archive = isArchive();
+  const today = currentDateEst();
+
+  const dateEl = document.getElementById('bubudle-daily-date');
+  if (dateEl) {
+    dateEl.textContent = archive ? formatDailyDate(dailyDate) : 'Today';
+    dateEl.classList.toggle('bubudle-daily-date-gone', dailyUnavailable);
+  }
+
+  const prev = document.getElementById('bubudle-daily-prev') as HTMLButtonElement | null;
+  if (prev) prev.disabled = dailyDate <= ARCHIVE_START;
+  const next = document.getElementById('bubudle-daily-next') as HTMLButtonElement | null;
+  if (next) next.disabled = dailyDate >= today;
+
+  // Countdown only means something on today's daily; "back to today" only in the archive.
+  const countdown = document.getElementById('bubudle-daily-countdown-wrap');
+  if (countdown) countdown.style.display = archive ? 'none' : '';
+  const back = document.getElementById('bubudle-daily-today');
+  if (back) back.style.display = archive ? '' : 'none';
+}
+
+/** Step the archive by whole days, clamped to [ARCHIVE_START, today]. */
+function stepDailyDate(days: number): void {
+  const today = currentDateEst();
+  let target = shiftDate(dailyDate, days);
+  if (target > today) target = today;
+  if (target < ARCHIVE_START) target = ARCHIVE_START;
+  if (target === dailyDate) return;
+  pinDailyDate(target);
+  void loadDailyWithManifest();
+}
+
+// The manifest is only needed once you leave today, so it's fetched here rather
+// than on page load. Resolved before rendering so the archive never flashes a
+// live-computed line and then replaces it.
+async function loadDailyWithManifest(): Promise<void> {
+  await loadDailyManifest();
+  await loadDailyForScope();
+}
+
+function goToTodaysDaily(): void {
+  if (!isArchive()) return;
+  pinDailyDate(currentDateEst());
+  void loadDailyWithManifest();
 }
 
 function shareLabelFor(scope: DailyScope): string {
@@ -984,7 +1112,20 @@ function shareLabelFor(scope: DailyScope): string {
 
 function shareUrlFor(scope: DailyScope): string {
   const base = `${location.host}${location.pathname}`;
-  return scope.kind === 'group' ? `${base}?daily=${scope.group}` : base;
+  const params = new URLSearchParams();
+  if (scope.kind === 'group') params.set('daily', scope.group);
+  if (isArchive()) params.set('date', dailyDate);
+  const query = params.toString();
+  return query ? `${base}?${query}` : base;
+}
+
+// Archive plays are read-only for stats: the streak means "kept up with the
+// daily", which replaying an old one doesn't demonstrate.
+function recordStreak(next: number): void {
+  if (isArchive()) return;
+  streak = next;
+  setStorage('bubudle-streak', String(streak));
+  updateStreak();
 }
 
 function updateShareButton(): void {
@@ -994,19 +1135,20 @@ function updateShareButton(): void {
   btn.style.display = show ? '' : 'none';
 }
 
-function shareDailyResult(): void {
+function shareDailyResult(target?: HTMLElement): void {
   if (!current || dailyResultCorrect === null) return;
   const text = buildShareText({
     label: shareLabelFor(dailyScope),
-    date: currentDateEst(),
+    date: dailyDate,
     guesses: previousGuesses.map(parseGuessKey),
     ans: current.ans,
     songSingers,
     correct: dailyResultCorrect,
-    streak,
+    // An archive solve doesn't move the streak, so don't advertise one.
+    streak: isArchive() ? undefined : streak,
     url: shareUrlFor(dailyScope),
   });
-  const btn = document.getElementById('bubudle-share');
+  const btn = target ?? document.getElementById('bubudle-share');
   const flash = () => {
     if (!btn) return;
     const orig = btn.textContent;
@@ -1036,7 +1178,11 @@ function startCountdown(): void {
     const ms = msUntilNextEstMidnight();
     const el = document.getElementById('bubudle-daily-countdown');
     if (el) el.textContent = formatHms(ms);
-    if (ms <= 0 && bubudleMode === 'daily') loadDailyForScope();
+    // Roll into the new day — but never yank someone off a daily they pinned.
+    if (ms <= 0 && bubudleMode === 'daily' && !archivePinned) {
+      dailyDate = currentDateEst();
+      void loadDailyWithManifest();
+    }
   };
   tick();
   countdownTimer = window.setInterval(tick, 1000);
@@ -1044,13 +1190,38 @@ function startCountdown(): void {
 
 function persistDailyResult(correct: boolean): void {
   if (bubudleMode !== 'daily' || !current) return;
-  saveDailyResult(dailyScope, currentDateEst(), {
+  saveDailyResult(dailyScope, dailyDate, {
     guesses: previousGuesses.slice(),
     correct,
     songId: current.song.id,
     range: current.range,
     wrongCount,
+    ...(isArchive() ? { archive: true } : {}),
   });
+}
+
+function showDailyStats(): void {
+  const stored = loadDailyResult(dailyScope, dailyDate);
+  const outcome = stored ? (stored.correct ? stored.guesses.length : 'X') : null;
+  openStatsModal({
+    title: `${shareLabelFor(dailyScope)} daily`,
+    stats: computeDailyStats(loadScopeResults(dailyScope), currentDateEst()),
+    outcome,
+    showCountdown: !isArchive(),
+    // Share needs the live board (answer + song singers), so only offer it
+    // while the finished daily is the one on screen.
+    onShare: stored && checked && dailyResultCorrect !== null ? (btn) => shareDailyResult(btn) : undefined,
+    onPractice: () => switchMode('infinite'),
+  });
+}
+
+// A beat after the reveal, so the answer and song name land before the dialog.
+function showDailyStatsSoon(): void {
+  const date = dailyDate;
+  const key = scopeKey(dailyScope);
+  setTimeout(() => {
+    if (bubudleMode === 'daily' && dailyDate === date && scopeKey(dailyScope) === key) showDailyStats();
+  }, 1400);
 }
 
 function playClip(forcePlay = false): void {
@@ -1058,6 +1229,7 @@ function playClip(forcePlay = false): void {
 
   if (!forcePlay && player.isPlaying()) {
     player.pause();
+    player.release();
     const playBtn = document.querySelector<HTMLElement>('.jp-play');
     const pauseBtn = document.querySelector<HTMLElement>('.jp-pause');
     if (playBtn) playBtn.style.display = 'inline-block';
@@ -1088,9 +1260,7 @@ function checkAnswer(): void {
   const correct = currentSlot.state === SlotState.Correct;
   if (correct) {
     checked = true;
-    streak++;
-    setStorage('bubudle-streak', String(streak));
-    updateStreak();
+    recordStreak(streak + 1);
 
     revealSongName(current.song);
     switchTheme(current.song.id);
@@ -1098,6 +1268,7 @@ function checkAnswer(): void {
     persistDailyResult(true);
     dailyResultCorrect = true;
     updateShareButton();
+    if (bubudleMode === 'daily') showDailyStatsSoon();
 
     document.getElementById('bubudle-check-bottom')!.style.display = 'none';
     document.getElementById('bubudle-skip-bottom')!.style.display = 'none';
@@ -1149,9 +1320,7 @@ function checkAnswer(): void {
   } else {
     // 4th wrong: give up, reveal answer
     checked = true;
-    streak = 0;
-    setStorage('bubudle-streak', String(streak));
-    updateStreak();
+    recordStreak(0);
     // Drop the wrong guess so it isn't persisted back to the song as a
     // filled-in selection — only correct answers write to song progress.
     currentSlot.choices = [];
@@ -1162,6 +1331,7 @@ function checkAnswer(): void {
     persistDailyResult(false);
     dailyResultCorrect = false;
     updateShareButton();
+    if (bubudleMode === 'daily') showDailyStatsSoon();
 
     document.getElementById('bubudle-check-bottom')!.style.display = 'none';
     document.getElementById('bubudle-skip-bottom')!.style.display = 'none';
@@ -1176,9 +1346,7 @@ function skipAnswer(): void {
   if (!current || !currentSlot || checked) return;
 
   checked = true;
-  streak = 0;
-  setStorage('bubudle-streak', String(streak));
-  updateStreak();
+  recordStreak(0);
   // Skipped — don't persist a partial guess back to the song.
   currentSlot.choices = [];
   toggleReveal(currentSlot, true);
@@ -1513,10 +1681,13 @@ function updateLyricMarker(): void {
   marker.style.width = `${widthPct}%`;
 }
 
+// This counter is consecutive solves across Infinite and Daily, not the
+// day-by-day streak the stats dialog shows, so the label has to say which.
 function updateStreak(): void {
   const el = document.getElementById('bubudle-streak')!;
   if (streak > 0) {
-    el.textContent = `Streak: ${streak}`;
+    el.textContent = `Solves in a row: ${streak}`;
+    el.title = 'Consecutive correct answers across Daily and Infinite. Your daily streak is in Stats.';
     el.style.display = '';
   } else {
     el.style.display = 'none';

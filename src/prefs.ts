@@ -48,6 +48,7 @@ export const prefs = {
   // play.html scalars
   lyricsMode: numPref('lyrics', 0, (s) => parseInt(s, 10)),
   volume: numPref('volume', 0.3, parseFloat),
+  playbackRate: numPref('playbackRate', 1, parseFloat),
 
   // app-wide toggles
   palette: enumPref('palette', 'official', 'default'),

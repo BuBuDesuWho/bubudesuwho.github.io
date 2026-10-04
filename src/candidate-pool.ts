@@ -1,4 +1,6 @@
 import { BubudleDifficulty, SongDifficulty } from './bubudle-config';
+import { subunitFilterAliases } from './groups';
+import { songLines, PoolSong, SongLine } from './bubudle-lines';
 
 // The eligibility filter for the Bubudle candidate pool, lifted out of the page
 // module as a pure function: given the full pool and the four active filter
@@ -44,13 +46,50 @@ export function eligibleCandidates<T extends FilterableCandidate>(
     if (!clipOk) return false;
     if (diffFilter !== 0 && c.diff !== diffFilter) return false;
     const key = c.allSingers.join(',');
-    // Saint Snow ("10,11") subunit filter also covers saint-aqours-snow songs
-    // (their allSingers usually span 1–11, so wouldn't match the "10,11" key on their own).
-    const saintSnowMatch = c.song.group === 'saint-aqours-snow';
+    // Extension groups (saint-aqours-snow) declare subunit keys they also match,
+    // since their allSingers span the whole roster and wouldn't hit e.g. "10,11".
+    const aliases = subunitFilterAliases(c.song.group);
     const matchesKey = (set: Set<string>): boolean =>
-      set.has(key) || (saintSnowMatch && set.has('10,11'));
+      set.has(key) || aliases.some(a => set.has(a));
     if (includeSet && !matchesKey(includeSet)) return false;
     if (excludeSet && matchesKey(excludeSet)) return false;
     return true;
   });
+}
+
+/** A line in the pool: enough to filter and pick, before its song is fetched. */
+export interface PoolCandidate extends FilterableCandidate {
+  song: PoolSong;
+  /** Position in songLines(fullSong).lines. */
+  ordinal: number;
+}
+
+/** Flatten the pool file's songs into lines, in pool order. */
+export function poolCandidates(songs: PoolSong[], include: (s: PoolSong) => boolean): PoolCandidate[] {
+  const out: PoolCandidate[] = [];
+  for (const song of songs) {
+    if (!include(song)) continue;
+    song.lines.forEach((l, ordinal) => {
+      out.push({ song, ordinal, range: [l[0], l[1]], diff: l[2] ?? 1, allSingers: song.singers });
+    });
+  }
+  return out;
+}
+
+/**
+ * The full line a pool entry stands for, once its song has loaded. Matched by
+ * position, which is exact even when two lines share a range; the range check
+ * (and lookup by range) only matters if the pool and song came from different
+ * deploys. Null when the song no longer has that line.
+ */
+export function resolvePoolLine(
+  song: Parameters<typeof songLines>[0],
+  c: PoolCandidate,
+): (SongLine & { allSingers: number[] }) | null {
+  const sl = songLines(song);
+  if (!sl) return null;
+  const same = (l: SongLine) => l.range[0] === c.range[0] && l.range[1] === c.range[1];
+  const at = sl.lines[c.ordinal];
+  const line = at && same(at) ? at : sl.lines.find(same);
+  return line ? { ...line, allSingers: sl.singers } : null;
 }

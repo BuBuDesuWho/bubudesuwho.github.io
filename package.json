@@ -15,7 +15,10 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "gate": "node scripts/song-gate.mjs",
+    "validate:songs": "node scripts/validate-songs.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { preprocessSong } from './config';
+import { preprocessSong, songUrl, contentUrl } from './config';
 import type { SongConfig } from './types';
 
 function baseCfg(overrides: Partial<SongConfig> = {}): SongConfig {
@@ -114,5 +114,15 @@ describe('preprocessSong', () => {
     const song = preprocessSong(cfg);
     expect(song.slotsBase).toHaveLength(2);
     expect(song.slotsBase.map((s) => s.mapping.ans)).toEqual([[1], [3]]);
+  });
+});
+
+describe('songUrl', () => {
+  it('versions a song by its content hash when the index has one', () => {
+    expect(songUrl('aqours/aozora.json', 'abc123def0')).toBe('/songs/aqours/aozora.json?v=abc123def0');
+  });
+
+  it('falls back to the build version without a hash (dev index)', () => {
+    expect(songUrl('aqours/aozora.json', undefined)).toBe(contentUrl('songs/aqours/aozora.json'));
   });
 });

@@ -1,5 +1,33 @@
 [
   {
+    "date": "09/27/2026",
+    "change": "Added a new <strong>♪ Live</strong> rhythm mode: tap along to who's singing in real time, with pause (<code>Esc</code>/<code>P</code>) and instant retry (<code>R</code>), adjustable note speed and audio offset, and a per-member results table when you finish"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "Play page: added playback speed (<code>S</code> for 0.5x/0.75x/1x) and a loop-the-current-line practice tool (<code>L</code>), plus an end-of-song results card (<code>R</code>) with per-member accuracy bars, a new-best badge, and shareable Wordle-style result text"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "Sidebar search is now fuzzy across kana, romaji, and accents (press <code>/</code> to jump into it, arrows + Enter to pick a song), alongside filter chips for <strong>Unplayed</strong>, <strong>In progress</strong>, <strong>Mastered</strong>, and ★ <strong>Favorites</strong>"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "Added song favorites, <strong>Random</strong> / <strong>Random unplayed</strong> buttons, a <strong>Continue</strong> strip for picking up where you left off, and progress dots next to each song in the sidebar"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "Stats page: added 36 achievements across quiz, mastery, groups, streaks, and Bubudle, plus a play streak tracker and a 26-week activity heatmap"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "Bubudle: added a stats modal showing win %, current/max streak, a guess distribution histogram, and a countdown to the next daily"
+  },
+  {
+    "date": "09/27/2026",
+    "change": "BubuDesuWho is now installable as a <strong>PWA</strong>: add it to your home screen for an app-like icon, offline access to pages you've visited, and faster loads from cached audio and covers"
+  },
+  {
     "date": "05/03/2026",
     "change": "Sidebar now offers an <strong>Album</strong> grouping — sort songs by their release album (works on its own or stacked with Subunit)"
   },

@@ -1,5 +1,6 @@
 import { getFavorite } from './favorite';
 import { getStorage, setStorage, loadMasteryCache, masteryPct } from './storage';
+import { setImgSrc } from './thumbs';
 
 // Floating "buddy" portrait of the user's favorited member. Mounts on every
 // page (called from main.ts). Currently only Aqours has portraits available
@@ -7,6 +8,8 @@ import { getStorage, setStorage, loadMasteryCache, masteryPct } from './storage'
 // have art for them.
 
 const BUDDY_BASE = 'css/images/buddies/';
+// Downsized WebP copies from scripts/build-thumbs.py; the PNG is the fallback.
+const BUDDY_THUMB_BASE = 'css/images/thumbs/buddies/';
 const SUPPORTED_GROUPS = new Set(['aqours']);
 // Aqours uses ids 1–9 with normal/idolized art on disk.
 const AQOURS_IDS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -155,7 +158,8 @@ function mount(group: string, id: number): void {
   // Idolization is gated — if locked, force non-idolized regardless of pref.
   let idolized = canIdolize && loadIdolized();
   const setSrc = () => {
-    img.src = `${BUDDY_BASE}${group}/${id}-${idolized ? 'idolized' : 'normal'}.png`;
+    const name = `${group}/${id}-${idolized ? 'idolized' : 'normal'}`;
+    setImgSrc(img, `${BUDDY_THUMB_BASE}${name}.webp`, `${BUDDY_BASE}${name}.png`);
   };
   setSrc();
 

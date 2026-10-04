@@ -8,16 +8,24 @@
 
 <script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}</script>
 
-<title>Bubudle</title>
+<title>Bubudle – Daily Singer Puzzle | BubuDesuWho</title>
+<meta name="description" content="Bubudle is the daily BubuDesuWho puzzle: hear one song clip, guess who sings each line, and share your score. A new song every day.">
+<link rel="canonical" href="https://bubudesuwho.vercel.app/bubudle.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BubuDesuWho">
+<meta property="og:title" content="Bubudle – Daily Singer Puzzle | BubuDesuWho">
+<meta property="og:description" content="Bubudle is the daily BubuDesuWho puzzle: hear one song clip, guess who sings each line, and share your score. A new song every day.">
+<meta property="og:url" content="https://bubudesuwho.vercel.app/bubudle.html">
+<meta name="twitter:card" content="summary">
 
 <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 <link type="text/css" href="css/bootstrap.min.css" rel="stylesheet" />
 <link type="text/css" href="css/themes.css?ver=20170402" rel="stylesheet" />
-<link type="text/css" href="css/themes-generated.css" rel="stylesheet" />
 <link type="text/css" href="css/styles.css?ver=20260405" rel="stylesheet" />
+<link rel="preconnect" href="%VITE_SOUND_BASE%" crossorigin>
 <link rel="preconnect" href="https://github.com">
-<link rel="preconnect" href="https://objects.githubusercontent.com">
+<link rel="preconnect" href="https://release-assets.githubusercontent.com">
 
 </head>
 <body class="bubudle-page">
@@ -86,7 +94,15 @@
       <div id="bubudle-daily-banner" class="bubudle-daily-banner" style="display:none">
         <span id="bubudle-daily-label" class="bubudle-daily-label"></span>
         <span class="bubudle-daily-sep">·</span>
-        <span class="bubudle-daily-countdown-wrap">Next daily in <span id="bubudle-daily-countdown">--:--:--</span></span>
+        <span class="bubudle-daily-archive">
+          <button id="bubudle-daily-prev" type="button" class="bubudle-daily-step" title="Previous daily" aria-label="Previous daily">&lsaquo;</button>
+          <span id="bubudle-daily-date" class="bubudle-daily-date">Today</span>
+          <button id="bubudle-daily-next" type="button" class="bubudle-daily-step" title="Next daily" aria-label="Next daily">&rsaquo;</button>
+        </span>
+        <span class="bubudle-daily-sep">·</span>
+        <span id="bubudle-daily-countdown-wrap" class="bubudle-daily-countdown-wrap">Next daily in <span id="bubudle-daily-countdown">--:--:--</span></span>
+        <button id="bubudle-daily-today" type="button" class="bubudle-daily-back" style="display:none">Back to today</button>
+        <button id="bubudle-daily-stats" type="button" class="bubudle-daily-stats-btn" title="Your daily stats">Stats</button>
       </div>
       <div id="bubudle-lyric-card" class="bubudle-lyric-card">
         <div class="bubudle-card-left">

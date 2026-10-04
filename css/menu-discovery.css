@@ -1,0 +1,250 @@
+/* Song menu discovery: filter chips, random picks, continue strip,
+   per-song progress pips, favorites and keyboard focus. Colors lean on the
+   same light/dark surfaces as the sort toggles so themes stay consistent. */
+
+.menu-discovery {
+  padding: 6px 10px 8px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.menu-discovery:empty {
+  display: none;
+}
+html.dark-mode .menu-discovery {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+/* Pin the filters under the already-sticky search (34px) and sort row (39px)
+   so a filter is one click away mid-list. Short screens skip it: the three
+   rows together would leave almost no room for songs. */
+@media (min-height: 640px) {
+  .menu-discovery {
+    position: sticky;
+    top: 73px;
+    z-index: 1;
+  }
+}
+
+/* Per-song themes repaint the search and sort rows (css/themes.css); follow
+   them so the pinned block doesn't read as a separate grey slab. */
+html[class*="theme-"] .menu-discovery {
+  background: var(--t-slot-bg, #f5f5f5);
+  border-bottom-color: var(--t-slot-active-bg, #ddd);
+}
+html[class*="theme-"] .menu-chip.active {
+  background: var(--t-check-bg, #62C462);
+  border-color: var(--t-check-dark, #4aad4a);
+}
+html.dark-mode[class*="theme-"] .menu-discovery {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+}
+html.dark-mode[class*="theme-"] .menu-chip.active {
+  background: var(--t-check-bg, var(--accent));
+  border-color: var(--t-check-dark, var(--accent));
+}
+
+.menu-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.menu-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.menu-chip:hover {
+  background: #e4e4e4;
+  color: #333;
+}
+.menu-chip.active {
+  background: #62C462;
+  border-color: #4aad4a;
+  color: #fff;
+}
+.menu-chip-count {
+  font-weight: 400;
+  opacity: 0.75;
+}
+html.dark-mode .menu-chip {
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+html.dark-mode .menu-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+html.dark-mode .menu-chip.active {
+  background: #3f8f3f;
+  border-color: #3f8f3f;
+  color: #fff;
+}
+
+.menu-random {
+  display: flex;
+  gap: 4px;
+}
+.menu-random-btn {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.menu-random-btn:hover {
+  background: #eef6ee;
+  border-color: #62C462;
+}
+.menu-random-btn.menu-random-empty {
+  opacity: 0.5;
+  cursor: default;
+}
+html.dark-mode .menu-random-btn {
+  color: var(--text-muted);
+  background: transparent;
+  border-color: var(--border);
+}
+html.dark-mode .menu-random-btn:hover {
+  background: rgba(98, 196, 98, 0.12);
+}
+
+.menu-recent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.menu-recent-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  margin-right: 2px;
+}
+html.dark-mode .menu-recent-label {
+  color: var(--text-muted);
+}
+/* Beat the generic `.sidebar-nav li a` block styling so these stay chips. */
+.sidebar-nav li.menu-discovery a.menu-recent-item {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #444;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+}
+.hoverable .sidebar-nav li.menu-discovery a.menu-recent-item:hover {
+  background: #eef6ee;
+  border-color: #62C462;
+  text-decoration: none;
+}
+html.dark-mode .sidebar-nav li.menu-discovery a.menu-recent-item {
+  color: var(--text-muted);
+  background: transparent;
+  border-color: var(--border);
+}
+
+/* Per-song progress pip: hollow ring = unplayed, partial fill = best score
+   so far, solid star-green = mastered (a perfect run). */
+.song-progress {
+  --pct: 0;
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 6px;
+  vertical-align: 1px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+}
+.song-progress-progress {
+  border-color: #ffd54a;
+  background: conic-gradient(#ffd54a calc(var(--pct) * 1%), transparent 0);
+}
+.song-progress-mastered {
+  border-color: #62C462;
+  background: #62C462;
+  box-shadow: 0 0 4px rgba(98, 196, 98, 0.8);
+}
+html.dark-mode .song-progress-unplayed {
+  border-color: var(--border);
+}
+
+.sidebar-nav li.select-option {
+  position: relative;
+}
+.sidebar-nav li a .song-name {
+  /* Room for the pip on the left and the star on the right. */
+  width: calc(94% - 34px);
+}
+.song-fav {
+  position: absolute;
+  top: 50%;
+  right: 22px;
+  transform: translateY(-50%);
+  padding: 0 4px;
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.sidebar-nav li.select-option:hover .song-fav,
+.song-fav:focus-visible,
+.song-fav.on {
+  opacity: 1;
+}
+.song-fav.on {
+  color: #ffd54a;
+}
+/* Touch screens have no hover, so keep the star visible. */
+@media (hover: none) {
+  .song-fav {
+    opacity: 0.7;
+  }
+}
+
+.song-group-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 10px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.18);
+  vertical-align: 1px;
+}
+
+.sidebar-nav li a.kb-focus {
+  outline: 2px solid #ffd54a;
+  outline-offset: -2px;
+}
+
+.menu-empty {
+  padding: 14px 10px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
