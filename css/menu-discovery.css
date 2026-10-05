@@ -193,9 +193,24 @@ html.dark-mode .song-progress-unplayed {
 .sidebar-nav li.select-option {
   position: relative;
 }
+/* One row: pip, name (takes the slack and wraps on its own), lyrics icon.
+   A percentage width on the name used to push the pip onto its own line. */
+.sidebar-nav li.select-option > a {
+  display: flex;
+  align-items: center;
+}
+.sidebar-nav li.select-option > a .song-progress {
+  flex: none;
+}
 .sidebar-nav li a .song-name {
-  /* Room for the pip on the left and the star on the right. */
-  width: calc(94% - 34px);
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  /* Room for the star, which sits absolutely over the right edge. */
+  padding-right: 24px;
+}
+.sidebar-nav li.select-option > a .song-attrs {
+  flex: none;
 }
 .song-fav {
   position: absolute;
