@@ -46,15 +46,23 @@ export function setPreload(preload: boolean | 'metadata'): void {
   _preload = preload;
 }
 
-function makeHowl(ogg: string, m4a: string): Howl {
-  const h = new Howl({
+function newHowl(ogg: string, m4a: string, preload: boolean | 'metadata'): Howl {
+  return new Howl({
     src: [ogg, m4a],
     format: ['ogg', 'm4a'],
     html5: true,
-    preload: _preload,
+    preload,
     volume: _volume,
     rate: _rate,
   });
+}
+
+function makeHowl(ogg: string, m4a: string): Howl {
+  return adopt(newHowl(ogg, m4a, _preload));
+}
+
+/** Make `h` the current track: the end, deferred-seek and fallback handlers. */
+function adopt(h: Howl): Howl {
   h.on('end', () => callbacks?.onEnd?.());
   h.on('play', () => {
     if (_pendingSeek === null) return;
@@ -84,7 +92,102 @@ export function loadSong(ogg: string, m4a: string, fallback?: { ogg: string; m4a
   _pendingSeek = null;
   _fallback = fallback ?? null;
   _triedFallback = false;
-  howl = makeHowl(ogg, m4a);
+  const ready = prepared.get(ogg);
+  prepared.delete(ogg);
+  if (ready && ready.state() !== 'unloaded') {
+    ready.volume(_volume);
+    ready.rate(_rate);
+    howl = adopt(ready);
+  } else {
+    howl = makeHowl(ogg, m4a);
+  }
+  currentOgg = ogg;
+  settleLater();
+}
+
+// ─── Prepared tracks ─────────────────────────────────────────────
+// Bubudle warms the clips you're likely to open next (Infinite's next puzzle,
+// the neighbouring dailies) so they start without a network wait. Each is a
+// paused, metadata-only element already seeked to its clip, which makes the
+// browser fetch just the bytes around it; loadSong() takes it over as is.
+
+export interface PrepareTarget {
+  ogg: string;
+  m4a: string;
+  /** Where playback will start, in seconds. */
+  at: number;
+}
+
+/** Browsers cap live media elements (Howler pools 10); this plus the current track stays under that. */
+export const PREPARE_LIMIT = 5;
+const SETTLE_MS = 2500;
+
+const prepared = new Map<string, Howl>();
+let currentOgg: string | null = null;
+// The current track gets the network first: preparing waits until it has
+// started playing, finished loading, or had SETTLE_MS to itself.
+let settled = true;
+let settleTimer: ReturnType<typeof setTimeout> | null = null;
+let wanted: PrepareTarget[] = [];
+
+function settleLater(): void {
+  if (howl?.state() === 'loaded') { settled = false; settle(); return; }
+  settled = false;
+  if (settleTimer !== null) clearTimeout(settleTimer);
+  settleTimer = setTimeout(settle, SETTLE_MS);
+  howl?.once('play', settle);
+  howl?.once('load', settle);
+}
+
+function settle(): void {
+  if (settled) return;
+  settled = true;
+  if (settleTimer !== null) clearTimeout(settleTimer);
+  settleTimer = null;
+  applyPrepared();
+}
+
+/**
+ * Keep exactly these tracks warm, most wanted first; the first PREPARE_LIMIT
+ * count. Tracks already warm are kept, ones no longer wanted are dropped.
+ */
+export function prepare(targets: PrepareTarget[]): void {
+  const seen = new Set<string>();
+  wanted = targets.filter((t) => !seen.has(t.ogg) && seen.add(t.ogg)).slice(0, PREPARE_LIMIT);
+  if (settled) applyPrepared();
+}
+
+function applyPrepared(): void {
+  const keep = new Set(wanted.map((t) => t.ogg).filter((o) => o !== currentOgg));
+  for (const [ogg, h] of prepared) {
+    if (!keep.has(ogg)) { h.unload(); prepared.delete(ogg); }
+  }
+  for (const t of wanted) {
+    if (!keep.has(t.ogg) || prepared.has(t.ogg)) continue;
+    prepared.set(t.ogg, warm(t));
+  }
+}
+
+function warm(t: PrepareTarget): Howl {
+  const h = newHowl(t.ogg, t.m4a, 'metadata');
+  // Howler only applies a seek once the track can play through, which a
+  // metadata-only element never reaches by itself; seeking the element as soon
+  // as its metadata is in is what gets the clip's bytes fetched. Not once:
+  // Howler's audio unlock on the first tap calls load() on every element,
+  // which throws the seek away, so it's redone while the track is still waiting.
+  const node = (h as unknown as { _sounds?: { _node?: HTMLMediaElement }[] })._sounds?.[0]?._node;
+  if (node) {
+    node.addEventListener('loadedmetadata', () => {
+      if (prepared.get(t.ogg) === h) node.currentTime = t.at;
+    });
+  } else {
+    h.seek(t.at);
+  }
+  h.once('loaderror', () => {
+    if (prepared.get(t.ogg) === h) prepared.delete(t.ogg);
+    h.unload();
+  });
+  return h;
 }
 
 export function play(seekTo?: number): void {
@@ -186,4 +289,11 @@ export function destroyPlayer(): void {
   if (animFrameId !== null) cancelAnimationFrame(animFrameId);
   if (howl) howl.unload();
   howl = null;
+  currentOgg = null;
+  for (const h of prepared.values()) h.unload();
+  prepared.clear();
+  wanted = [];
+  if (settleTimer !== null) clearTimeout(settleTimer);
+  settleTimer = null;
+  settled = true;
 }

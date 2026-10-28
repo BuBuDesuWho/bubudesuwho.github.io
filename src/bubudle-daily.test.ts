@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ARCHIVE_START, clampDailyDate, shiftDate, formatDailyDate } from './bubudle-daily';
+import { ARCHIVE_START, clampDailyDate, dailyNeighbors, shiftDate, formatDailyDate, type DailyScope } from './bubudle-daily';
 
 const TODAY = '2026-08-25';
 
@@ -67,5 +67,33 @@ describe('formatDailyDate', () => {
   // visitors west of Greenwich.
   it('renders the calendar day it was given', () => {
     expect(formatDailyDate('2026-08-24')).toBe('Mon, Aug 24, 2026');
+  });
+});
+
+describe('dailyNeighbors', () => {
+  const aqours: DailyScope = { kind: 'group', group: 'aqours' };
+  const muse: DailyScope = { kind: 'group', group: 'muse' };
+  const all: DailyScope = { kind: 'mode', mode: 'anime' };
+  const scopes = [muse, aqours, all];
+  const label = (r: { scope: DailyScope; date: string }) =>
+    `${r.scope.kind === 'group' ? r.scope.group : 'all'}@${r.date}`;
+
+  it('orders the same day in other scopes, then this scope either side, then the rest', () => {
+    const out = dailyNeighbors({ scope: aqours, date: '2026-08-20' }, scopes, TODAY).map(label);
+    expect(out).toEqual([
+      'muse@2026-08-20', 'all@2026-08-20',
+      'aqours@2026-08-19', 'aqours@2026-08-21',
+      'muse@2026-08-19', 'muse@2026-08-21', 'all@2026-08-19', 'all@2026-08-21',
+    ]);
+  });
+
+  it('never reaches past today', () => {
+    const out = dailyNeighbors({ scope: all, date: TODAY }, scopes, TODAY).map(label);
+    expect(out).toEqual(['muse@2026-08-25', 'aqours@2026-08-25', 'all@2026-08-24', 'muse@2026-08-24', 'aqours@2026-08-24']);
+  });
+
+  it('never reaches before the archive starts', () => {
+    const out = dailyNeighbors({ scope: muse, date: ARCHIVE_START }, [muse], TODAY).map(label);
+    expect(out).toEqual(['muse@2026-04-26']);
   });
 });

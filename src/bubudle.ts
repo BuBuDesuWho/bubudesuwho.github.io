@@ -1,6 +1,6 @@
 import { Song, Slot, SlotState, MappingEntry, GroupName, MEMBER_MAPPING } from './types';
 import { loadIndex, loadSongById, loadBubudlePool } from './config';
-import { state, initGameState, loadSong, checkSlot, toggleChoice, toggleReveal, getSongTitle, getActivePool, setActivePool } from './game';
+import { state, initGameState, loadSong, audioSources, checkSlot, toggleChoice, toggleReveal, getSongTitle, getActivePool, setActivePool } from './game';
 import { initThemeToggle } from './ui-about';
 import { switchTheme, buildSlotSkeleton } from './ui';
 import { initKofi } from './kofi';
@@ -19,12 +19,12 @@ import {
   parseBubudleDiff,
   parseSongDiff,
 } from './bubudle-config';
-import { eligibleCandidates as filterEligible, PoolCandidate, poolCandidates, resolvePoolLine } from './candidate-pool';
+import { eligibleCandidates as filterEligible, CandidateFilters, PoolCandidate, poolCandidates, resolvePoolLine } from './candidate-pool';
 import type { PoolSong, SongLine } from './bubudle-lines';
 import { bubudleGridLayout } from './bubudle-grid';
 import { appendToLog, renderLog, hasLogEntries } from './bubudle-log';
 import {
-  AppMode, DailyScope,
+  AppMode, DailyScope, dailyNeighbors,
   currentDateEst, msUntilNextEstMidnight, formatHms,
   loadDailyResult, saveDailyResult,
   ARCHIVE_START, clampDailyDate, shiftDate, formatDailyDate, scopeKey,
@@ -241,14 +241,25 @@ function isAllScope(): boolean {
   return bubudleMode === 'daily' ? dailyScope.kind === 'mode' : infiniteAll;
 }
 
+/** The sidebar's group buttons Bubudle can play: this mode's groups, minus exclusions. */
+function playableGroupButtons(): HTMLElement[] {
+  return [...document.querySelectorAll<HTMLElement>('.group-button[data-value]')]
+    .filter((gb) => hasGroup(gb.dataset.value!) && !isExcluded(gb.dataset.value));
+}
+
+/** Every daily there is: one per playable group, plus the whole-mode one. */
+function allDailyScopes(): DailyScope[] {
+  return [
+    ...playableGroupButtons().map((gb): DailyScope => ({ kind: 'group', group: gb.dataset.value as GroupName })),
+    { kind: 'mode', mode: APP_MODE },
+  ];
+}
+
 function populateAllButton(): void {
   const btn = document.getElementById('bubudle-all-group-button');
   if (!btn) return;
   const sources: string[] = [];
-  document.querySelectorAll<HTMLElement>('.group-button[data-value]').forEach((gb) => {
-    const slug = gb.dataset.value!;
-    if (!hasGroup(slug)) return;   // off-mode group — skip its icon
-    if (isExcluded(slug)) return;
+  playableGroupButtons().forEach((gb) => {
     const img = gb.querySelector<HTMLImageElement>('img.group-icon');
     if (img?.src) sources.push(img.getAttribute('src')!);
   });
@@ -486,16 +497,21 @@ function applyGroupClass(group: GroupName): void {
   html.classList.add(`group-${group}`);
 }
 
-function buildCandidatePool(songs: PoolSong[]): void {
-  candidates = poolCandidates(songs, (s) => {
+/** Which songs a scope draws from: one group's menu, or every playable group. */
+function scopeIncludes(scope: DailyScope): (s: PoolSong) => boolean {
+  return (s) => {
     const menu = (s.menu ?? s.group) as string;
-    return menu === bubudleGroup && !isExcluded(menu);
-  });
+    return !isExcluded(menu) && (scope.kind === 'mode' || menu === scope.group);
+  };
+}
+
+function buildCandidatePool(songs: PoolSong[]): void {
+  candidates = poolCandidates(songs, scopeIncludes({ kind: 'group', group: bubudleGroup }));
   updatePoolCount();
 }
 
 function buildCandidatePoolAll(songs: PoolSong[]): void {
-  candidates = poolCandidates(songs, (s) => !isExcluded((s.menu ?? s.group) as string));
+  candidates = poolCandidates(songs, scopeIncludes({ kind: 'mode', mode: APP_MODE }));
   updatePoolCount();
 }
 
@@ -709,8 +725,18 @@ function pickFromPool(pool: PoolCandidate[]): PoolCandidate {
 }
 
 function prefetchNext(pool: PoolCandidate[]): void {
-  upNext = drawFrom(pool);
-  void loadSongById(upNext.song.id);
+  const next = upNext = drawFrom(pool);
+  void fetchLine(next).then((line) => {
+    if (line && upNext === next && bubudleMode === 'infinite') prepareClips([line]);
+  });
+}
+
+/** Warm these puzzles' clips in the player, most wanted first (it keeps the first few). */
+function prepareClips(lines: LyricCandidate[]): void {
+  player.prepare(lines.map((c) => {
+    const src = audioSources(c.song);
+    return { ogg: src.ogg, m4a: src.m4a, at: calcClipRange(c.range)[0] };
+  }));
 }
 
 function updatePoolCount(): void {
@@ -972,10 +998,13 @@ function syncDifficultyButtons(): void {
   );
 }
 
+// Every daily is drawn from its whole scope: no clip, song or subunit filter.
+const DAILY_FILTERS: CandidateFilters = { clipDiff: 'all', songDiff: 'all', subunitInclude: [], subunitExclude: [] };
+
 async function loadDailyForScope(): Promise<void> {
   // Lock filters
-  bubudleDiff = 'all';
-  songDiff = 'all';
+  bubudleDiff = DAILY_FILTERS.clipDiff;
+  songDiff = DAILY_FILTERS.songDiff;
   subunitInclude = [];
   subunitExclude = [];
   recentHistory.clear();
@@ -1032,6 +1061,30 @@ async function loadDailyForScope(): Promise<void> {
 
   updateDailyBanner();
   startCountdown();
+  void prefetchDailyNeighbors();
+}
+
+/**
+ * Fetch every neighbouring daily's song (the same day in the other groups, and
+ * each group a day either side) so switching to one doesn't wait on the
+ * network, and warm the clips of the likeliest few.
+ */
+async function prefetchDailyNeighbors(): Promise<void> {
+  const here = { scope: dailyScope, date: dailyDate };
+  const stillHere = () =>
+    bubudleMode === 'daily' && dailyDate === here.date && scopeKey(dailyScope) === scopeKey(here.scope);
+  const today = currentDateEst();
+  const targets = dailyNeighbors(here, allDailyScopes(), today);
+  // Past days resolve through the manifest, the same way loading them would.
+  if (targets.some((t) => t.date !== today)) await loadDailyManifest();
+  if (!stillHere()) return;
+  const lines = await Promise.all(targets.map((t) => {
+    const pool = filterEligible(poolCandidates(poolSongs, scopeIncludes(t.scope)), DAILY_FILTERS);
+    const pick = pickDailyLine(pool, candidateKey, t.scope, t.date, t.date !== today);
+    return pick ? fetchLine(pick) : Promise.resolve(null);
+  }));
+  if (!stillHere()) return;
+  prepareClips(lines.filter((c): c is LyricCandidate => c !== null));
 }
 
 // Rather than silently serving a different line than the day actually had.

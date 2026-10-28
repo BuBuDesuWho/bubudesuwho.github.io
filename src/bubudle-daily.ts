@@ -82,6 +82,28 @@ export function clampDailyDate(raw: string | null, today: string, start = ARCHIV
   return raw;
 }
 
+export interface DailyRef {
+  scope: DailyScope;
+  date: string;
+}
+
+/**
+ * The dailies a visitor on `current` is likeliest to open next, most likely
+ * first: the same day in every other scope, then this scope a day either side,
+ * then the other scopes a day either side. Days outside the archive (before
+ * ARCHIVE_START, after today) are left out, as is `current` itself.
+ */
+export function dailyNeighbors(current: DailyRef, scopes: DailyScope[], today: string, start = ARCHIVE_START): DailyRef[] {
+  const here = scopeKey(current.scope);
+  const others = scopes.filter((s) => scopeKey(s) !== here);
+  const days = [shiftDate(current.date, -1), shiftDate(current.date, 1)].filter((d) => d >= start && d <= today);
+  return [
+    ...others.map((scope) => ({ scope, date: current.date })),
+    ...days.map((date) => ({ scope: current.scope, date })),
+    ...others.flatMap((scope) => days.map((date) => ({ scope, date }))),
+  ];
+}
+
 const ARCHIVE_LABEL_FMT = new Intl.DateTimeFormat('en-US', {
   timeZone: 'UTC',
   weekday: 'short',

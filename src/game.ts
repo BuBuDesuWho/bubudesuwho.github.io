@@ -101,13 +101,22 @@ export function loadSong(song: Song): void {
   const savedDiff = getStorage('diff');
   if (savedDiff) state.diff = Math.min(parseInt(savedDiff, 10), getMaxDiff());
 
-  // load audio — by default every client streams through the Cloudflare audio worker
-  // (VITE_SOUND_BASE) so all traffic flows through Cloudflare for analytics; the worker
-  // proxies the GitHub Releases origin and rewrites the Content-Type/Disposition iOS
-  // Safari rejects. VITE_SOUND_BASE_GH is the GitHub-direct base kept as a backup:
-  // visiting with ?sound=gh (persisted; ?sound=cf clears it) serves NON-iOS clients
-  // straight from GitHub. iOS always stays on the worker — GH Releases' headers break
-  // iOS Safari playback. Falls back to local sound/ when no base is set (dev).
+  const src = audioSources(song);
+  player.loadSong(src.ogg, src.m4a, src.fallback);
+}
+
+/**
+ * Where a song's audio is served from. By default every client streams through the
+ * Cloudflare audio worker (VITE_SOUND_BASE) so all traffic flows through Cloudflare for
+ * analytics; for anime the worker serves R2, else it proxies the GitHub Releases origin
+ * and rewrites the Content-Type/Disposition iOS Safari rejects. VITE_SOUND_BASE_GH is the
+ * GitHub-direct base kept as a backup: visiting with ?sound=gh (persisted; ?sound=cf
+ * clears it) serves NON-iOS clients straight from GitHub. iOS always stays on the worker —
+ * GH Releases' headers break iOS Safari playback. Falls back to local sound/ when no base
+ * is set (dev). Bubudle prepares upcoming clips from these same URLs, so the player can
+ * match them when the song comes up.
+ */
+export function audioSources(song: Song): { ogg: string; m4a: string; fallback?: { ogg: string; m4a: string } } {
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
@@ -130,7 +139,7 @@ export function loadSong(song: Song): void {
     !isIOS && !useGh && ghBase
       ? { ogg: resolveWith(ghBase, song.ogg), m4a: resolveWith(ghBase, m4aPath) }
       : undefined;
-  player.loadSong(resolveAudio(song.ogg), resolveAudio(m4aPath), fallback);
+  return { ogg: resolveAudio(song.ogg), m4a: resolveAudio(m4aPath), fallback };
 }
 
 export function makeSlotsFromBase(bases: SlotBase[]): Slot[] {
