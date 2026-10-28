@@ -324,10 +324,10 @@ export async function initBubudlePage(): Promise<void> {
     onTick(currentTime, _duration, _didSeek) {
       if (clipEnd !== null && currentTime >= clipEnd) {
         clipEnd = null;
-        // A paused element keeps downloading the track (1-3 MB a clip). Drop
-        // it; a replay reloads from the clip's start, which it seeks to anyway.
+        // Keep the paused element: it carries on buffering the track, so a
+        // replay (the usual next move after a wrong guess) starts from memory
+        // instead of reloading and re-seeking over the network.
         player.pause();
-        player.release();
       }
       updateSeekSlider(currentTime);
     },
@@ -1229,7 +1229,6 @@ function playClip(forcePlay = false): void {
 
   if (!forcePlay && player.isPlaying()) {
     player.pause();
-    player.release();
     const playBtn = document.querySelector<HTMLElement>('.jp-play');
     const pauseBtn = document.querySelector<HTMLElement>('.jp-pause');
     if (playBtn) playBtn.style.display = 'inline-block';

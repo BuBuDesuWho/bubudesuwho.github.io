@@ -46,12 +46,7 @@ export function setPreload(preload: boolean | 'metadata'): void {
   _preload = preload;
 }
 
-// Sources of the current track, kept so release() can drop the audio element
-// and the next play() rebuild it.
-let _src: { ogg: string; m4a: string } | null = null;
-
 function makeHowl(ogg: string, m4a: string): Howl {
-  _src = { ogg, m4a };
   const h = new Howl({
     src: [ogg, m4a],
     format: ['ogg', 'm4a'],
@@ -92,17 +87,7 @@ export function loadSong(ogg: string, m4a: string, fallback?: { ogg: string; m4a
   howl = makeHowl(ogg, m4a);
 }
 
-/** Unload the audio element so the browser stops buffering the rest of the
- *  track (Bubudle plays a few seconds, then idles on a paused element that keeps
- *  downloading). The next play() reloads it from the same source. */
-export function release(): void {
-  if (!howl) return;
-  howl.unload();
-  howl = null;
-}
-
 export function play(seekTo?: number): void {
-  if (!howl && _src) howl = makeHowl(_src.ogg, _src.m4a);
   if (!howl) return;
   if (seekTo !== undefined) {
     _seekPending = true;
@@ -201,5 +186,4 @@ export function destroyPlayer(): void {
   if (animFrameId !== null) cancelAnimationFrame(animFrameId);
   if (howl) howl.unload();
   howl = null;
-  _src = null;
 }
