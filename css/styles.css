@@ -2601,9 +2601,17 @@ html.dark-mode .edit-mode .navbar {
   margin-left: auto;
 }
 @media (max-width: 600px) {
-  .bubudle-lyric-card { flex-direction: column; }
+  /* On a phone the lyric, the member grid and Check/Next have to share one
+     screen, so the card drops its padding and the hint rows it reserves on
+     desktop: a hint takes room only once it's revealed. */
+  .bubudle-lyric-card { flex-direction: column; gap: 4px; padding: 14px 12px; margin-bottom: 8px; }
   .bubudle-card-left { padding-left: 0; }
-  .bubudle-card-right { flex: none; text-align: center; margin-left: 0; }
+  .bubudle-card-right { flex: none; text-align: center; margin-left: 0; gap: 2px; }
+  .bubudle-card-right:not(:has(.revealed)):not(:has(.bubudle-guess)) { display: none; }
+  .bubudle-hint-line:not(.revealed) { display: none; }
+  .bubudle-guesses:empty { display: none; }
+  .bubudle-play-btn { margin: 6px auto; }
+  .bubudle-controls { margin-top: 8px; }
 }
 
 .bubudle-play-btn {

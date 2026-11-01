@@ -105,12 +105,12 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
   const memberMapping = MEMBER_MAPPING[state.group] ?? MEMBER_MAPPING[bubudleGroup];
 
   const colors = getGroupColors(state.group);
-  const folders = portraitFolders(state.group, parentGroupOf(state.group), bubudleGroup);
+  const parent = parentGroupOf(state.group);
   const contentBase = (import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL) as string;
   const faceFor = (id: number): FaceInfo => ({
     name: memberMapping[id] ?? `#${id}`,
     color: colors[id],
-    urls: portraitUrls(contentBase, folders, id),
+    urls: portraitUrls(contentBase, portraitFolders(state.group, parent, bubudleGroup, !!parent && id in (MEMBER_MAPPING[parent] ?? {})), id),
   });
 
   function makeBtn(value: string): HTMLButtonElement {

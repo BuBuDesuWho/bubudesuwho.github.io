@@ -4,14 +4,17 @@ import { portraitFolders, portraitUrls } from './bubudle-faces';
 // The tile DOM is checked in the browser (no jsdom here); these are the pure parts.
 
 describe('portraitFolders', () => {
-  it('tries the collab group, then its parent, then the page group', () => {
-    expect(portraitFolders('saint-aqours-snow', 'aqours', 'aqours')).toEqual(['saint-aqours-snow', 'aqours']);
+  it("looks in the parent group's folder first for a member the parent has", () => {
+    expect(portraitFolders('saint-aqours-snow', 'aqours', 'aqours', true)).toEqual(['aqours', 'saint-aqours-snow']);
+  });
+  it("looks in the collab group's own folder first for its guests", () => {
+    expect(portraitFolders('saint-aqours-snow', 'aqours', 'aqours', false)).toEqual(['saint-aqours-snow', 'aqours']);
   });
   it('is just the group when it has no parent', () => {
-    expect(portraitFolders('liella', undefined, 'liella')).toEqual(['liella']);
+    expect(portraitFolders('liella', undefined, 'liella', false)).toEqual(['liella']);
   });
   it('falls back to the page group when the song group differs', () => {
-    expect(portraitFolders('aqours-miku', 'aqours', 'muse')).toEqual(['aqours-miku', 'aqours', 'muse']);
+    expect(portraitFolders('aqours-miku', 'aqours', 'muse', false)).toEqual(['aqours-miku', 'aqours', 'muse']);
   });
 });
 

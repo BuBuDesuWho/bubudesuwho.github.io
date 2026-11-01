@@ -12,11 +12,13 @@ export interface FaceInfo {
   urls: string[];
 }
 
-/** Folders to look for a member's portrait in, most specific first, no repeats.
- *  A collab group (Saint Aqours Snow) keeps only its own members' portraits and
- *  borrows the rest from its parent group's folder. */
-export function portraitFolders(group: string, parent: string | undefined, fallback: string): string[] {
-  return [...new Set([group, parent, fallback].filter((g): g is string => !!g))];
+/** Folders to look for one member's portrait in, likeliest first, no repeats.
+ *  A collab group's folder (Saint Aqours Snow) holds only its guests'
+ *  portraits, so a member its parent group also has is looked up there first;
+ *  guessing at a file that isn't there costs a request and a broken frame. */
+export function portraitFolders(group: string, parent: string | undefined, fallback: string, inParent: boolean): string[] {
+  const order = parent && inParent ? [parent, group, fallback] : [group, parent, fallback];
+  return [...new Set(order.filter((g): g is string => !!g))];
 }
 
 export function portraitUrls(base: string, folders: string[], id: number): string[] {
@@ -40,7 +42,6 @@ function face(info: FaceInfo, cls: string): HTMLElement {
   }
   const img = document.createElement('img');
   img.alt = '';
-  img.loading = 'lazy';
   img.decoding = 'async';
   let i = 0;
   img.onerror = () => {

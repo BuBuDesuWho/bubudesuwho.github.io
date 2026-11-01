@@ -125,23 +125,36 @@
 html.dark-mode .bf-tile.disabled .bf-face,
 html.dark-mode .bf-tile.disabled .bf-mini { border-color: #3a4352; }
 
+/* Phones: the lyric card, the grid and Check/Next must fit one screen, so
+   tiles stay close to the old text buttons' height and shortcuts go back to
+   one line (tiny faces beside the label, which fits now that they're small). */
 @media (max-width: 767px) {
   .slot-body .btn.bf-tile {
-    gap: 6px;
-    min-height: 46px;
-    padding: 5px 5px 5px 4px;
-    font-size: 13px;
+    gap: 5px;
+    min-height: 36px;
+    padding: 3px 4px 3px 3px;
+    font-size: 12.5px;
   }
-  .bf-face { width: 32px; height: 32px; border-width: 2px; }
-  .bf-nick { font-size: 10px; }
+  .bf-face { width: 28px; height: 28px; border-width: 2px; }
+  .bf-nick { font-size: 9.5px; }
+  .slot-body .btn.bf-shortcut,
   .bubudle-mobile-shortcut-group .btn.bf-shortcut {
-    min-height: 44px;
-    gap: 1px;
-    padding: 3px 2px;
+    flex-direction: row;
+    min-height: 30px;
+    gap: 4px;
+    padding: 2px 3px;
     font-size: 11.5px;
   }
-  .bf-mini { width: 20px; height: 20px; margin-left: -7px; }
+  .bf-mini { width: 17px; height: 17px; border-width: 1.5px; margin-left: -7px; }
   .bf-stack { padding-left: 7px; }
+  .bubudle-mobile-shortcuts { margin-top: 4px; }
+  /* Collab songs add guests and an extra shortcut here: wrap at three a row
+     instead of squeezing five labels down to one letter each. */
+  .bubudle-mobile-shortcut-group { margin-bottom: 2px; flex-wrap: wrap; gap: 2px 4px; }
+  .bubudle-mobile-shortcut-group .btn.bf-tile { flex: 1 1 30%; }
+  .bubudle-mobile-shortcut-group .btn.bf-tile:not(.bf-shortcut) { min-height: 30px; }
+  .bubudle-mobile-shortcut-group .bf-tile:not(.bf-shortcut) .bf-face { width: 22px; height: 22px; }
+  .bubudle-mobile-shortcut-group .bf-tile:not(.bf-shortcut) .bf-nick { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
