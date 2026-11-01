@@ -1,11 +1,12 @@
 import { Song, Slot, SlotState, MappingEntry, GroupName, MEMBER_MAPPING } from './types';
 import { loadIndex, loadSongById, loadBubudlePool } from './config';
-import { state, initGameState, loadSong, audioSources, checkSlot, toggleChoice, toggleReveal, getSongTitle, getActivePool, setActivePool } from './game';
+import { state, initGameState, loadSong, audioSources, checkSlot, toggleChoice, toggleReveal, getSongTitle, getActivePool, setActivePool, getGroupColors } from './game';
+import { FaceInfo, portraitFolders, portraitUrls, decorateMemberButton, decorateShortcutButton } from './bubudle-faces';
 import { initThemeToggle } from './ui-about';
 import { switchTheme, buildSlotSkeleton } from './ui';
 import { initKofi } from './kofi';
 import { buildMenu, toggleMenu } from './ui-menu';
-import { hasGroup, getGroup, isExcludedFrom } from './groups';
+import { hasGroup, getGroup, isExcludedFrom, parentGroupOf } from './groups';
 import * as player from './player';
 import { getStorage, setStorage } from './storage';
 import {
@@ -15,6 +16,7 @@ import {
   HINT_SUBUNITS,
   HINT_YEARS,
   BubudleDifficulty,
+  ShortcutGroup,
   SongDifficulty,
   parseBubudleDiff,
   parseSongDiff,
@@ -102,18 +104,32 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
   const hasSubunits = layout.hasSubunits;
   const memberMapping = MEMBER_MAPPING[state.group] ?? MEMBER_MAPPING[bubudleGroup];
 
-  const labelFor = (id: number): string => {
-    const name = memberMapping[id] ?? `#${id}`;
-    const nick = (MEMBER_NICKNAMES[bubudleGroup] ?? {})[id];
-    return nick ? `${name} (${nick})` : name;
-  };
+  const colors = getGroupColors(state.group);
+  const folders = portraitFolders(state.group, parentGroupOf(state.group), bubudleGroup);
+  const contentBase = (import.meta.env.VITE_CONTENT_BASE || import.meta.env.BASE_URL) as string;
+  const faceFor = (id: number): FaceInfo => ({
+    name: memberMapping[id] ?? `#${id}`,
+    color: colors[id],
+    urls: portraitUrls(contentBase, folders, id),
+  });
 
-  function makeBtn(value: string, label: string): HTMLButtonElement {
+  function makeBtn(value: string): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'btn btn-primary';
     btn.dataset.value = value;
-    btn.textContent = label;
+    return btn;
+  }
+
+  function memberBtn(id: number): HTMLButtonElement {
+    const btn = makeBtn(String(id));
+    decorateMemberButton(btn, faceFor(id), (MEMBER_NICKNAMES[bubudleGroup] ?? {})[id]);
+    return btn;
+  }
+
+  function shortcutBtn(g: ShortcutGroup): HTMLButtonElement {
+    const btn = makeBtn(g.members.join(','));
+    decorateShortcutButton(btn, g.label, g.members.map(faceFor));
     return btn;
   }
 
@@ -125,23 +141,18 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
   }
 
   // Member columns (3 cols of individual members)
-  const memberCols = layout.memberCols.map(ids => ids.map(id => makeBtn(String(id), labelFor(id))));
+  const memberCols = layout.memberCols.map(ids => ids.map(memberBtn));
 
-  // Extra member buttons
-  const extraBtns = layout.extras.map(id => makeBtn(String(id), labelFor(id)));
-
-  // Shortcut buttons
-  const leftShortcutBtns = layout.leftShortcuts.map(g => makeBtn(g.members.join(','), g.label));
-  const rightShortcutBtns = layout.rightShortcuts.map(g => makeBtn(g.members.join(','), g.label));
-
-  // Add extra member buttons to whichever shortcut column has room
-  if (extraBtns.length > 0) {
-    if (!hasSubunits) {
-      leftShortcutBtns.unshift(...extraBtns);
-    } else {
-      leftShortcutBtns.push(...extraBtns);
-    }
-  }
+  // Extras (guests) go in whichever shortcut column has room. Built by a
+  // function, not cloned, because the mobile row needs its own copies and a
+  // cloned <img> would lose its portrait fallback handler.
+  const leftShortcutsWithExtras = (): HTMLButtonElement[] => {
+    const shortcuts = layout.leftShortcuts.map(shortcutBtn);
+    const extras = layout.extras.map(memberBtn);
+    return hasSubunits ? [...shortcuts, ...extras] : [...extras, ...shortcuts];
+  };
+  const leftShortcutBtns = leftShortcutsWithExtras();
+  const rightShortcutBtns = layout.rightShortcuts.map(shortcutBtn);
 
   // Build layout: col1 | shortcutsLeft | col2 | shortcutsRight | col3.
   // With shortcut cols: 3 member cols at col-sm-2 + 2 shortcut cols at col-sm-2
@@ -166,8 +177,8 @@ function createBubudleSlot(slot: Slot, singers: number[]): HTMLElement {
 
   // Mobile-only row: shortcuts laid out horizontally below the member grid.
   // Desktop uses the hidden-xs shortcut cols above; xs swaps to this block.
-  const leftBtnsMobile = leftShortcutBtns.map(b => b.cloneNode(true) as HTMLButtonElement);
-  const rightBtnsMobile = rightShortcutBtns.map(b => b.cloneNode(true) as HTMLButtonElement);
+  const leftBtnsMobile = leftShortcutBtns.length > 0 ? leftShortcutsWithExtras() : [];
+  const rightBtnsMobile = layout.rightShortcuts.map(shortcutBtn);
   if (leftBtnsMobile.length + rightBtnsMobile.length > 0) {
     const mobileRow = document.createElement('div');
     mobileRow.className = 'row visible-xs-block bubudle-mobile-shortcuts';

@@ -1,0 +1,151 @@
+/* Bubudle face tiles (bubudle-faces.ts). The button keeps every state class
+   game.ts sets (active, disabled, revealed) and the --member-accent fill from
+   styles.css; this only lays out the face, name and nickname inside it. */
+
+.slot-body .btn.bf-tile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 6px 10px 6px 7px;
+  text-align: left;
+  white-space: normal;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.bf-face,
+.bf-mini {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  /* Some portraits are cut out on transparency; a light wash of the member's
+     colour keeps them readable in dark mode too. */
+  background: color-mix(in srgb, var(--mc, #b9c3cf) 22%, #fff);
+  border: 3px solid var(--mc, #b9c3cf);
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.bf-face { width: 40px; height: 40px; }
+.bf-face img,
+.bf-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter .12s ease;
+}
+.bf-initial {
+  font-weight: 700;
+  color: #fff;
+  background: var(--mc, #8a94a3);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+.bf-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+.bf-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bf-nick {
+  font-size: 11px;
+  opacity: .7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Picked: the tile fills with the member's colour; the ring goes white with a
+   halo in that colour so the face reads as "lit". Bootstrap's navy
+   .btn-primary.active:hover/:focus would otherwise win while the pointer is
+   still over the tile, which on a phone is until the next tap. */
+.slot-body .btn.bf-tile.active,
+.slot-body .btn.bf-tile.active:hover,
+.slot-body .btn.bf-tile.active:focus {
+  background: var(--member-accent, var(--slot-btn-active-bg));
+  border-color: var(--member-accent-border, var(--accent-dark));
+  color: #fff;
+}
+.slot-body .btn.bf-tile.active {
+  transform: scale(1.03);
+  z-index: 3;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .18);
+}
+.bf-tile.active .bf-face,
+.bf-tile.active .bf-mini {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--mc, transparent);
+}
+.bf-tile.active .bf-nick { opacity: .9; }
+
+.bf-tile.disabled img { filter: grayscale(1); }
+.bf-tile.disabled .bf-face,
+.bf-tile.disabled .bf-mini { border-color: #c9ced6; }
+
+.bf-tile.revealed .bf-face,
+.bf-tile.revealed .bf-mini { box-shadow: 0 0 0 3px #63D365; }
+
+/* Shortcuts: up to three overlapping faces over the label, so the label gets
+   the column's full width ("Guilty Kiss" fits where it didn't beside them). */
+.slot-body .btn.bf-shortcut {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 4px;
+  text-align: center;
+  font-size: 12px;
+}
+.bf-shortcut .bf-name {
+  max-width: 100%;
+  white-space: nowrap;
+}
+.bf-stack {
+  display: inline-flex;
+  flex: none;
+  padding-left: 8px;
+}
+.bf-mini {
+  width: 26px;
+  height: 26px;
+  border-width: 2px;
+  margin-left: -8px;
+}
+.bf-mini .bf-initial { font-size: 11px; }
+
+html.dark-mode .bf-tile.disabled .bf-face,
+html.dark-mode .bf-tile.disabled .bf-mini { border-color: #3a4352; }
+
+@media (max-width: 767px) {
+  .slot-body .btn.bf-tile {
+    gap: 6px;
+    min-height: 46px;
+    padding: 5px 5px 5px 4px;
+    font-size: 13px;
+  }
+  .bf-face { width: 32px; height: 32px; border-width: 2px; }
+  .bf-nick { font-size: 10px; }
+  .bubudle-mobile-shortcut-group .btn.bf-shortcut {
+    min-height: 44px;
+    gap: 1px;
+    padding: 3px 2px;
+    font-size: 11.5px;
+  }
+  .bf-mini { width: 20px; height: 20px; margin-left: -7px; }
+  .bf-stack { padding-left: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot-body .btn.bf-tile,
+  .bf-face, .bf-mini, .bf-face img, .bf-mini img { transition: none; }
+  .slot-body .btn.bf-tile.active { transform: none; }
+}
